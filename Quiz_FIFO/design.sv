@@ -9,9 +9,9 @@ module fifo_flops #(parameter depth = 16, parameter bits = 32 )(
   input rst
   
 );
-  wire [depth-1:0][bits-1 : 0] d;
+  wire [bits-1 : 0] d [depth-1:0];
   //wire [bits-1 : 0] q;
-  wire [$clog2(depth)-1:0] select;
+  logic [$clog2(depth)-1:0] select = '1; //No estoy seguro de esto 
   
   reg[1:0] state;
   logic[1:0] nxt_state;
@@ -21,10 +21,10 @@ module fifo_flops #(parameter depth = 16, parameter bits = 32 )(
   generate
     for(i=0, i < depth, i + 1)begin: bit_
       if(i == 0)begin
-        ff_d dff_i(.d(Din), .clk(clk), .rst(rst), .q(d[i]));
+        ff_d dff_i(.d(Din), .clk(push), .rst(rst), .q(d[i]));
       end
       else
-        ff_d dff_r(.d(d[i-1]]), .clk(clk), .rst(rst), q(d[i]));
+        ff_d dff_r(.d(d[i-1]]), .clk(push), .rst(rst), q(d[i]));
 
     end
   endgenerate
@@ -36,25 +36,46 @@ module fifo_flops #(parameter depth = 16, parameter bits = 32 )(
     
     if (rst)begin
       state<=s0;
-      
-    end else begin
+    end 
+    else begin
       state<=nxt_state;
     end
-    always_comb begin
-      case(state)
-        s0: next_state= select? s0:s0;
-        s1: next_state= select? s1:s0;
-        s2: next_state= select? s2:s0;
-        s3: next_state= select? s3:s0;
+  end
+  always_comb begin
+    next_state = current_state; //default state: the same
+    case(state)
+      s0:begin
+        if(ctr == 2'b00)begin
+          nxt_state = s0;
+        end else begin
+          nxt_state = s1;
+        end
+      end
+      s1:begin
+        if(ctr == 2'b01) begin
+          select = select - 1; 
+          nxt_state = s0;
+        end else begin
+          nxt_state = s2;
+        end
+      end
+      s2:begin
+        if(ctr == 2'b10)begin
+          nxt_state = s0;
+        end else begin
+          nxt_state = s3;
+        end
+      end
+      s3:begin
+        select = select - 1;
+        nxt_state = s0;
+        end
+      end
         
-      endcase
-      
-      case(state)
-        s1: 
+    endcase
         
-        
-        
+           
   end
   
 
-endmodulev
+endmodule
