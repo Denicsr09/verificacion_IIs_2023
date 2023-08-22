@@ -1,6 +1,6 @@
 module fifo_flops #(parameter depth = 16, parameter bits = 32 )(
   input [bits-1: 0] Din,
-  output reg [bits-1:0] }t,
+  output reg [bits-1:0] Dout,
   input push,
   input pop,
   input clk,
