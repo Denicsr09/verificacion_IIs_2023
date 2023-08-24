@@ -1,6 +1,7 @@
 module ff_d #(parameter bits = 32)(
   input [bits - 1 : 0] d,
   input rst,
+  input clk, 
   output reg [bits - 1 : 0] q
 );
 

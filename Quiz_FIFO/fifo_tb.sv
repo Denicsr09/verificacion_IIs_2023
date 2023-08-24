@@ -17,7 +17,7 @@ module fifo_tb;
     reg pop;
     reg rst;
     //Outputs:
-    wire ['bits-1:0] Dout;
+    wire [`bits-1:0] Dout;
     wire full;
     wire pndng;
 
@@ -27,7 +27,7 @@ module fifo_tb;
       .Din(Din),
       .push(push),
       .pop(pop),
-      .(rst),
+      .rst(rst),
       .Dout(Dout),
       .full(full),
       .pndng(pndng)
