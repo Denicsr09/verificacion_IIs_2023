@@ -32,7 +32,7 @@ module fifo_flops #(parameter depth = 16, parameter bits = 32 )(
         ff_d #(.bits(bits)) dff_i(.d(Din), .clk(push), .rst(rst), .q(d[i]));
       end
       else
-        ff_d #(.bits(bits)) dff_r(.d(d[i-1]]), .clk(push), .rst(rst), q(d[i]));
+        ff_d #(.bits(bits)) dff_r(.d(d[i-1]), .clk(push), .rst(rst), .q(d[i]));
 
     end
   endgenerate
