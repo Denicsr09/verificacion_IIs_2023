@@ -25,7 +25,7 @@ module fifo_flops #(parameter depth = 16, parameter bits = 32 )(
   genvar i;
   generate
     //usamos el for para generar la cantidad de manera parametizable 
-    for(i=0; i < depth; i + 1)begin: bit_
+    for(i=0; i < depth; i = i+ 1)begin: bit_
       
       //generamos las instancias de los flip flops en cadena
       if(i == 0)begin
