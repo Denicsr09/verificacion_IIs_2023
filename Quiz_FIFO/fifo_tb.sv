@@ -94,6 +94,7 @@ module fifo_tb;
         if (pndng==0)begin 
           $display("The memory is empty");
         end
-
-	endcase
+      end
+    endcase
+  endtask
 endmodule
