@@ -77,7 +77,7 @@ module fifo_tb;
         pop = 0;
         Din = dato;
         if (push==1) begin
-          $display("at %g pushed data: %g count %g",$time,dato,fifo_flops.DUT.count);
+          //$display("at %g pushed data: %g count %g",$time,dato,fifo_flops.DUT.count);
         end 
         else begin
           dato=dato+1;
@@ -89,7 +89,7 @@ module fifo_tb;
         pop = ~pop ;
         Din = dato;
         if (pop==1) begin
-          $display("at %g poped data: %g count %g",$time,dato,fifo_flops.DUT.count);
+          //$display("at %g poped data: %g count %g",$time,dato,fifo_flops.DUT.count);
         end 
         if (pndng==0)begin 
           $display("The memory is empty");
