@@ -40,7 +40,7 @@ module fifo_flops #(parameter depth = 16, parameter bits = 32 )(
   
   
   //ctr concatena 2 variables de 1 bit 
-  assign ctr={push,pop};
+  reg ctr={push,pop};
   
   //hace cambios cuando haya un flanco de reloj positivo  
   always_ff @ (posedge clk) begin
@@ -60,7 +60,7 @@ module fifo_flops #(parameter depth = 16, parameter bits = 32 )(
     full=0;
     pndng=0;
     
-    next_state = current_state; //default state: the same
+    nxt_state = state; //default state: the same
     
     case(state)
       s0:begin
@@ -78,19 +78,20 @@ module fifo_flops #(parameter depth = 16, parameter bits = 32 )(
           nxt_state = s2;
         end
       end
+      
       s2:begin
-        
-        if(ctr == 2'b10)begin
-          if (cont <= depth)begin
+        if(ctr == 2'b10) begin
+          if (cont <= depth) begin
             nxt_state = s0;
             cont = cont + 1;
           end else begin
             //flanco de reloj positivo cuando el contador llegue al maximo
             full=1;
             nxt_state = s0;
-        end else begin
+          end
+        end else begin 
           nxt_state = s3;
-        end
+        end 
       end
       s3:begin
         
