@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE cov SYSTEM "ucdb_srcinfo.dtd">
+  <srcinfo name="/mnt/vol_NFS_rh003/Est_Verif_II2023/CarlosQuiros_II_2023/verificacion_IIs_2023/Test_CR_fifo"  >
+    <ucapi_version  major_ver="13"  minor_ver="1"  patch_str="R-2020.12-SP2"  />
+      <fileinfo name="test_bench.sv"  id="0"  timestamp="1695916738"  />
+      <fileinfo name="fifo.sv"  id="1"  timestamp="1695916738"  />
+      <fileinfo name="interface_transactions.sv"  id="2"  timestamp="1695916738"  />
+      <fileinfo name="driver.sv"  id="3"  timestamp="1695916738"  />
+      <fileinfo name="checker.sv"  id="4"  timestamp="1695916738"  />
+      <fileinfo name="score_board.sv"  id="5"  timestamp="1695916738"  />
+      <fileinfo name="agent.sv"  id="6"  timestamp="1695916738"  />
+      <fileinfo name="ambiente.sv"  id="7"  timestamp="1695916738"  />
+      <fileinfo name="test.sv"  id="8"  timestamp="1695916738"  />
+      <fileinfo name=""  id="9"  />
+    </srcinfo>
