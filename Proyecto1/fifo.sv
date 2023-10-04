@@ -23,13 +23,13 @@ class fifo #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter bits = 
         //$display("Fifo ha inic");
         if(this.push) begin
           this.cola.push_front(this.Din);
-          this.push = 0;
-            //$display("Se ha ingresado el dato: %0d", this.Din);
+          //this.push = 0;
+          $display("Se ha ingresado el dato: %0d", this.Din);
         end	
         if(this.pop) begin
           this.Dout = this.cola.pop_front();
-          this.pop = 0;
-            //$display("Se ha sacado el dato: %0d", this.Dout);
+          //this.pop = 0;
+          $display("Se ha sacado el dato: %0d", this.Dout);
         end
         if(this.cola.size() == 0) begin
           this.pndng = 0;
