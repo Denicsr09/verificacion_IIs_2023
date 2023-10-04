@@ -1,4 +1,4 @@
-class fifo (parameter pckg_sz = 16, parameter deep_fifo = 10);
+class fifo #(parameter pckg_sz = 16, parameter deep_fifo = 10);
 	bit clk;
 	bit [pckg_sz - 1: 0] Din;
 	bit [pckg_sz - 1: 0] Dout;
@@ -16,9 +16,9 @@ class fifo (parameter pckg_sz = 16, parameter deep_fifo = 10);
 		this.pndng = 0;
 		this.cola = {};
 	endfunction
-	task.run();
+	task run();
 		forever begin
-			if(this.cola_in.size() == 0) begin
+			if(this.cola.size() == 0) begin
 				pndng = 0;
 				$display("El pending esta bajo");
 			end

@@ -15,13 +15,20 @@ module test_fifo;
 
     initial begin
         fifo_prueba = new();
-        this.fifo_prueba = clk;
+        fifo_prueba.clk = clk;
         #1;
         Dato_in = 20;
-        this.Din = Dato_in;
-        this.put = 1;
+        fifo_prueba.Din = Dato_in;
+        fifo_prueba.push = 1;
     end
-
+    initial begin
+    	#10000;
+    	$finish;
+    end
+	initial begin
+    $dumpfile("test.vcd");
+    $dumpvars(0, test_fifo);
+  end    
   
 
 endmodule
