@@ -50,7 +50,7 @@ class trans_fifo #(parameter pckg_sz = 16, parameter drvrs = 4);
   endfunction;
     
   function void print(string tag = "");
-    $display("[%g] %s Tiempo=%g Tipo=%s Retardo=%g dato=0x%h",$time,tag,tiempo,this.tipo,this.retardo,this.dato);
+    $display("[%g] %s Tiempo=%g Tipo=%s Retardo=%g Source= %0d dato=0x%h",$time,tag,tiempo,this.tipo,this.retardo,this.drvSource,this.dato);
   endfunction
 endclass
 
@@ -67,3 +67,9 @@ interface bus_if #(parameter bits = 1, parameter drvrs = 4, parameter pckg_sz =1
   logic [pckg_sz-1:0] D_pop[bits-1:0][drvrs-1:0];
   logic [pckg_sz-1:0] D_push[bits-1:0][drvrs-1:0];
 endinterface
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
+///////////////////////////////////////////////////////////////////////////////////////
+typedef mailbox #(trans_fifo) trans_fifo_mbx;
