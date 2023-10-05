@@ -60,15 +60,43 @@ module test_driver;
         tpo_spec = escritura;
         transaccion.tipo = tpo_spec;
         transaccion.dato =  16'b00000010_00000010;
+        transaccion.drvSource = 1;
+        transaccion.retardo = 1;
+        transaccion.print("Agente: transacción creada");
+        agnt_drv_mbx.put(transaccion);
+      
+      	transaccion = new;
+        tpo_spec = escritura;
+        transaccion.tipo = tpo_spec;
+        transaccion.dato =  16'b00000010_00000011;
         transaccion.drvSource = 2;
         transaccion.retardo = 1;
         transaccion.print("Agente: transacción creada");
         agnt_drv_mbx.put(transaccion);
-        
+      	
+      	transaccion = new;
+        tpo_spec = escritura;
+        transaccion.tipo = tpo_spec;
+        transaccion.dato =  16'b00000010_00000100;
+        transaccion.drvSource = 1;
+        transaccion.retardo = 1;
+        transaccion.print("Agente: transacción creada");
+        agnt_drv_mbx.put(transaccion);
+      	
+      	transaccion = new;
+        tpo_spec = escritura;
+        transaccion.tipo = tpo_spec;
+        transaccion.dato =  16'b00000010_00000100;
+        transaccion.drvSource = 0;
+        transaccion.retardo = 1;
+        transaccion.print("Agente: transacción creada");
+        agnt_drv_mbx.put(transaccion);
+      
         fork
 
             driver_prueba.run();
-          driver_prueba.fifos();
+            driver_prueba.fifos();
+          	driver_prueba.detec_pop();
         join_none
         
     end
