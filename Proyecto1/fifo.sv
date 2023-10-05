@@ -1,7 +1,6 @@
 // Code your design here
 class fifo #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter bits = 1, parameter drvrs = 4 );
-  virtual bus_if #(.pckg_sz(pckg_sz), .drvrs(drvrs), .bits(bits)) vif;
-	bit clk;
+
 	bit [pckg_sz - 1: 0] Din;
 	bit [pckg_sz - 1: 0] Dout;
 	bit push;
@@ -10,7 +9,6 @@ class fifo #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter bits = 
 	bit [pckg_sz -1 : 0] cola [$:deep_fifo];
 
 	function new();
-		this.clk = 0;
 		this.Din = 0;
 		this.Dout = 0;
 		this.push = 0;
@@ -20,42 +18,37 @@ class fifo #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter bits = 
 	endfunction
   
 	task run();
-        //$display("Fifo ha iniciado con Din: %0d: ", this.Din);
-        //if(this.push) begin
-          //this.cola.push_front(this.Din);
-          //this.push = 0;
-          //$display("FiFo:Se ha ingresado el dato: %0d", this.Din);
-        //end	
         if(this.pop) begin
           this.Dout = this.cola.pop_front();
-          //this.pop = 0;
-          $display("FiFo:Se ha sacado el dato: %0h", this.Dout);
-          $display("Tamaño cola: %0d", cola.size());
+          //$display("FiFo:Se ha sacado el dato: %0h", this.Dout);
+          //$display("Tamaño cola: %0d", cola.size());
         end
-      $display("Tontera, %0d", cola.size());
-        if(this.cola.size() == 0) begin
+      	
+      if(this.cola.size() == 0) begin
           this.pndng = 0;
+        	this.Dout = 0; 
           //$display("El pending esta bajo");
         end
         else begin
           this.pndng = 1;
 				//$display("El pending esta alto");
         end
+      
+      	
+
 	endtask
   
   task fifo_push(bit[pckg_sz-1:0] dto);
-    this.Dout = dto; 
-    this.cola.push_front(dto);
-    
+    if(this.cola.size() == 0) begin
+      this.Dout = dto;
+      this.cola.push_front(dto);
+    end
+    else
+    	this.cola.push_front(dto);
     $display("FiFo:Se ha ingresado el dato: %0h", dto);
   endtask
   
-  task fifo_pop();
-    if(this.pop) begin
-      this.Dout = this.cola.pop_front();
-      $display("FiFo:Se ha sacado el dato: %0h, tiempo: %0d", this.Dout, $time);
-    end
+
     
-  endtask
     
 endclass

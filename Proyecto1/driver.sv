@@ -17,7 +17,6 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvr
         $display("[%g]  El driver fue inicializado",$time);
         foreach (fifo_in[i]) begin
             fifo_in [i] = new();
-            fifo_in [i].vif = vif;
         end
         @(posedge vif.clk);
         vif.reset=1;
@@ -40,22 +39,16 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvr
                @(posedge vif.clk);
               if(espera == transaction.retardo - 1)begin
                 fifo_in[transaction.drvSource].fifo_push(transaction.dato);
+                transaction.tiempo = $time;
+	     		      drv_chkr_mbx.put(transaction); 
                 $display("Se ha ingresado el dato %0h, en el driver %d",transaction.dato, transaction.drvSource );
+                transaction.print("Driver: Transaccion ejecutada");
               end
               espera = espera + 1;
-              $display("espera: %0d", espera);
+              //$display("espera: %0d", espera);
               //fifo_in[transaction.drvSource].Din = transaction.dato;
                 
             end
-            case (transaction.tipo)
-                escritura: begin
-                  	//@(posedge vif.clk);
-                  
-                    //fifo_in[transaction.drvSource].push = 1;
-                  	//@(posedge vif.clk);
-                    $display("Se ha realizado push del dato %0h, en el driver %d",transaction.dato, transaction.drvSource );
-                end
-            endcase
           @(posedge vif.clk);
         end
 
@@ -67,7 +60,6 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvr
       forever begin
             foreach(fifo_in[i]) begin
               	fifo_in[i].run();
-              	//fifo_in[i].fifo_pop();
                 fifo_in[i].pop = vif.pop[0][i];
               	vif.D_pop[0][i] = fifo_in[i].Dout;
              	vif.pndng[0][i] = fifo_in[i].pndng;

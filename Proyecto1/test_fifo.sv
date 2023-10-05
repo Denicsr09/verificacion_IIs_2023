@@ -1,71 +1,111 @@
 // Code your testbench here
 // or browse Examples
+// Code your testbench here
+// or browse Examples
 `timescale 1ns/1ps
 `include "fifo.sv"
-`include "Library.sv"
 `include "interface_transaction.sv"
-module test_fifo;
+`include "Library.sv"
+`include "driver.sv"
+
+module test_driver;
     parameter pckg_sz = 16;
     parameter deep_fifo = 8;
   	parameter drvrs = 4;
+    parameter bits = 1;
     reg clk;
-    bit [pckg_sz - 1: 0] Dato_in;
-    bit [pckg_sz - 1: 0] Dato_out;
 
-  bus_if #(.drvrs(drvrs), .pckg_sz(pckg_sz)) vif (.clk(clk));
- 
+    bit [pckg_sz-1:0] dto_spec [drvrs-1: 0];
   
-  bs_gnrtr_n_rbtr dut (.clk(vif.clk),
+    tipo_trans tpo_spec;
+
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;
+    end
+
+    
+
+    trans_fifo #(.pckg_sz(pckg_sz), .drvrs(drvrs)) transaccion;
+    driver #(.pckg_sz(pckg_sz), .drvrs(drvrs), .deep_fifo(deep_fifo), .bits(bits)) driver_prueba;
+    bus_if #(.drvrs(drvrs), .pckg_sz(pckg_sz)) vif (.clk(clk));
+    
+    trans_fifo_mbx agnt_drv_mbx;
+    trans_fifo_mbx drv_chkr_mbx;
+  	
+  
+    bs_gnrtr_n_rbtr dut (.clk(vif.clk),
                        .reset(vif.reset),
                        .pndng(vif.pndng),
                        .push(vif.push),
                        .pop(vif.pop),
                        .D_pop(vif.D_pop),
                        .D_push(vif.D_push)
-                        ); 
-    initial begin
-        clk = 0;
-        forever #5 clk = ~clk;
-    end
-  fifo #( .pckg_sz(pckg_sz), .deep_fifo(deep_fifo), .drvrs(drvrs)) fifo_prueba;
-  
+    );
 
+   
     initial begin
-      	
-        fifo_prueba = new();
-     	fifo_prueba.vif = vif;
+    
+        agnt_drv_mbx = new;
+    	drv_chkr_mbx = new;
+    	driver_prueba = new;
       
-      fork
-        fifo_prueba.run();
-      join_none
+        driver_prueba.vif = vif;
+        driver_prueba.agnt_drv_mbx  = agnt_drv_mbx;
+      	driver_prueba.drv_chkr_mbx = drv_chkr_mbx;
+        
+        
 
+        transaccion = new;
+        tpo_spec = escritura;
+        transaccion.tipo = tpo_spec;
+        transaccion.dato =  16'b00000010_00000010;
+        transaccion.drvSource = 1;
+        transaccion.retardo = 1;
+        transaccion.print("Agente: transacción creada");
+        agnt_drv_mbx.put(transaccion);
       
-        //@(posedge clk);
-     	#1;
-        Dato_in = 20;
-        fifo_prueba.Din = Dato_in;
-        fifo_prueba.push = 1;
-      	#40;
-      	fifo_prueba.Din = 10;
-      	fifo_prueba.push = 1;
-      
-      	//fifo_prueba.push = 0;
-      	//@(posedge clk);
-      	#80;
-      	fifo_prueba.pop = 1;
+      	transaccion = new;
+        tpo_spec = escritura;
+        transaccion.tipo = tpo_spec;
+        transaccion.dato =  16'b00000010_00000011;
+        transaccion.drvSource = 2;
+        transaccion.retardo = 1;
+        transaccion.print("Agente: transacción creada");
+        agnt_drv_mbx.put(transaccion);
       	
+      	transaccion = new;
+        tpo_spec = escritura;
+        transaccion.tipo = tpo_spec;
+        transaccion.dato =  16'b00000010_00000100;
+        transaccion.drvSource = 1;
+        transaccion.retardo = 1;
+        transaccion.print("Agente: transacción creada");
+        agnt_drv_mbx.put(transaccion);
       	
+      	transaccion = new;
+        tpo_spec = escritura;
+        transaccion.tipo = tpo_spec;
+        transaccion.dato =  16'b00000010_00000100;
+        transaccion.drvSource = 0;
+        transaccion.retardo = 1;
+        transaccion.print("Agente: transacción creada");
+        agnt_drv_mbx.put(transaccion);
       
+        fork
+
+            driver_prueba.run();
+            driver_prueba.fifos();
+        join_none
+        
     end
     initial begin
-    	#1000;
-    	$finish;
+        #10000;
+        $finish;
     end
-  
-	initial begin
-    $dumpfile("test.vcd");
-    $dumpvars(0, test_fifo);
-  end    
-  
+    initial begin
+        $dumpfile("test.vcd");
+        $dumpvars(0, test_driver);
+    end
 
 endmodule
