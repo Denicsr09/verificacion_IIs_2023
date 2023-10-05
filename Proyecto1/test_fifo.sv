@@ -96,6 +96,7 @@ module test_driver;
 
             driver_prueba.run();
             driver_prueba.fifos();
+          	driver_prueba.detec_pop();
         join_none
         
     end
