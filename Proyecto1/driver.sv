@@ -37,10 +37,10 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvr
 
             while(espera < transaction.retardo)begin
                @(posedge vif.clk);
-              if(espera == transaction.retardo - 1)begin
+              if((espera == transaction.retardo - 1) && transaction.tipo != reset )begin
                 fifo_in[transaction.drvSource].fifo_push(transaction.dato);
                 transaction.tiempo = $time;
-	     		      drv_chkr_mbx.put(transaction); 
+	     		drv_chkr_mbx.put(transaction); 
                 $display("Se ha ingresado el dato %0h, desde el driver %d",transaction.dato, transaction.drvSource );
                 transaction.print("Driver: Transaccion ejecutada");
               end
@@ -49,6 +49,13 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvr
               //fifo_in[transaction.drvSource].Din = transaction.dato;
                 
             end
+          if(transaction.tipo == reset ) begin
+            vif.reset =1;
+	     	transaction.tiempo = $time;
+	     	drv_chkr_mbx.put(transaction); 
+	     	transaction.print("Driver: Transaccion ejecutada");
+          end
+          
           @(posedge vif.clk);
         end
 
@@ -78,7 +85,6 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvr
            transaction =new;
            transaction.dato = vif.D_push[0][i];
            transaction.tiempo = $time;
-           transaction.drvSource= i;
            transaction.tipo = lectura;
            drv_chkr_mbx.put(transaction);
            transaction.print("Driver: Transaccion ejecutada");

@@ -7,6 +7,7 @@
 `include "interface_transaction.sv"
 `include "Library.sv"
 `include "driver.sv"
+`include "checker.sv"
 
 module test_driver;
     parameter pckg_sz = 16;
@@ -28,10 +29,12 @@ module test_driver;
 
     trans_fifo #(.pckg_sz(pckg_sz), .drvrs(drvrs)) transaccion;
     driver #(.pckg_sz(pckg_sz), .drvrs(drvrs), .deep_fifo(deep_fifo), .bits(bits)) driver_prueba;
+    check #(.pckg_sz(pckg_sz), .drvrs(drvrs), .deep_fifo(deep_fifo)) checker_prueba;
     bus_if #(.drvrs(drvrs), .pckg_sz(pckg_sz)) vif (.clk(clk));
     
     trans_fifo_mbx agnt_drv_mbx;
     trans_fifo_mbx drv_chkr_mbx;
+  	trans_sb_mbx chkr_sb_mbx;
   	
   
     bs_gnrtr_n_rbtr dut (.clk(vif.clk),
@@ -48,12 +51,16 @@ module test_driver;
     
         agnt_drv_mbx = new;
     	drv_chkr_mbx = new;
+      	chkr_sb_mbx  = new;
     	driver_prueba = new;
+      	checker_prueba = new;
+      	 
       
         driver_prueba.vif = vif;
         driver_prueba.agnt_drv_mbx  = agnt_drv_mbx;
       	driver_prueba.drv_chkr_mbx = drv_chkr_mbx;
-        
+        checker_prueba.drv_chkr_mbx = drv_chkr_mbx;
+    	checker_prueba.chkr_sb_mbx = chkr_sb_mbx;
         
 
         transaccion = new;
@@ -69,7 +76,7 @@ module test_driver;
         tpo_spec = escritura;
         transaccion.tipo = tpo_spec;
         transaccion.dato =  16'b00000010_00000011;
-        transaccion.drvSource = 2;
+        transaccion.drvSource = 0;
         transaccion.retardo = 1;
         transaccion.print("Agente: transacción creada");
         agnt_drv_mbx.put(transaccion);
@@ -82,19 +89,14 @@ module test_driver;
         transaccion.retardo = 1;
         transaccion.print("Agente: transacción creada");
         agnt_drv_mbx.put(transaccion);
+      
+
       	
-      	transaccion = new;
-        tpo_spec = escritura;
-        transaccion.tipo = tpo_spec;
-        transaccion.dato =  16'b00000010_00000100;
-        transaccion.drvSource = 0;
-        transaccion.retardo = 1;
-        transaccion.print("Agente: transacción creada");
-        agnt_drv_mbx.put(transaccion);
       
         fork
 
             driver_prueba.run();
+            checker_prueba.run();
             driver_prueba.fifos();
           	driver_prueba.detec_pop();
         join_none

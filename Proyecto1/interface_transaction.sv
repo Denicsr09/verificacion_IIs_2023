@@ -69,10 +69,67 @@ interface bus_if #(parameter bits = 1, parameter drvrs = 4, parameter pckg_sz =1
 endinterface
 
 
+////////////////////////////////////////////////////
+// Objeto de transacción usado en el scroreboard  //
+////////////////////////////////////////////////////
+
+class trans_sb #(parameter pckg_sz = 16, parameter drvrs = 4);
+  bit [pckg_sz-1:0] dato_enviado;
+  bit [drvrs-1:0] drvSource_push;
+  bit [drvrs-1:0] ID_pop;
+  int tiempo_push;
+  int tiempo_pop;
+  bit completado;
+  bit overflow;
+  bit underflow;
+  bit reset;
+  int latencia;
+  
+  function clean();
+    this.dato_enviado = 0;
+    this.drvSource_push = 0;
+    this.ID_pop = 0;
+    this.tiempo_push = 0;
+    this.tiempo_pop = 0;
+    this.completado = 0;
+    this.overflow = 0;
+    this.underflow = 0;
+    this.reset = 0;
+    this.latencia = 0;
+  endfunction
+
+  task calc_latencia;
+    this.latencia = this.tiempo_pop - this.tiempo_push;
+  endtask
+  
+  function print (string tag);
+    $display("[%g] %s dato=%h,t_push=%g,t_pop=%g,cmplt=%g,ovrflw=%g,undrflw=%g,rst=%g,ltncy=%g,desde el driver=%0d, hacia la el driver = %0d", 
+             $time,
+             tag, 
+             this.dato_enviado, 
+             this.tiempo_push,
+             this.tiempo_pop,
+             this.completado,
+             this.overflow,
+             this.underflow,
+             this.reset,
+             this.latencia,
+             this.drvSource_push,
+             this.ID_pop);
+  endfunction
+endclass
+
+/////////////////////////////////////////////////////////////////////////
+// Definición de estructura para generar comandos hacia el scroreboard //
+/////////////////////////////////////////////////////////////////////////
+typedef enum {retardo_promedio,reporte} solicitud_sb;
+
 ///////////////////////////////////////////////////////////////////////////////////////
 // Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
 ///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(trans_fifo) trans_fifo_mbx;
+
+/////////////////////////////////////////////////////////////////////////
 // Definición de estructura para generar comandos hacia el agente      //
 /////////////////////////////////////////////////////////////////////////
 typedef enum {llenado_aleatorio,IDaleatorio,trans_especifica} instrucciones_agente;
@@ -80,9 +137,15 @@ typedef enum {llenado_aleatorio,IDaleatorio,trans_especifica} instrucciones_agen
 ///////////////////////////////////////////////////////////////////////////////////////
 // Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
 ///////////////////////////////////////////////////////////////////////////////////////
-//typedef mailbox #(trans_sb) trans_sb_mbx;
+typedef mailbox #(trans_sb) trans_sb_mbx;
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
 ///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(instrucciones_agente) comando_test_agent_mbx;
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
+///////////////////////////////////////////////////////////////////////////////////////
+typedef mailbox #(solicitud_sb) comando_test_sb_mbx;
+
