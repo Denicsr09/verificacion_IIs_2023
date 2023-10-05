@@ -51,6 +51,7 @@ module test_driver;
         tpo_spec = escritura;
         transaccion.tipo = tpo_spec;
         transaccion.dato =  16'b00000001_00000010;
+        transaccion.drvSource = 0;
         transaccion.retardo = 1;
         transaccion.print("Agente: transacción creada");
         agnt_drv_mbx.put(transaccion);

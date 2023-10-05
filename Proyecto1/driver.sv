@@ -19,14 +19,22 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvr
             fifo_in [i] = new();
             fifo_in [i].vif = vif;
         end
+        fork
+            foreach(fifo_in[i]) begin
+                fifo_in[i].run();
+            end
+        join_none
         @(posedge vif.clk);
         vif.reset=1;
         @(posedge vif.clk);
         forever begin
             trans_fifo #(.width(width)) transaction;
             foreach (fifo_in[i]) begin
-                this.fifo_in[i].push = 0;
-                this.fifo_in[i].Din  = 0; 
+                fifo_in[i].push = 0;
+                fifo_in[i].Din  = 0; 
+                vif.pndng[0][i] = fifo_in[i].pndng;
+                vif.pop[0][i] = fifo_in[i].pop;
+                vif.D_pop[0][i] = fifo_in[i].D_pop;
             end
             $display("[%g] el Driver espera por una transacción",$time);
             espera = 0;
@@ -40,14 +48,17 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvr
                 @(posedge vif.clk);
                 espera = espera+1;
                 Din[transaction.drvSource] = transaction.dato;
+                $display("Se ha ingresado el dato %0h, en el driver %d",transaction.dato, transaction.drvSource );
             end
             case (transaction.tipo)
                 escritura: begin
-
+                    fifo_in[transaction.drvSource].push = 1;
+                    $display("Se ha realizado push del dato %0h, en el driver %d",transaction.dato, transaction.drvSource );
                 end
             endcase
         @(posedge vif.clk)
-        end 
+        end
+
 
     endtask
 
