@@ -18,18 +18,18 @@ class fifo #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter bits = 
 		this.pndng = 0;
 		this.cola = {};
 	endfunction
+  
 	task run();
-      forever begin
-        //$display("Fifo ha inic");
-        if(this.push) begin
-          this.cola.push_front(this.Din);
+        //$display("Fifo ha iniciado con Din: %0d: ", this.Din);
+        //if(this.push) begin
+          //this.cola.push_front(this.Din);
           //this.push = 0;
-          $display("Se ha ingresado el dato: %0d", this.Din);
-        end	
+          //$display("FiFo:Se ha ingresado el dato: %0d", this.Din);
+        //end	
         if(this.pop) begin
           this.Dout = this.cola.pop_front();
           //this.pop = 0;
-          $display("Se ha sacado el dato: %0d", this.Dout);
+          $display("FiFo:Se ha sacado el dato: %0h", this.Dout);
         end
         if(this.cola.size() == 0) begin
           this.pndng = 0;
@@ -39,7 +39,10 @@ class fifo #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter bits = 
           this.pndng = 1;
 				//$display("El pending esta alto");
         end
-        @(posedge vif.clk);
-      end
 	endtask
+  
+  task fifo_push(bit[pckg_sz-1:0] dto);
+    this.cola.push_front(dto);
+    $display("FiFo:Se ha ingresado el dato: %0h", dto);
+  endtask
 endclass

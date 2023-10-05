@@ -13,7 +13,7 @@ class trans_fifo #(parameter pckg_sz = 16, parameter drvrs = 4);
   bit[pckg_sz-1:0] dato ; // este es el dato de la transacción
   rand bit[7:0] ID ; 
   rand bit[pckg_sz-9:0] payload;
-  rand bit [drvs-1:0] drvSource;
+  rand bit [drvrs-1:0] drvSource;
   int tiempo; //Representa el tiempo  de la simulación en el que se ejecutó la transacción 
   rand tipo_trans tipo; // lectura, escritura, reset;
   int max_retardo;
@@ -43,7 +43,7 @@ class trans_fifo #(parameter pckg_sz = 16, parameter drvrs = 4);
   
   function finish_rand;
     dato= {ID,payload};
-    $display("fifo_if: ID[%0d]: %0h ",ID);
+    $display("fifo_if: ID: %0h ",ID);
     $display("fifo_if: payload: %0h ",payload);
     $display("fifo_if: Dato concatenado: %0h ",dato);
 
@@ -80,7 +80,7 @@ typedef enum {llenado_aleatorio,IDaleatorio,trans_especifica} instrucciones_agen
 ///////////////////////////////////////////////////////////////////////////////////////
 // Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
 ///////////////////////////////////////////////////////////////////////////////////////
-typedef mailbox #(trans_sb) trans_sb_mbx;
+//typedef mailbox #(trans_sb) trans_sb_mbx;
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //

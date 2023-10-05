@@ -19,51 +19,63 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvr
             fifo_in [i] = new();
             fifo_in [i].vif = vif;
         end
-        fork
-            foreach(fifo_in[i]) begin
-                fifo_in[i].run();
-            end
-        join_none
         @(posedge vif.clk);
         vif.reset=1;
         @(posedge vif.clk);
         forever begin
-            trans_fifo #(.width(width)) transaction;
+            trans_fifo #(.pckg_sz(pckg_sz), .drvrs(drvrs)) transaction;
             foreach (fifo_in[i]) begin
-                vif.pndng[0][i] = fifo_in[i].pndng;
-                vif.pop[0][i] = fifo_in[i].pop;
-                vif.D_pop[0][i] = fifo_in[i].D_pop;
-                fifo_in[i].push = 0;
+                //fifo_in[i].push = 0;
                 fifo_in[i].Din  = 0;
             end
             $display("[%g] el Driver espera por una transacción",$time);
             espera = 0;
             vif.reset = 0;
             @(posedge vif.clk);
-            agnt_drv_mbx.get(transaction);
+            agnt_drv_mbx.get(transaction); 
             transaction.print("Driver: Transaccion recibida");
             $display("Transacciones pendientes en el mbx agnt_drv = %g",agnt_drv_mbx.num());
 
             while(espera < transaction.retardo)begin
-                @(posedge vif.clk);
-                espera = espera+1;
-                Din[transaction.drvSource] = transaction.dato;
+               @(posedge vif.clk);
+              if(espera == transaction.retardo - 1)begin
+                fifo_in[transaction.drvSource].fifo_push(transaction.dato);
                 $display("Se ha ingresado el dato %0h, en el driver %d",transaction.dato, transaction.drvSource );
+              end
+              espera = espera + 1;
+              $display("espera: %0d", espera);
+              //fifo_in[transaction.drvSource].Din = transaction.dato;
+                
             end
             case (transaction.tipo)
                 escritura: begin
-                    fifo_in[transaction.drvSource].push = 1;
+                  	//@(posedge vif.clk);
+                  
+                    //fifo_in[transaction.drvSource].push = 1;
+                  	//@(posedge vif.clk);
                     $display("Se ha realizado push del dato %0h, en el driver %d",transaction.dato, transaction.drvSource );
                 end
             endcase
-        @(posedge vif.clk)
+          @(posedge vif.clk);
         end
 
 
     endtask
 
 
-
+    task fifos();
+      forever begin
+            foreach(fifo_in[i]) begin
+              	fifo_in[i].pop = vif.pop[0][i];
+              	vif.D_pop[0][i] = fifo_in[i].Dout;
+              	fifo_in[i].run();
+             	vif.pndng[0][i] = fifo_in[i].pndng;
+                
+                
+            end
+        @(posedge vif.clk);
+      end
+    endtask
 
 
 
