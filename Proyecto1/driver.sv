@@ -30,11 +30,11 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvr
         forever begin
             trans_fifo #(.width(width)) transaction;
             foreach (fifo_in[i]) begin
-                fifo_in[i].push = 0;
-                fifo_in[i].Din  = 0; 
                 vif.pndng[0][i] = fifo_in[i].pndng;
                 vif.pop[0][i] = fifo_in[i].pop;
                 vif.D_pop[0][i] = fifo_in[i].D_pop;
+                fifo_in[i].push = 0;
+                fifo_in[i].Din  = 0;
             end
             $display("[%g] el Driver espera por una transacción",$time);
             espera = 0;
