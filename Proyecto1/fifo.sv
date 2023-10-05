@@ -30,7 +30,9 @@ class fifo #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter bits = 
           this.Dout = this.cola.pop_front();
           //this.pop = 0;
           $display("FiFo:Se ha sacado el dato: %0h", this.Dout);
+          $display("Tamaño cola: %0d", cola.size());
         end
+      $display("Tontera, %0d", cola.size());
         if(this.cola.size() == 0) begin
           this.pndng = 0;
           //$display("El pending esta bajo");
@@ -42,7 +44,18 @@ class fifo #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter bits = 
 	endtask
   
   task fifo_push(bit[pckg_sz-1:0] dto);
+    this.Dout = dto; 
     this.cola.push_front(dto);
+    
     $display("FiFo:Se ha ingresado el dato: %0h", dto);
   endtask
+  
+  task fifo_pop();
+    if(this.pop) begin
+      this.Dout = this.cola.pop_front();
+      $display("FiFo:Se ha sacado el dato: %0h, tiempo: %0d", this.Dout, $time);
+    end
+    
+  endtask
+    
 endclass

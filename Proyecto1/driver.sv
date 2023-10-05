@@ -66,19 +66,16 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvr
     task fifos();
       forever begin
             foreach(fifo_in[i]) begin
-              	fifo_in[i].pop = vif.pop[0][i];
-              	vif.D_pop[0][i] = fifo_in[i].Dout;
               	fifo_in[i].run();
+              	//fifo_in[i].fifo_pop();
+                fifo_in[i].pop = vif.pop[0][i];
+              	vif.D_pop[0][i] = fifo_in[i].Dout;
              	vif.pndng[0][i] = fifo_in[i].pndng;
-                
-                
             end
         @(posedge vif.clk);
       end
     endtask
-
-
-
+  
 
 
 endclass
