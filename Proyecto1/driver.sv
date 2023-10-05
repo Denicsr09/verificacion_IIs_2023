@@ -78,6 +78,7 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvr
            transaction =new;
            transaction.dato = vif.D_push[0][i];
            transaction.tiempo = $time;
+           transaction.drvSource= i;
            transaction.tipo = lectura;
            drv_chkr_mbx.put(transaction);
            transaction.print("Driver: Transaccion ejecutada");
