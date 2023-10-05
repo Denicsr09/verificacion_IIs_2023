@@ -10,7 +10,7 @@ class agent #(parameter pckg_sz = 16, parameter deep_fifo = 8, parameter drvrs =
   trans_fifo #(.pckg_sz(pckg_sz)) transaccion;
    
   function new;
-    num_transacciones = 2;
+    num_transacciones = 1;
     max_retardo = 10;
   endfunction
 task run;

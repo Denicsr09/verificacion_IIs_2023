@@ -19,11 +19,11 @@ class trans_fifo #(parameter pckg_sz = 16, parameter drvrs = 4);
   int max_retardo;
  
   constraint const_retardo {retardo < max_retardo; retardo>0;};
-  constraint const_ID  { ID < (drvrs)};
+  constraint const_ID  { ID < (drvrs);};
   constraint const_ID_unique{
     unique{ID};
     }
-  constraint const_drvSource {drvSource < (drvrs)};
+  constraint const_drvSource {drvSource < (drvrs);};
 
   function new(int ret =0,bit[pckg_sz-1:0] dto = 0,int tmp = 0, tipo_trans tpo = lectura, int mx_rtrd = 10);
     this.retardo = ret;
@@ -73,3 +73,16 @@ endinterface
 // Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
 ///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(trans_fifo) trans_fifo_mbx;
+// Definición de estructura para generar comandos hacia el agente      //
+/////////////////////////////////////////////////////////////////////////
+typedef enum {llenado_aleatorio,IDaleatorio,trans_especifica} instrucciones_agente;
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
+///////////////////////////////////////////////////////////////////////////////////////
+typedef mailbox #(trans_sb) trans_sb_mbx;
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
+///////////////////////////////////////////////////////////////////////////////////////
+typedef mailbox #(instrucciones_agente) comando_test_agent_mbx;
