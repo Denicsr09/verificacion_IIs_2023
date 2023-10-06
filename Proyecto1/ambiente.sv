@@ -4,14 +4,14 @@
 class ambiente #(parameter pckg_sz =16, parameter deep_fifo = 8,parameter drvrs = 4);
   
   // Declaración de los componentes del ambiente
-  driver #(.pckg_sz(pckg_sz),.deep_fifo(deep_fifo),.drvrs(drvrs),.bits(bits)) driver_inst;
+  driver #(.pckg_sz(pckg_sz),.deep_fifo(deep_fifo),.drvrs(drvrs)) driver_inst;
   check #(.pckg_sz(pckg_sz),.deep_fifo(deep_fifo),.drvrs(drvrs)) checker_inst;
   score_board #(.pckg_sz(pckg_sz),.drvrs(drvrs)) scoreboard_inst;
-  agent #(.pckg_sz(width),.deep_fifo(deep_fifo),.drvrs(drvrs)) agent_inst;
+  agent #(.pckg_sz(pckg_sz),.deep_fifo(deep_fifo),.drvrs(drvrs)) agent_inst;
     
   
   // Declaración de la interface que conecta el DUT 
-  virtual bus_if #(.pckg_sz(pckg_sz), .drvrs(drvrs), .bits(bits)) vif; //Interface de conexión del dut
+  virtual bus_if #(.pckg_sz(pckg_sz), .drvrs(drvrs)) vif; //Interface de conexión del dut
 
   //declaración de los mailboxes  
   trans_fifo_mbx agnt_drv_mbx;           //mailbox del agente al driver
@@ -33,8 +33,9 @@ class ambiente #(parameter pckg_sz =16, parameter deep_fifo = 8,parameter drvrs 
     checker_inst    = new();
     scoreboard_inst = new();
     agent_inst      = new();
+    
     // conexion de las interfaces y mailboxes en el ambiente
-    driver_inst.vif             = _if;
+    driver_inst.vif             = vif;
     driver_inst.drv_chkr_mbx    = drv_chkr_mbx;
     driver_inst.agnt_drv_mbx    = agnt_drv_mbx;
     checker_inst.drv_chkr_mbx   = drv_chkr_mbx;
@@ -52,6 +53,8 @@ class ambiente #(parameter pckg_sz =16, parameter deep_fifo = 8,parameter drvrs 
       checker_inst.run();
       scoreboard_inst.run();
       agent_inst.run();
+      driver_inst.fifos();
+      driver_inst.detec_pop();
     join_none
   endtask 
 endclass

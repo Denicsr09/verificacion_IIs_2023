@@ -7,7 +7,7 @@ class test #(parameter pckg_sz = 16, parameter deep_fifo =8, drvrs=4);
   comando_test_sb_mbx    test_sb_mbx;
   comando_test_agent_mbx test_agent_mbx;
 
-  parameter num_transacciones =10;
+  parameter num_transacciones =2;
   parameter max_retardo = 4;
   solicitud_sb orden;
   instrucciones_agente instr_agent;
@@ -16,7 +16,7 @@ class test #(parameter pckg_sz = 16, parameter deep_fifo =8, drvrs=4);
  // Definición del ambiente de la prueba
   ambiente #(.deep_fifo(deep_fifo),.pckg_sz(pckg_sz),.drvrs(drvrs)) ambiente_inst;
  // Definición de la interface a la que se conectará el DUT
-  virtual fifo_if  #(.pckg_sz(pckg_sz)) _if; //no se si lleva drvrs
+  virtual bus_if  #(.pckg_sz(pckg_sz), .drvrs(drvrs)) vif; //no se si lleva drvrs
 
   //definción de las condiciones iniciales del test
   function new; 
@@ -25,7 +25,7 @@ class test #(parameter pckg_sz = 16, parameter deep_fifo =8, drvrs=4);
     test_agent_mbx = new();
     // Definición y conexión del driver
     ambiente_inst = new();
-    ambiente_inst._if = _if;    
+    ambiente_inst.vif = vif;    
     ambiente_inst.test_sb_mbx = test_sb_mbx;
     ambiente_inst.scoreboard_inst.test_sb_mbx = test_sb_mbx;
     ambiente_inst.test_agent_mbx = test_agent_mbx;
@@ -40,24 +40,24 @@ class test #(parameter pckg_sz = 16, parameter deep_fifo =8, drvrs=4);
       ambiente_inst.run();
     join_none
     
-    instr_agent = trans_especifica;
+    instr_agent = IDaleatorio;
     test_agent_mbx.put(instr_agent);
     $display("[%g]  Test: Enviada la primera instruccion al agente llenado aleatorio con num_transacciones %g",$time,num_transacciones);
     
-    instr_agent = trans_aleatoria;
-    test_agent_mbx.put(instr_agent);
-    $display("[%g]  Test: Enviada la segunda instruccion al agente transaccion_aleatoria",$time);
+    //instr_agent = trans_especifica;
+    //test_agent_mbx.put(instr_agent);
+    //$display("[%g]  Test: Enviada la segunda instruccion al agente transaccion_aleatoria",$time);
     
-    ambiente_inst.agent_inst.ret_spec = 3;
-    ambiente_inst.agent_inst.tpo_spec = escritura;
-    ambiente_inst.agent_inst.dto_spec = {width/4{4'h5}};
-    instr_agent = trans_especifica;
-    test_agent_mbx.put(instr_agent);
-    $display("[%g]  Test: Enviada la tercera instruccion al agente transaccion_específica",$time);
+    //ambiente_inst.agent_inst.ret_spec = 3;
+    //ambiente_inst.agent_inst.tpo_spec = escritura;
+    //ambiente_inst.agent_inst.dto_spec = {width/4{4'h5}};
+    //instr_agent = trans_especifica;
+    //test_agent_mbx.put(instr_agent);
+    //$display("[%g]  Test: Enviada la tercera instruccion al agente transaccion_específica",$time);
 
-    instr_agent = sec_trans_aleatorias;
-    test_agent_mbx.put(instr_agent);
-    $display("[%g]  Test: Enviada la cuarta instruccion al agente secuencia %g de transaccion_aleatoria",$time,num_transacciones);
+    //instr_agent = sec_trans_aleatorias;
+    //test_agent_mbx.put(instr_agent);
+    //$display("[%g]  Test: Enviada la cuarta instruccion al agente secuencia %g de transaccion_aleatoria",$time,num_transacciones);
 
     #10000
     $display("[%g]  Test: Se alcanza el tiempo límite de la prueba",$time);

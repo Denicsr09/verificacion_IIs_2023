@@ -1,5 +1,7 @@
 // Code your testbench here
 // or browse Examples
+
+/////aqui funciona hasta el scoreborad/////////////
 `timescale 1ns/1ps
 `include "fifo.sv"
 `include "interface_transaction.sv"

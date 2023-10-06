@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Checker/scoreboard: este objeto es responsable de verificar que el comportamiento del DUT sea el esperado //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class check #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvrs = 4);
+class check #(parameter pckg_sz = 16, parameter deep_fifo = 8, parameter drvrs = 4);
   trans_fifo #(.pckg_sz(pckg_sz), .drvrs(drvrs)) transaccion;
   trans_fifo #(.pckg_sz(pckg_sz), .drvrs(drvrs)) auxiliar;
   trans_sb   #(.pckg_sz(pckg_sz), .drvrs(drvrs)) to_sb;

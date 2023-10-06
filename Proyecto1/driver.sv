@@ -2,7 +2,7 @@
 //Transacción: Esta clase se encarga de manejar las entradas y salidas del Dut y las FIFO    //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvrs = 4, parameter bits = 1);
+class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 8, parameter drvrs = 4, parameter bits = 1);
     virtual bus_if #(.pckg_sz(pckg_sz), .drvrs(drvrs), .bits(bits)) vif; //Interface de conexión del dut
     
     trans_fifo_mbx agnt_drv_mbx; // Mailbox entre el agente y el driver
