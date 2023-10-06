@@ -41,7 +41,6 @@ class score_board  #(parameter pckg_sz = 16, parameter drvrs = 4);
             end
             ancho_banda:begin
               $display("Score Board: Recibida Orden Ancho de banda");
-              $display("pckg_sz: %0d",retardo_promedio );
               ancho_banda_min = (1*pckg_sz*drvrs)/(retardo_promedio);
               ancho_banda_max = (transacciones_completadas*pckg_sz*drvrs )/retardo_promedio;
               $display("[%g] Score board: El Ancho de Banda Minimo: %0.3f y el Ancho Banda Maximo  %0.5f", $time, ancho_banda_min, ancho_banda_max);

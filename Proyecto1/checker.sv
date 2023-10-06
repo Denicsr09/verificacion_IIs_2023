@@ -43,7 +43,7 @@ class check #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvrs 
                 to_sb.drvSource_push = auxiliar.drvSource;
                 to_sb.ID_pop = transaccion.drvSource;
                 ID = transaccion.dato [pckg_sz -1: pckg_sz -8];
-              	if(transaccion.drvSource == ID) begin
+              if((transaccion.drvSource == ID) || (ID == 8'b1111_1111)) begin
                   to_sb.completado = 1;
                   $display("La transaccion ejecutadata llego a la terminal adecuada, terminal esperada: %0d, terminal llegada: %0d",transaccion.drvSource, ID );
               	end
@@ -64,9 +64,19 @@ class check #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvrs 
         end
         escritura: begin
           transaccion.print("Checker: Escritura");
-          emul_fifo.push_back(transaccion);
-          $display("Checker: La FIFO EMULADA= %0h", transaccion.dato);
-          
+          if(transaccion.dato[pckg_sz -1: pckg_sz -8] == 8'b1111_1111) begin
+            $display("Se ha detectado un dato con broadcast");
+            for (int i = 0; i < drvrs - 1; i++) begin
+              $display("Valor de i: %0d", i);
+              emul_fifo.push_back(transaccion);
+              $display("Checker: La FIFO EMULADA= %0h", transaccion.dato);
+            end
+          end
+          else begin
+            emul_fifo.push_back(transaccion);
+          	$display("Checker: La FIFO EMULADA= %0h", transaccion.dato);
+          end
+           
         end
         reset: begin
           contador_auxiliar = emul_fifo.size();
