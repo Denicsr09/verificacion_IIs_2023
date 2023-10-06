@@ -8,7 +8,8 @@ class check #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvrs 
   trans_fifo  emul_fifo[$];//this queue is going to be used as golden reference for the fifo
   trans_fifo_mbx drv_chkr_mbx; //Mailbox de comunicación entre el driver y el checker
   trans_sb_mbx  chkr_sb_mbx; //Mailbox de comunicación entre el scoreboard y el scoreboard
-  int contador_auxiliar; 
+  int contador_auxiliar;
+  int ID;
   
   function new();
     this.emul_fifo = {};
@@ -41,6 +42,15 @@ class check #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvrs 
               	to_sb.tiempo_pop = transaccion.tiempo;
                 to_sb.drvSource_push = auxiliar.drvSource;
                 to_sb.ID_pop = transaccion.drvSource;
+                ID = transaccion.dato [pckg_sz -1: pckg_sz -8];
+              	if(transaccion.drvSource == ID) begin
+                  to_sb.completado = 1;
+                  $display("La transaccion ejecutadata llego a la terminal adecuada, terminal esperada: %0d, terminal llegada: %0d",transaccion.drvSource, ID );
+              	end
+                else begin
+                  to_sb.completado = 0;
+                  $display("La transaccion ejecutadata no llego a la terminal adecuada, terminal esperada: %0d, terminal llegada: %0d",transaccion.drvSource, transaccion.ID );
+                end
               	to_sb.calc_latencia();
              	to_sb.print("Checker:Transaccion Completada");
              	chkr_sb_mbx.put(to_sb);
@@ -58,7 +68,23 @@ class check #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvrs 
           $display("Checker: La FIFO EMULADA= %0h", transaccion.dato);
           
         end
-        
+        reset: begin
+          contador_auxiliar = emul_fifo.size();
+          for(int i =0; i<contador_auxiliar; i++)begin
+           auxiliar = emul_fifo.pop_front();
+           to_sb.clean();
+           to_sb.dato_enviado = auxiliar.dato;
+           to_sb.tiempo_push = auxiliar.tiempo;
+           to_sb.drvSource_push = auxiliar.drvSource;
+           to_sb.reset = 1;
+           to_sb.print("Checker: Reset");
+           chkr_sb_mbx.put(to_sb);
+         end
+        end
+        default: begin
+         $display("[%g] Checker Error: la transacción recibida no tiene tipo valido",$time);
+         $finish;
+       	end
       endcase
     end
   endtask

@@ -8,6 +8,7 @@
 `include "Library.sv"
 `include "driver.sv"
 `include "checker.sv"
+`include "score_board.sv"
 
 module test_driver;
     parameter pckg_sz = 16;
@@ -31,10 +32,14 @@ module test_driver;
     driver #(.pckg_sz(pckg_sz), .drvrs(drvrs), .deep_fifo(deep_fifo), .bits(bits)) driver_prueba;
     check #(.pckg_sz(pckg_sz), .drvrs(drvrs), .deep_fifo(deep_fifo)) checker_prueba;
     bus_if #(.drvrs(drvrs), .pckg_sz(pckg_sz)) vif (.clk(clk));
+  	
+   score_board #(.drvrs(drvrs), .pckg_sz(pckg_sz)) score_board_prueba;
     
     trans_fifo_mbx agnt_drv_mbx;
     trans_fifo_mbx drv_chkr_mbx;
   	trans_sb_mbx chkr_sb_mbx;
+  	comando_test_sb_mbx test_sb_mbx;
+  	
   	
   
     bs_gnrtr_n_rbtr dut (.clk(vif.clk),
@@ -52,16 +57,24 @@ module test_driver;
         agnt_drv_mbx = new;
     	drv_chkr_mbx = new;
       	chkr_sb_mbx  = new;
+        test_sb_mbx  = new;
+      	
     	driver_prueba = new;
       	checker_prueba = new;
+      	score_board_prueba = new;
+      	
       	 
       
         driver_prueba.vif = vif;
+      
         driver_prueba.agnt_drv_mbx  = agnt_drv_mbx;
       	driver_prueba.drv_chkr_mbx = drv_chkr_mbx;
+      
         checker_prueba.drv_chkr_mbx = drv_chkr_mbx;
     	checker_prueba.chkr_sb_mbx = chkr_sb_mbx;
-        
+      
+      	score_board_prueba.chkr_sb_mbx = chkr_sb_mbx;
+        score_board_prueba.test_sb_mbx =  test_sb_mbx;
 
         transaccion = new;
         tpo_spec = escritura;
@@ -75,7 +88,10 @@ module test_driver;
       	transaccion = new;
         tpo_spec = escritura;
         transaccion.tipo = tpo_spec;
-        transaccion.dato =  16'b00000010_00000011;
+      	transaccion.ID = 2;
+      	transaccion.payload = 3;
+        transaccion.finish_rand();
+        //transaccion.dato =  16'b00000010_00000011;
         transaccion.drvSource = 0;
         transaccion.retardo = 1;
         transaccion.print("Agente: transacción creada");
@@ -97,6 +113,7 @@ module test_driver;
 
             driver_prueba.run();
             checker_prueba.run();
+            score_board_prueba.run();
             driver_prueba.fifos();
           	driver_prueba.detec_pop();
         join_none
