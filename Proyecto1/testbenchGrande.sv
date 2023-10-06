@@ -7,9 +7,10 @@
 `include "checker.sv"
 `include "Library.sv"
 `include "agent.sv"
+`include "score_board.sv"
 
 
-module tb_driver_dut;
+module tb_general;
   reg clk;
   parameter pckg_sz = 16;
   parameter deep_fifo = 8;
@@ -30,6 +31,8 @@ module tb_driver_dut;
   
   check #(.pckg_sz(pckg_sz), .drvrs(drvrs), .deep_fifo(deep_fifo)) checker_prueba;
   
+  score_board  #(.pckg_sz(pckg_sz),.drvrs(drvrs)) sb_prueba;
+  
   trans_fifo #(.pckg_sz(pckg_sz), .drvrs(drvrs)) transaccion;
   
   bus_if #(.drvrs(drvrs), .pckg_sz(pckg_sz)) vif (.clk(clk));
@@ -40,18 +43,19 @@ module tb_driver_dut;
   trans_fifo_mbx agnt_drv_mbx_tb;
   trans_fifo_mbx tst_agnt_mbx;
   trans_fifo_mbx drv_chkr_mbx;
-  trans_sb_mbx chkr_sb_mbx;
-  	
+  trans_sb_mbx chkr_sb_mbx;	 
+  solicitud_sb orden;
   
   
   //Comunicacion con el agente para pruebas // Lineas para simular el Test.sv------
   comando_test_agent_mbx test_agent_mbx; // Simulando que el test existe (Mailbox)
   instrucciones_agente instr_agent; // Aloja la instrucción que se va a enviar
+  comando_test_sb_mbx test_sb_mbx; //simulando conexion sb a test
+		  //------------------------------------------------------------------------------
   
-		  //-------------------------------------------------------------------------------
   
-  
-  
+ 
+
   bs_gnrtr_n_rbtr dut (.clk(vif.clk),
                        .reset(vif.reset),
                        .pndng(vif.pndng),
@@ -65,43 +69,57 @@ module tb_driver_dut;
     agnt_drv_mbx_tb = new();
     agente_prueba  = new();
     transaccion= new();
-    
-    // Instanciando el MB 
     test_agent_mbx = new();
     drv_chkr_mbx = new();
     driver_prueba=new();
     checker_prueba = new;
+    chkr_sb_mbx= new();
+    sb_prueba=new();
+    test_sb_mbx=new();
     driver_prueba.vif = vif;
-    agente_prueba.test_agent_mbx = test_agent_mbx; // MB entre el TB y el agente 
+    instr_agent = trans_especifica;    
+    // Instanciando el MB 
+   
     
     //Instruccion al mailbox del agente
-    instr_agent = trans_especifica;
-    test_agent_mbx.put(instr_agent);
-   
+     agente_prueba.test_agent_mbx = test_agent_mbx; // MB entre el TB y el agente
+    test_agent_mbx.put(instr_agent);                                                                                             
     driver_prueba.drv_chkr_mbx = drv_chkr_mbx;
     agente_prueba.agnt_drv_mbx = agnt_drv_mbx_tb;
     driver_prueba.agnt_drv_mbx = agnt_drv_mbx_tb;
-  	
     checker_prueba.drv_chkr_mbx = drv_chkr_mbx;
     checker_prueba.chkr_sb_mbx = chkr_sb_mbx;
+    sb_prueba. chkr_sb_mbx=chkr_sb_mbx;
+    sb_prueba.test_sb_mbx=test_sb_mbx;
     
     fork
-      
       agente_prueba.run();
       driver_prueba.run();
       checker_prueba.run();
       driver_prueba.fifos();
       driver_prueba.detec_pop();
+      sb_prueba.run();
     join_none
     
   end
   initial begin
-    #5000;
-    $finish;
-  end
-  initial begin
-    $dumpfile("test.vcd");
-    $dumpvars(0, tb_driver_dut);
-  end
+      #8000;
+      $display("[%g]  Test: Se alcanza el tiempo límite de la prueba",$time);
+      orden = retardo_promedio;
+      test_sb_mbx.put(orden);
+      orden = ancho_banda;
+      test_sb_mbx.put(orden);
+      orden = reporte;
+      test_sb_mbx.put(orden);
+      
+    end
+    initial begin
+        #10000;
+        $finish;
+    end
+    initial begin
+        $dumpfile("test.vcd");
+        $dumpvars(0, tb_general);
+    end
 
 endmodule
