@@ -7,7 +7,7 @@ class test #(parameter pckg_sz = 16, parameter deep_fifo =8, drvrs=4);
   comando_test_sb_mbx    test_sb_mbx;
   comando_test_agent_mbx test_agent_mbx;
 
-  parameter num_transacciones =2;
+  parameter num_transacciones =1;
   parameter max_retardo = 4;
   solicitud_sb orden;
   instrucciones_agente instr_agent;
@@ -40,7 +40,7 @@ class test #(parameter pckg_sz = 16, parameter deep_fifo =8, drvrs=4);
       ambiente_inst.run();
     join_none
     
-    instr_agent = IDaleatorio;
+    instr_agent = broadcast;
     test_agent_mbx.put(instr_agent);
     $display("[%g]  Test: Enviada la primera instruccion al agente llenado aleatorio con num_transacciones %g",$time,num_transacciones);
     
