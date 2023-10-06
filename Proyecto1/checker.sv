@@ -1,92 +1,67 @@
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Checker/scoreboard: este objeto es responsable de verificar que el comportamiento del DUT sea el esperado //
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class check #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvrs = 4);
-  trans_fifo #(.pckg_sz(pckg_sz), .drvrs(drvrs)) transaccion;
-  trans_fifo #(.pckg_sz(pckg_sz), .drvrs(drvrs)) auxiliar;
-  trans_sb   #(.pckg_sz(pckg_sz), .drvrs(drvrs)) to_sb;
-  trans_fifo  emul_fifo[$];//this queue is going to be used as golden reference for the fifo
-  trans_fifo_mbx drv_chkr_mbx; //Mailbox de comunicación entre el driver y el checker
-  trans_sb_mbx  chkr_sb_mbx; //Mailbox de comunicación entre el scoreboard y el scoreboard
-  int contador_auxiliar;
-  int ID;
-  
-  function new();
-    this.emul_fifo = {};
-    this.contador_auxiliar = 0;
-  endfunction 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Scoreboard: Este objeto se encarga de llevar un estado del comportamiento de la prueba y es capa de generar reportes //
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class score_board  #(parameter pckg_sz = 16, parameter drvrs = 4);
+  trans_sb_mbx  chkr_sb_mbx; //Mailbox de Comunicación entre el checker y el score board
+  comando_test_sb_mbx test_sb_mbx; //Mailbox de Comunicación entre test y el score board
+  trans_sb   #(.pckg_sz(pckg_sz), .drvrs(drvrs)) transaccion_entrante; // transaccion entrante que viene del checker
+  trans_sb scoreboard[$]; // esta es la estructura dinámica que maneja el scoreboard  
+  trans_sb auxiliar_array[$]; // estructura auxiliar usada para explorar el scoreboard;  
+  trans_sb auxiliar_trans;
+  shortreal retardo_promedio;
+  solicitud_sb orden;
+  int tamano_sb = 0;
+  int transacciones_completadas =0;
+  int retardo_total = 0;
+  shortreal ancho_banda_min = 0;
+  shortreal ancho_banda_max = 0;
+   
   task run();
-    $display("[%g]  El checker fue inicializado",$time);
-   	to_sb = new();
+    $display("[%g] El Score Board fue inicializado",$time);
     forever begin
-      to_sb = new();
-      drv_chkr_mbx.get(transaccion);
-      transaccion.print("Checker: Se recibe trasacción desde el driver");
-      to_sb.clean();
-      case(transaccion.tipo)
-        lectura: begin
-          if(0 !== emul_fifo.size()) begin //Revisa si el Fifo no está vacía
-            auxiliar = emul_fifo.pop_front();
-            //$display("El dato auxiliar del checker: =%h",auxiliar.dato );
-            while(auxiliar.dato != transaccion.dato) begin
-              emul_fifo.push_back(auxiliar);
-              //$display(" NOOO el auxiliar: %0h y transaccion: %0h", auxiliar.dato, transaccion.dato);
-              auxiliar = emul_fifo.pop_front();
-              //$display(" Dato que se le hizo pop front = %0h", auxiliar.dato);
+      #5;
+      if(chkr_sb_mbx.num() > 0) begin
+        chkr_sb_mbx.get(transaccion_entrante);
+        transaccion_entrante.print("Score Board: transacción recibida desde el checker");
+        if(transaccion_entrante.completado) begin
+            retardo_total = retardo_total + transaccion_entrante.latencia;
+            transacciones_completadas++;
+        end
+        scoreboard.push_back(transaccion_entrante);
+        $display("Retardo total del breteeee: %0d",  retardo_total);
+      end
+      else begin
+        if(test_sb_mbx.num()>0)begin
+          test_sb_mbx.get(orden);
+          case(orden)
+            retardo_promedio: begin
+              $display("Score Board: Recibida Orden Retardo_Promedio");
+              retardo_promedio = retardo_total/transacciones_completadas;
+              $display("[%g] Score board: el retardo promedio es: %0.3f", $time, retardo_promedio);
             end
-            //$display("Datooooo que quedo en el auxiliar: %0h", auxiliar.dato);
-            if(auxiliar.dato == transaccion.dato) begin
-                $display("Encontro el auxiliar: %0h y transaccion: %0h", auxiliar.dato, transaccion.dato);
-              	to_sb.dato_enviado = auxiliar.dato;
-              	to_sb.tiempo_push = auxiliar.tiempo;
-              	to_sb.tiempo_pop = transaccion.tiempo;
-                to_sb.drvSource_push = auxiliar.drvSource;
-                to_sb.ID_pop = transaccion.drvSource;
-                ID = transaccion.dato [pckg_sz -1: pckg_sz -8];
-              	if(transaccion.drvSource == ID) begin
-                  to_sb.completado = 1;
-                  $display("La transaccion ejecutadata llego a la terminal adecuada, terminal esperada: %0d, terminal llegada: %0d",transaccion.drvSource, ID );
-              	end
-                else begin
-                  to_sb.completado = 0;
-                  $display("La transaccion ejecutadata no llego a la terminal adecuada, terminal esperada: %0d, terminal llegada: %0d",transaccion.drvSource, transaccion.ID );
-                end
-              	to_sb.calc_latencia();
-             	to_sb.print("Checker:Transaccion Completada");
-             	chkr_sb_mbx.put(to_sb);
+            ancho_banda:begin
+              $display("Score Board: Recibida Orden Ancho de banda");
+              $display("pckg_sz: %0d",retardo_promedio );
+              ancho_banda_min = (1*pckg_sz*drvrs)/(retardo_promedio);
+              ancho_banda_max = (transacciones_completadas*pckg_sz*drvrs )/retardo_promedio;
+              $display("[%g] Score board: El Ancho de Banda Minimo: %0.3f y el Ancho Banda Maximo  %0.5f", $time, ancho_banda_min, ancho_banda_max);
             end
-          end
-          else begin
-            transaccion.print("Checker: Error el dato de la transacción no calza con el esperado");
-            $display("Dato_leido= %0h, Dato_Esperado = %0h",transaccion.dato,auxiliar.dato);
-            $finish; 
-          end
+            reporte: begin
+              $display("Score Board: Recibida Orden Reporte");
+              tamano_sb = this.scoreboard.size();
+              for(int i=0;i<tamano_sb;i++) begin
+                auxiliar_trans = scoreboard.pop_front;
+                auxiliar_trans.print("SB_Report:");
+                auxiliar_array.push_back(auxiliar_trans);
+              end
+              scoreboard = auxiliar_array;
+            end
+          endcase
         end
-        escritura: begin
-          transaccion.print("Checker: Escritura");
-          emul_fifo.push_back(transaccion);
-          $display("Checker: La FIFO EMULADA= %0h", transaccion.dato);
-          
-        end
-        reset: begin
-          contador_auxiliar = emul_fifo.size();
-          for(int i =0; i<contador_auxiliar; i++)begin
-           auxiliar = emul_fifo.pop_front();
-           to_sb.clean();
-           to_sb.dato_enviado = auxiliar.dato;
-           to_sb.tiempo_push = auxiliar.tiempo;
-           to_sb.drvSource_push = auxiliar.drvSource;
-           to_sb.reset = 1;
-           to_sb.print("Checker: Reset");
-           chkr_sb_mbx.put(to_sb);
-         end
-        end
-        default: begin
-         $display("[%g] Checker Error: la transacción recibida no tiene tipo valido",$time);
-         $finish;
-       	end
-      endcase
+      end
     end
+    
+    
+    
   endtask
-  
 endclass
