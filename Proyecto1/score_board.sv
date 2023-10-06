@@ -13,8 +13,8 @@ class score_board  #(parameter pckg_sz = 16, parameter drvrs = 4);
   int tamano_sb = 0;
   int transacciones_completadas =0;
   int retardo_total = 0;
-  int ancho_banda_min;
-  int ancho_banda_max;
+  shortreal ancho_banda_min = 0;
+  shortreal ancho_banda_max = 0;
    
   task run();
     $display("[%g] El Score Board fue inicializado",$time);
@@ -41,9 +41,10 @@ class score_board  #(parameter pckg_sz = 16, parameter drvrs = 4);
             end
             ancho_banda:begin
               $display("Score Board: Recibida Orden Ancho de banda");
-              ancho_banda_min = (1*pckg_sz*drvrs)/retardo_promedio;
-              ancho_banda_max  (transacciones_completadas*pckg_sz*drvrs )/retardo_promedio;
-              $display("[%g] Score board: El Ancho de Banda Minimo: %0.3f y el Ancho Banda Maximo  %0.3f", $time, ancho_banda_min, ancho_banda_max);
+              $display("pckg_sz: %0d",retardo_promedio );
+              ancho_banda_min = (1*pckg_sz*drvrs)/(retardo_promedio);
+              ancho_banda_max = (transacciones_completadas*pckg_sz*drvrs )/retardo_promedio;
+              $display("[%g] Score board: El Ancho de Banda Minimo: %0.3f y el Ancho Banda Maximo  %0.5f", $time, ancho_banda_min, ancho_banda_max);
             end
             reporte: begin
               $display("Score Board: Recibida Orden Reporte");
