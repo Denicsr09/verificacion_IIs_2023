@@ -24,19 +24,26 @@ class check #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter drvrs 
       to_sb.clean();
       case(transaccion.tipo)
         lectura: begin
-          //Esto es un foreach
           if(0 !== emul_fifo.size()) begin //Revisa si el Fifo no está vacía
             auxiliar = emul_fifo.pop_front();
-            $display("El dato auxiliar del checker: =%h",auxiliar.dato );
+            //$display("El dato auxiliar del checker: =%h",auxiliar.dato );
             while(auxiliar.dato != transaccion.dato) begin
               emul_fifo.push_back(auxiliar);
-              $display(" NOOO el auxiliar: %0h y transaccion: %0h", auxiliar.dato, transaccion.dato);
+              //$display(" NOOO el auxiliar: %0h y transaccion: %0h", auxiliar.dato, transaccion.dato);
               auxiliar = emul_fifo.pop_front();
-              $display(" Dato que se le hizo pop front = %0h", auxiliar.dato);
+              //$display(" Dato que se le hizo pop front = %0h", auxiliar.dato);
             end
-            $display("Datooooo que quedo en el auxiliar: %0h", auxiliar.dato);
+            //$display("Datooooo que quedo en el auxiliar: %0h", auxiliar.dato);
             if(auxiliar.dato == transaccion.dato) begin
                 $display("Encontro el auxiliar: %0h y transaccion: %0h", auxiliar.dato, transaccion.dato);
+              	to_sb.dato_enviado = auxiliar.dato;
+              	to_sb.tiempo_push = auxiliar.tiempo;
+              	to_sb.tiempo_pop = transaccion.tiempo;
+                to_sb.drvSource_push = auxiliar.drvSource;
+                to_sb.ID_pop = transaccion.drvSource;
+              	to_sb.calc_latencia();
+             	to_sb.print("Checker:Transaccion Completada");
+             	chkr_sb_mbx.put(to_sb);
             end
           end
           else begin
