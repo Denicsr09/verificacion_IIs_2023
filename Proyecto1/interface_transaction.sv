@@ -132,7 +132,7 @@ typedef mailbox #(trans_fifo) trans_fifo_mbx;
 /////////////////////////////////////////////////////////////////////////
 // Definición de estructura para generar comandos hacia el agente      //
 /////////////////////////////////////////////////////////////////////////
-typedef enum {llenado_aleatorio,IDaleatorio,trans_especifica} instrucciones_agente;
+typedef enum {llenado_aleatorio,IDaleatorio,trans_especifica,payload_especifico,ID_especifico,broadcast} instrucciones_agente;
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //

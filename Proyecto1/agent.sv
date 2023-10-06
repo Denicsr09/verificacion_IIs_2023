@@ -28,7 +28,6 @@ task run;
               transaccion =new;
               transaccion.max_retardo = max_retardo;
               transaccion.randomize();
-              //transaccion.ID=0;
               transaccion.finish_rand();
               tpo_spec = escritura;
               transaccion.tipo = tpo_spec;
@@ -37,11 +36,28 @@ task run;
             end
           end
           trans_especifica: begin
-            
+            transaccion =new;
+            transaccion.max_retardo = max_retardo;
+            transaccion.randomize();
+            transaccion.drvSource=2;
+            transaccion.ID=0;
+            transaccion.finish_rand();
+            tpo_spec = escritura;
+            transaccion.tipo = tpo_spec;
+            transaccion.print("Agente: transacción creada");
+            agnt_drv_mbx.put(transaccion);
           end
           
-          ID_especifica: begin
-            
+          ID_especifico: begin
+            transaccion =new;
+            transaccion.max_retardo = max_retardo;
+            transaccion.randomize();
+            transaccion.ID=0;
+            transaccion.finish_rand();
+            tpo_spec = escritura;
+            transaccion.tipo = tpo_spec;
+            transaccion.print("Agente: transacción creada");
+            agnt_drv_mbx.put(transaccion);
           end
           
           payload_especifico: begin
@@ -49,6 +65,9 @@ task run;
           end
           
           
+          broadcast: begin
+            
+          end
           
           
         endcase
