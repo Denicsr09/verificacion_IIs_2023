@@ -4,7 +4,7 @@
 `include "fifo.sv"
 `include "interface_transaction.sv"
 `include "driver.sv"
-//`include "checker.sv"
+`include "checker.sv"
 `include "Library.sv"
 `include "agent.sv"
 
@@ -28,6 +28,8 @@ module tb_driver_dut;
   
   driver #(.pckg_sz(pckg_sz), .drvrs(drvrs), .deep_fifo(deep_fifo), .bits(bits)) driver_prueba;
   
+  check #(.pckg_sz(pckg_sz), .drvrs(drvrs), .deep_fifo(deep_fifo)) checker_prueba;
+  
   trans_fifo #(.pckg_sz(pckg_sz), .drvrs(drvrs)) transaccion;
   
   bus_if #(.drvrs(drvrs), .pckg_sz(pckg_sz)) vif (.clk(clk));
@@ -38,8 +40,8 @@ module tb_driver_dut;
   trans_fifo_mbx agnt_drv_mbx_tb;
   trans_fifo_mbx tst_agnt_mbx;
   trans_fifo_mbx drv_chkr_mbx;
-
-  
+  trans_sb_mbx chkr_sb_mbx;
+  	
   
   
   //Comunicacion con el agente para pruebas // Lineas para simular el Test.sv------
@@ -63,25 +65,31 @@ module tb_driver_dut;
     agnt_drv_mbx_tb = new();
     agente_prueba  = new();
     transaccion= new();
+    
     // Instanciando el MB 
     test_agent_mbx = new();
     drv_chkr_mbx = new();
     driver_prueba=new();
+    checker_prueba = new;
     driver_prueba.vif = vif;
-    agente_prueba.test_agent_mbx = test_agent_mbx; // MB entre el TB y el agente la
+    agente_prueba.test_agent_mbx = test_agent_mbx; // MB entre el TB y el agente 
+    
     //Instruccion al mailbox del agente
-    instr_agent = IDaleatorio;
+    instr_agent = trans_especifica;
     test_agent_mbx.put(instr_agent);
    
     driver_prueba.drv_chkr_mbx = drv_chkr_mbx;
     agente_prueba.agnt_drv_mbx = agnt_drv_mbx_tb;
     driver_prueba.agnt_drv_mbx = agnt_drv_mbx_tb;
   	
+    checker_prueba.drv_chkr_mbx = drv_chkr_mbx;
+    checker_prueba.chkr_sb_mbx = chkr_sb_mbx;
     
     fork
       
       agente_prueba.run();
       driver_prueba.run();
+      checker_prueba.run();
       driver_prueba.fifos();
       driver_prueba.detec_pop();
     join_none

@@ -103,7 +103,7 @@ class trans_sb #(parameter pckg_sz = 16, parameter drvrs = 4);
   endtask
   
   function print (string tag);
-    $display("[%g] %s dato=%h,t_push=%g,t_pop=%g,cmplt=%g,ovrflw=%g,undrflw=%g,rst=%g,ltncy=%g,desde el driver=%0d, hacia la el driver = %0d", 
+    $display("[%g] %s dato=%h,t_push=%g,t_pop=%g,cmplt=%g,ovrflw=%g,undrflw=%g,rst=%g,ltncy=%g,desde el driver=%0d, hacia el driver = %0d", 
              $time,
              tag, 
              this.dato_enviado, 

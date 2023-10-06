@@ -18,7 +18,7 @@ task run;
     forever begin
       #1
       if(test_agent_mbx.num() > 0)begin
-        $display("[%g]  Agente: se recibe instruccion",$time);
+        $display("[%g]  Agente: recibe instruccion",$time);
         test_agent_mbx.get(instruccion);
         case(instruccion)
           IDaleatorio: begin  // Esta instruccion genera num_tranacciones escrituras seguidas del mismo número de lecturas

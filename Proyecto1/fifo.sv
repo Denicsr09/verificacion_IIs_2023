@@ -25,8 +25,8 @@ class fifo #(parameter pckg_sz = 16, parameter deep_fifo = 10, parameter bits = 
         end
       	
       if(this.cola.size() == 0) begin
-          this.pndng = 0;
-        	this.Dout = 0; 
+        this.pndng = 0;
+        this.Dout = 0; 
           //$display("El pending esta bajo");
         end
         else begin
