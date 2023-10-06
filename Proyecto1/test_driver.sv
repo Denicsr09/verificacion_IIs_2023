@@ -39,6 +39,7 @@ module test_driver;
     trans_fifo_mbx drv_chkr_mbx;
   	trans_sb_mbx chkr_sb_mbx;
   	comando_test_sb_mbx test_sb_mbx;
+    solicitud_sb orden;
   	
   	
   
@@ -75,7 +76,9 @@ module test_driver;
       
       	score_board_prueba.chkr_sb_mbx = chkr_sb_mbx;
         score_board_prueba.test_sb_mbx =  test_sb_mbx;
-
+      
+      	
+      
         transaccion = new;
         tpo_spec = escritura;
         transaccion.tipo = tpo_spec;
@@ -105,7 +108,8 @@ module test_driver;
         transaccion.retardo = 1;
         transaccion.print("Agente: transacción creada");
         agnt_drv_mbx.put(transaccion);
-      
+        
+        
 
       	
       
@@ -118,6 +122,18 @@ module test_driver;
           	driver_prueba.detec_pop();
         join_none
         
+    end
+  	
+  	initial begin
+      #8000;
+      $display("[%g]  Test: Se alcanza el tiempo límite de la prueba",$time);
+      orden = retardo_promedio;
+      test_sb_mbx.put(orden);
+      orden = ancho_banda;
+      test_sb_mbx.put(orden);
+      orden = reporte;
+      test_sb_mbx.put(orden);
+      
     end
     initial begin
         #10000;

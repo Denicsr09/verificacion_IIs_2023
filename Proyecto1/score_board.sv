@@ -13,6 +13,8 @@ class score_board  #(parameter pckg_sz = 16, parameter drvrs = 4);
   int tamano_sb = 0;
   int transacciones_completadas =0;
   int retardo_total = 0;
+  int ancho_banda_min;
+  int ancho_banda_max;
    
   task run();
     $display("[%g] El Score Board fue inicializado",$time);
@@ -28,7 +30,34 @@ class score_board  #(parameter pckg_sz = 16, parameter drvrs = 4);
         scoreboard.push_back(transaccion_entrante);
         $display("Retardo total del breteeee: %0d",  retardo_total);
       end
-      
+      else begin
+        if(test_sb_mbx.num()>0)begin
+          test_sb_mbx.get(orden);
+          case(orden)
+            retardo_promedio: begin
+              $display("Score Board: Recibida Orden Retardo_Promedio");
+              retardo_promedio = retardo_total/transacciones_completadas;
+              $display("[%g] Score board: el retardo promedio es: %0.3f", $time, retardo_promedio);
+            end
+            ancho_banda:begin
+              $display("Score Board: Recibida Orden Ancho de banda");
+              ancho_banda_min = (1*pckg_sz*drvrs)/retardo_promedio;
+              ancho_banda_max  (transacciones_completadas*pckg_sz*drvrs )/retardo_promedio;
+              $display("[%g] Score board: El Ancho de Banda Minimo: %0.3f y el Ancho Banda Maximo  %0.3f", $time, ancho_banda_min, ancho_banda_max);
+            end
+            reporte: begin
+              $display("Score Board: Recibida Orden Reporte");
+              tamano_sb = this.scoreboard.size();
+              for(int i=0;i<tamano_sb;i++) begin
+                auxiliar_trans = scoreboard.pop_front;
+                auxiliar_trans.print("SB_Report:");
+                auxiliar_array.push_back(auxiliar_trans);
+              end
+              scoreboard = auxiliar_array;
+            end
+          endcase
+        end
+      end
     end
     
     
