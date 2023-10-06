@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////
-//Transacción: Esta clase se encarga de manejar las entradas y salidas del Dut y las FIFO    //
+//Driver: Esta clase se encarga de manejar las entradas y salidas del Dut y las FIFO        //
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 8, parameter drvrs = 4, parameter bits = 1);
@@ -11,50 +11,51 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 8, parameter drvrs
     int espera; // Variable utilizada para cumplir con el tiempo de retardo en la entrega de un dato;
 
     //Se instancia las FIFOs
-    fifo #(.pckg_sz(pckg_sz), .deep_fifo(deep_fifo), .bits(bits), .drvrs(drvrs)) fifo_in [drvrs - 1 : 0];
-
+    ////Arreglo para generar las FIFO de entrada con la cantidad de drivers del DUT que se generaron
+    fifo #(.pckg_sz(pckg_sz), .deep_fifo(deep_fifo), .bits(bits), .drvrs(drvrs)) fifo_in [drvrs - 1 : 0]; 
+    
+    //Task para escribir datos en la FIFO 
     task run();
         $display("[%g]  El driver fue inicializado",$time);
         foreach (fifo_in[i]) begin
-            fifo_in [i] = new();
+            fifo_in [i] = new(); // Se inicializan las FIFO de entrada
         end
         @(posedge vif.clk);
-        vif.reset=1;
+        vif.reset=1; //Reset del DUT
         @(posedge vif.clk);
         forever begin
-            trans_fifo #(.pckg_sz(pckg_sz), .drvrs(drvrs)) transaction;
+            trans_fifo #(.pckg_sz(pckg_sz), .drvrs(drvrs)) transaction; // Instancia para obtener el contenido del Mailbox agnt_drv_mbx
             foreach (fifo_in[i]) begin
-                //fifo_in[i].push = 0;
-                fifo_in[i].Din  = 0;
+                fifo_in[i].Din  = 0; 
             end
             $display("[%g] el Driver espera por una transacción",$time);
             espera = 0;
             vif.reset = 0;
             @(posedge vif.clk);
-            agnt_drv_mbx.get(transaction); 
+            agnt_drv_mbx.get(transaction); // Se obtiene el dato a escrbir proveniente del agente 
             transaction.print("Driver: Transaccion recibida");
             $display("Transacciones pendientes en el mbx agnt_drv = %g",agnt_drv_mbx.num());
-
+            
+            //Realiza el retardo que posee el dato antes de escribirse
             while(espera < transaction.retardo)begin
                @(posedge vif.clk);
               if((espera == transaction.retardo - 1) && transaction.tipo != reset )begin
                 fifo_in[transaction.drvSource].fifo_push(transaction.dato);
                 transaction.tiempo = $time;
-	     		drv_chkr_mbx.put(transaction); 
+	     		      drv_chkr_mbx.put(transaction); 
                 $display("Se ha ingresado el dato %0h, desde el driver %d",transaction.dato, transaction.drvSource );
                 transaction.print("Driver: Transaccion ejecutada");
               end
               espera = espera + 1;
-              //$display("espera: %0d", espera);
-              //fifo_in[transaction.drvSource].Din = transaction.dato;
                 
             end
-          if(transaction.tipo == reset ) begin
-            vif.reset =1;
-	     	transaction.tiempo = $time;
-	     	drv_chkr_mbx.put(transaction); 
-	     	transaction.print("Driver: Transaccion ejecutada");
-          end
+            //Si se realiza un evento reset 
+            if(transaction.tipo == reset ) begin
+              vif.reset =1;
+              transaction.tiempo = $time;
+              drv_chkr_mbx.put(transaction); 
+              transaction.print("Driver: Transaccion ejecutada");
+            end
           
           @(posedge vif.clk);
         end
