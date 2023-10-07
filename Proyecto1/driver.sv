@@ -63,32 +63,33 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 8, parameter drvrs
 
     endtask
 
-
+    //Task que corre las FIFos y actualiza las entradas del DUT que se conectan a las FIFO de entrada
     task fifos();
       forever begin
             foreach(fifo_in[i]) begin
-              	fifo_in[i].run();
-                fifo_in[i].pop = vif.pop[0][i];
-              	vif.D_pop[0][i] = fifo_in[i].Dout;
-             	vif.pndng[0][i] = fifo_in[i].pndng;
+              	fifo_in[i].run(); //task de las FIFO 
+                fifo_in[i].pop = vif.pop[0][i]; // Conexion del POP de las FIFOs y el POP del DUT
+              	vif.D_pop[0][i] = fifo_in[i].Dout; // Conexion de entrada del DUT y la salida de las FIFOs de entrada
+             	vif.pndng[0][i] = fifo_in[i].pndng; // Conexion de bandera pending del DUT y las FIFO
             end
         @(posedge vif.clk);
       end
     endtask
   	
+    //Task para que cuando el DUT realice un PoP se obtenga el dato y se envie al checker
    task detec_pop();
      
      forever begin
-       trans_fifo #(.pckg_sz(pckg_sz), .drvrs(drvrs)) transaction;
+       trans_fifo #(.pckg_sz(pckg_sz), .drvrs(drvrs)) transaction; //Instancia para crear una transacción y enviarla al checker
        foreach(fifo_in[i]) begin
          if(vif.push[0][i]) begin
            $display("Se ha detectado un dato en el driver");
            transaction =new;
-           transaction.dato = vif.D_push[0][i];
+           transaction.dato = vif.D_push[0][i]; // Salida del DUT para obtener el dato 
            transaction.tiempo = $time;
-           transaction.tipo = lectura;
-           transaction.drvSource = i;
-           drv_chkr_mbx.put(transaction);
+           transaction.tipo = lectura; 
+           transaction.drvSource = i; //Guarda el driver del cual se obtuvo
+           drv_chkr_mbx.put(transaction); // Envia el dato de lectura al checker
            transaction.print("Driver: Transaccion ejecutada");
          end
        end
