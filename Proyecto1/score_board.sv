@@ -30,7 +30,7 @@ class score_board  #(parameter pckg_sz = 16, parameter drvrs = 4);
             transacciones_completadas++;
         end
         scoreboard.push_back(transaccion_entrante);
-        $display("Retardo total del breteeee: %0d",  retardo_total);
+        //$display("Retardo total del brete: %0d",  retardo_total);
       end
       //Cuando termina de calcular el retardo realiza el reporte donde se calcula retardo promedio, ancho de banda y se muestra el reporte
       else begin

@@ -10,12 +10,23 @@ class agent #(parameter pckg_sz = 16, parameter deep_fifo = 8, parameter drvrs =
   bit [pckg_sz-1:0] dto_spec;
   instrucciones_agente instruccion;      // para guardar la última instruccion leída
   trans_fifo #(.pckg_sz(pckg_sz)) transaccion; //transaccion de tipo trans_fifo 
-   
+  int l; 
   function new;
     num_transacciones = 1;
     max_retardo = 10;
   endfunction
+  
+  reg [7:0] lista_especifica[0:3];
+  
+  
+
 task run;
+  
+  lista_especifica[0] = 8'hFF;
+  lista_especifica[1] = 8'h00;
+  lista_especifica[2] = 8'hAA;
+  lista_especifica[3] = 8'h55;
+  
     //$display("[%g]  El Agente fue inicializado",$time);
     forever begin
       #1
@@ -53,7 +64,8 @@ task run;
                 transaccion.print("Agente: transacción creada");
                 agnt_drv_mbx.put(transaccion);
               end else begin
-                $display("[%g]  Agente: ID y Source iguales, no se puede realizar",$time);
+                i=i-1;//como no se pudo realizar, no cuenta como un a transaccion
+                //$display("[%g]  Agente: ID y Source iguales, no se puede realizar",$time);
               end 
          
             end
@@ -66,14 +78,14 @@ task run;
               transaccion.randomize();
               transaccion.ID=1;//ID específico 
               if (transaccion.drvSource != transaccion.ID) begin 
-                
                 transaccion.concatena();
                 tpo_spec = escritura;
                 transaccion.tipo = tpo_spec;
                 transaccion.print("Agente: transacción creada");
                 agnt_drv_mbx.put(transaccion);
               end else begin
-                $display("[%g]  Agente: ID y Source iguales, no se puede realizar",$time);
+                i=i-1;
+                //$display("[%g]  Agente: ID y Source iguales, no se puede realizar",$time);
               end 
               
              
@@ -81,11 +93,19 @@ task run;
           end
           
           payload_especifico: begin //ID random, driverSOurce random y payload especifico 
+             l=0;
+            
              for(int i = 0; i < num_transacciones;i++) begin
                transaccion =new;
                transaccion.max_retardo = max_retardo;
                transaccion.randomize();
-               transaccion.payload= 8'b 00000010; //payload especifico 
+               
+               if (l==4)begin
+                 l=0;
+               end 
+               transaccion.payload= lista_especifica[l]; //payload especifico de la lista de payloads
+               //$display("valor de payload de lista %0h ", lista_especifica[l] );
+               l=l+1;
                if (transaccion.drvSource != transaccion.ID) begin
                  transaccion.concatena();
                  tpo_spec = escritura;
@@ -93,30 +113,25 @@ task run;
                  transaccion.print("Agente: transacción creada");
                  agnt_drv_mbx.put(transaccion);
                end else begin
-                  $display("[%g]  Agente: ID y Source iguales, no se puede realizar",$time);
+                 i=i-1;
+                 //$display("[%g]  Agente: ID y Source iguales, no se puede realizar",$time);
                end 
                  
              end
           end
           
           broadcast: begin //envia datos a todos los drivers
-            for(int i = 0; i < num_transacciones;i++) begin //revisar esta logica aun no funciona
-              for(int j = 0; j < drvrs ;j++) begin
-                
-                transaccion =new;
-                transaccion.max_retardo = max_retardo;
-                transaccion.randomize();
-                transaccion.ID=1;
-                if (transaccion.drvSource != transaccion.ID) begin
-                  transaccion.concatena();
-                  tpo_spec = escritura;
-                  transaccion.tipo = tpo_spec;
-                  transaccion.print("Agente: transacción creada");
-                  agnt_drv_mbx.put(transaccion);
-                end else begin
-                   $display("[%g]  Agente: ID y Source iguales, no se puede realizar",$time);
-                end 
-              end
+            for(int i = 0; i < num_transacciones;i++) begin
+              transaccion =new;
+              transaccion.max_retardo = max_retardo;
+              transaccion.randomize();
+              transaccion.ID=8'b11111111;//ID para generar el broadcast desde el checker 
+              transaccion.concatena();
+              tpo_spec = escritura;
+              transaccion.tipo = tpo_spec;
+              transaccion.print("Agente: transacción creada");
+              agnt_drv_mbx.put(transaccion);
+              
             end
             
             

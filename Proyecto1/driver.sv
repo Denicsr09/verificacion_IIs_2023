@@ -83,7 +83,7 @@ class driver  #(parameter pckg_sz = 16, parameter deep_fifo = 8, parameter drvrs
        trans_fifo #(.pckg_sz(pckg_sz), .drvrs(drvrs)) transaction; //Instancia para crear una transacción y enviarla al checker
        foreach(fifo_in[i]) begin
          if(vif.push[0][i]) begin
-           $display("Se ha detectado un dato en el driver");
+           //$display("Se ha detectado un dato en el driver");
            transaction =new;
            transaction.dato = vif.D_push[0][i]; // Salida del DUT para obtener el dato 
            transaction.tiempo = $time;

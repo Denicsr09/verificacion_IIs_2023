@@ -37,7 +37,7 @@ class check #(parameter pckg_sz = 16, parameter deep_fifo = 8, parameter drvrs =
             end
             //Cuando se encuentra el dato se envia al scorboard con los tiempos de push y pop
             if(auxiliar.dato == transaccion.dato) begin
-                $display("Encontro el auxiliar: %0h y transaccion: %0h", auxiliar.dato, transaccion.dato);
+                //$display("Encontro el auxiliar: %0h y transaccion: %0h", auxiliar.dato, transaccion.dato);
               	to_sb.dato_enviado = auxiliar.dato;
               	to_sb.tiempo_push = auxiliar.tiempo;
               	to_sb.tiempo_pop = transaccion.tiempo;
@@ -51,7 +51,7 @@ class check #(parameter pckg_sz = 16, parameter deep_fifo = 8, parameter drvrs =
               	end
                 else begin
                   to_sb.completado = 0;
-                  $display("La transaccion ejecutadata no llego a la terminal adecuada, terminal esperada: %0d, terminal llegada: %0d",transaccion.drvSource, transaccion.ID );
+                  $display("La transaccion ejecutada no llego a la terminal adecuada, terminal esperada: %0d, terminal llegada: %0d",transaccion.drvSource, transaccion.ID );
                 end
                 to_sb.calc_latencia();
                 to_sb.print("Checker:Transaccion Completada");
@@ -71,14 +71,14 @@ class check #(parameter pckg_sz = 16, parameter deep_fifo = 8, parameter drvrs =
           if(transaccion.dato[pckg_sz -1: pckg_sz -8] == 8'b1111_1111) begin
             $display("Se ha detectado un dato con broadcast");
             for (int i = 0; i < drvrs - 1; i++) begin
-              $display("Valor de i: %0d", i);
+              //$display("Valor de i: %0d", i);
               emul_fifo.push_back(transaccion);
-              $display("Checker: La FIFO EMULADA= %0h", transaccion.dato);
+              //$display("Checker: La FIFO EMULADA= %0h", transaccion.dato);
             end
           end
           else begin
             emul_fifo.push_back(transaccion); // Guarda en la FIFO la informacion de cada transaccion tipo escritura
-          	$display("Checker: La FIFO EMULADA= %0h", transaccion.dato);
+          	//$display("Checker: La FIFO EMULADA= %0h", transaccion.dato);
           end
            
         end

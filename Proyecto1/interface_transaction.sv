@@ -19,10 +19,10 @@ class trans_fifo #(parameter pckg_sz = 16, parameter drvrs = 4);
   int max_retardo; //tiempo de retardo entre transaccion
  
   constraint const_retardo {retardo < max_retardo; retardo>0;};
-  constraint const_ID  { ID < (drvrs-1);ID >= 0;};//el ID mayor igual que cero y menor que numero de drivers definio 
+  constraint const_ID  { ID < (drvrs);ID >= 0;};//el ID mayor igual que cero y menor que numero de drivers definio 
   constraint const_ID_unique{
     unique{ID};};//otra manera de hacer randc mi dato 
-  constraint const_drvSource {drvSource < (drvrs-1); drvSource >= 0;};//el driver de salida es del numero de drivers a los que está conectado 
+  constraint const_drvSource {drvSource < (drvrs); drvSource >= 0;};//el driver de salida es del numero de drivers a los que está conectado 
 
   function new(int ret =0,bit[pckg_sz-1:0] dto = 0,int tmp = 0, tipo_trans tpo = lectura, int mx_rtrd = 10);
     this.retardo = ret;
@@ -42,11 +42,12 @@ class trans_fifo #(parameter pckg_sz = 16, parameter drvrs = 4);
   
   function concatena;
     dato= {ID,payload};//se concatena el ID con el payload 
-    $display("fifo_if: ID: %0h ",ID);
-    $display("fifo_if: payload: %0h ",payload);
-    $display("fifo_if: Dato concatenado: %0h ",dato);
+    $display("fifo_if: ID: %0h payload: %0h Dato concatenado: %0h",ID,payload,dato);
 
   endfunction;
+  
+
+  
     
   function void print(string tag = "");
     $display("[%g] %s Tiempo=%g Tipo=%s Retardo=%g Source= %0d dato=0x%h",$time,tag,tiempo,this.tipo,this.retardo,this.drvSource,this.dato);
