@@ -60,11 +60,11 @@ class score_board  #(parameter pckg_sz = 16, parameter drvrs = 4);
               
               for(int i=0;i<tamano_sb;i++) begin
                 auxiliar_trans = scoreboard.pop_front;
-                //$fdisplay(fa," ID = %d, Payload= %0h, dato=  %0h , Tiempo de escritura= %d, Driver de salida= %d, 
-                //Tiempo de lectura= %d, Driver de llegada= %d, Latencia=%d"
-                //,auxiliar_trans.ID, auxiliar_trans.payload,auxiliar_trans.dato, auxiliar_trans.tiempo_push, auxiliar_trans.drvSource, 
-                //auxiliar_trans.tiempo_pop, auxiliar_trans.ID, auxiliar_trans.latencia);
-                $fdisplay(fa,"data= %0h, tiempo= %0d", auxiliar_trans.dato , auxiliar_trans.tiempo_push );
+                $fdisplay(fa," ID = %d, dato=  %0h , Tiempo de escritura= %d, Driver de salida= %d, 
+                Tiempo de lectura= %d, Driver de llegada= %d, Latencia=%d"
+                ,auxiliar_trans.ID_pop,auxiliar_trans.dato_enviado, auxiliar_trans.tiempo_push, auxiliar_trans.drvSource_push, 
+                auxiliar_trans.tiempo_pop, auxiliar_trans.ID_pop, auxiliar_trans.latencia);
+                //$fdisplay(fa,"data= %0h, tiempo= %0d", auxiliar_trans.dato , auxiliar_trans.tiempo_push );
                 auxiliar_trans.print("SB_Report:");
                 auxiliar_array.push_back(auxiliar_trans);
               end
