@@ -1,7 +1,6 @@
-// Code your testbench here
-// or browse Examples
-// Code your testbench here
-// or browse Examples
+/////////////////////////////////////////////////////////////////////////////////////////////
+//test_driver: Test bench utilizado para probar el driver y el checker simulando el agente //
+////////////////////////////////////////////////////////////////////////////////////////////
 `timescale 1ns/1ps
 `include "fifo.sv"
 `include "interface_transaction.sv"
@@ -47,8 +46,8 @@ module test_driver;
     initial begin
     
         agnt_drv_mbx = new;
-    	drv_chkr_mbx = new;
-    	driver_prueba = new;
+    	  drv_chkr_mbx = new;
+    	  driver_prueba = new;
       
         driver_prueba.vif = vif;
         driver_prueba.agnt_drv_mbx  = agnt_drv_mbx;

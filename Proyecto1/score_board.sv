@@ -7,12 +7,13 @@ class score_board  #(parameter pckg_sz = 16, parameter drvrs = 4);
   trans_sb   #(.pckg_sz(pckg_sz), .drvrs(drvrs)) transaccion_entrante; // transaccion entrante que viene del checker
   trans_sb scoreboard[$]; // esta es la estructura dinámica que maneja el scoreboard  
   trans_sb auxiliar_array[$]; // estructura auxiliar usada para explorar el scoreboard;  
-  trans_sb auxiliar_trans;
-  shortreal retardo_promedio;
-  solicitud_sb orden;
-  int tamano_sb = 0;
-  int transacciones_completadas =0;
-  int retardo_total = 0;
+  trans_sb auxiliar_trans;    // Me permite sacar el dato de cola scoreboard para imprimirlo en el reporte final
+  shortreal retardo_promedio; //Varaible para almacenar el valor del retardo promedio
+  solicitud_sb orden;  //Variable para definir la solicitud utilizada en el scoreboard
+  int tamano_sb = 0;   //Variable para definir el tamaño de la cola de scoreboard para el reporte
+  int transacciones_completadas =0; // Cantidad de transacciones completadas 
+  int retardo_total = 0;           //Suma de todas las latencias de las transacciones
+  //variables para almacenar el valor del ancho minimo y maximo
   shortreal ancho_banda_min = 0;
   shortreal ancho_banda_max = 0;
    
@@ -20,6 +21,7 @@ class score_board  #(parameter pckg_sz = 16, parameter drvrs = 4);
     $display("[%g] El Score Board fue inicializado",$time);
     forever begin
       #5;
+      //Revisa la cantidad de transacciones del checker al scoreboard y realiza el calculo del retardo total
       if(chkr_sb_mbx.num() > 0) begin
         chkr_sb_mbx.get(transaccion_entrante);
         transaccion_entrante.print("Score Board: transacción recibida desde el checker");
@@ -30,6 +32,7 @@ class score_board  #(parameter pckg_sz = 16, parameter drvrs = 4);
         scoreboard.push_back(transaccion_entrante);
         $display("Retardo total del breteeee: %0d",  retardo_total);
       end
+      //Cuando termina de calcular el retardo realiza el reporte donde se calcula retardo promedio, ancho de banda y se muestra el reporte
       else begin
         if(test_sb_mbx.num()>0)begin
           test_sb_mbx.get(orden);
