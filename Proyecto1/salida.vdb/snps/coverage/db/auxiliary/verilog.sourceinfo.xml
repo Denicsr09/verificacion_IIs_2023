@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <!DOCTYPE cov SYSTEM "ucdb_srcinfo.dtd">
-  <srcinfo name="/mnt/vol_NFS_rh003/Est_Verif_II2023/DenisseSolorzano_II_2023/verificacion_IIs_2023/Proyecto1"  >
+  <srcinfo name="/mnt/vol_NFS_rh003/Est_Verif_II2023/CarlosQuiros_II_2023/verificacion_IIs_2023/Proyecto1"  >
     <ucapi_version  major_ver="13"  minor_ver="1"  patch_str="R-2020.12-SP2"  />
-      <fileinfo name="testbenchFinalPrevio.sv"  id="0"  timestamp="1696646659"  />
-      <fileinfo name="fifo.sv"  id="1"  timestamp="1696646659"  />
-      <fileinfo name="interface_transaction.sv"  id="2"  timestamp="1696646659"  />
-      <fileinfo name="driver.sv"  id="3"  timestamp="1696646659"  />
-      <fileinfo name="checker.sv"  id="4"  timestamp="1696646659"  />
-      <fileinfo name="score_board.sv"  id="5"  timestamp="1696650906"  />
-      <fileinfo name="agent.sv"  id="6"  timestamp="1696646659"  />
-      <fileinfo name="ambiente.sv"  id="7"  timestamp="1696646659"  />
-      <fileinfo name="test.sv"  id="8"  timestamp="1696646659"  />
-      <fileinfo name="Library.sv"  id="9"  timestamp="1696389361"  />
+      <fileinfo name="testbenchFinalPrevio.sv"  id="0"  timestamp="1696646649"  />
+      <fileinfo name="fifo.sv"  id="1"  timestamp="1696646649"  />
+      <fileinfo name="interface_transaction.sv"  id="2"  timestamp="1696646649"  />
+      <fileinfo name="driver.sv"  id="3"  timestamp="1696646649"  />
+      <fileinfo name="checker.sv"  id="4"  timestamp="1696646649"  />
+      <fileinfo name="score_board.sv"  id="5"  timestamp="1696655125"  />
+      <fileinfo name="agent.sv"  id="6"  timestamp="1696646649"  />
+      <fileinfo name="ambiente.sv"  id="7"  timestamp="1696646649"  />
+      <fileinfo name="test.sv"  id="8"  timestamp="1696646649"  />
+      <fileinfo name="Library.sv"  id="9"  timestamp="1696388311"  />
       <fileinfo name=""  id="10"  />
     </srcinfo>
