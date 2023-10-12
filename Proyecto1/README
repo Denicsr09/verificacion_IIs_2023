@@ -1,0 +1,4 @@
+En la terminal se escribe: source comando.sh
+Se pone el nombre del testbench: testbenchFinalPrevio.sv
+Se corre con el archivo: ./salida
+Se genera el archivo: Reporte.csv
