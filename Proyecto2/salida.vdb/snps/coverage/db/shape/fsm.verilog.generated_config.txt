@@ -1,6 +1,6 @@
 // Synopsys, Inc.
 // User: DenisseSolorzano_II_2023
-// Date: Sat Oct 14 21:38:45 2023
+// Date: Sat Oct 14 21:54:38 2023
 
 // ==================================================================================================
 // This config file prototype is produced from the last run using the complete list of extracted fsms.

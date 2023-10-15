@@ -46,7 +46,7 @@ module tb;
   bit [pckg_sz-1:pckg_sz-8] Nxtjp=0;
   bit [pckg_sz-9:pckg_sz-12] row=0;
   bit [pckg_sz-13:pckg_sz-16] colum=2;
-  bit [pckg_sz-17]mode=1;
+  bit mode=1;
   bit [pckg_sz-18:0] payload=1;//7
   
   
