@@ -8,7 +8,7 @@ module tb;
   
   parameter ROWS= 4;
   parameter COLUMS= 4;
-  parameter pckg_sz= 20;
+  parameter pckg_sz= 40;
   parameter fifo_depth = 4;
   parameter bdcst= {8{1'b1}};
   //parameter drvs=(ROWS*2+COLUMS*2);
@@ -44,14 +44,15 @@ module tb;
     end
   
   bit [pckg_sz-1:pckg_sz-8] Nxtjp=0;
-  bit [pckg_sz-9:pckg_sz-12] row=2;
+  bit [pckg_sz-9:pckg_sz-12] row=1;
   bit [pckg_sz-13:pckg_sz-16] colum=5;
-  bit mode=0;
-  bit [pckg_sz-18:0] payload=3'b111;//7
+  bit [pckg_sz-17]mode=1;
+  bit [pckg_sz-18:0] payload=5'b10101;//7
   
   
   initial begin
     vif_tb.reset=1;
+    vif_tb.pndng_i_in[1]=0;
     #15;
 	vif_tb.reset=0;
     #15;
@@ -60,13 +61,21 @@ module tb;
     //end
     #15;
     vif_tb.pndng_i_in[1]=1;//5to bit en 1
-    #50;
-    
+    #15;
+    vif_tb.pndng_i_in[1]=0;//5to bit en 1
+    #1000;
+    //vif_tb.pop[13]=1;
       
    
     
     
     $finish;
   end
+  
+ // initial begin
+    //#10000;
+   // $finish;
+ // end
+  
   
 endmodule
