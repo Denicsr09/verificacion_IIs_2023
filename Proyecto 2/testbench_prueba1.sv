@@ -44,8 +44,8 @@ module tb;
     end
   
   bit [pckg_sz-1:pckg_sz-8] Nxtjp=0;
-  bit [pckg_sz-9:pckg_sz-12] row=1;
-  bit [pckg_sz-13:pckg_sz-16] colum=5;
+  bit [pckg_sz-9:pckg_sz-12] row=0;
+  bit [pckg_sz-13:pckg_sz-16] colum=2;
   bit [pckg_sz-17]mode=1;
   bit [pckg_sz-18:0] payload=5'b10101;//7
   
@@ -57,21 +57,26 @@ module tb;
 	vif_tb.reset=0;
     #15;
     //for (int i=0; i<1,i++) begin
-    vif_tb.data_out_i_in[1]={Nxtjp,row,colum,mode,payload};
+    vif_tb.data_out_i_in[0]={Nxtjp,row,colum,mode,payload};
     //end
     #15;
-    vif_tb.pndng_i_in[1]=1;//5to bit en 1
+    vif_tb.pndng_i_in[0]=1;//5to bit en 1
     #15;
-    vif_tb.pndng_i_in[1]=0;//5to bit en 1
+    vif_tb.pndng_i_in[0]=0;//5to bit en 1
+    #15;
+    vif_tb.pop[2]=1;
     #1000;
-    //vif_tb.pop[13]=1;
-      
+    vif_tb.pop[2]=0;
+    #1000;
    
     
     
     $finish;
   end
-  
+  initial begin
+    $dumpfile("tb.vcd");
+    $dumpvars(0, tb);
+  end
  // initial begin
     //#10000;
    // $finish;
