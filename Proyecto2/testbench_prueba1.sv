@@ -4,6 +4,7 @@
 //`include "Library.sv"
 `include "interface.sv"
 `include "fifo_in.sv"
+`include "driver.sv"
 
 module tb;
   
@@ -20,7 +21,7 @@ module tb;
   
   mesh_gnrtr_vif #( .ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .fifo_depth(fifo_depth), .bdcst(bdcst) ) vif_tb (.clk(clk)); //Aqui instancio mi interface 
   
-  fifo_in #(.pckg_sz(pckg_sz), .deep_fifo(fifo_depth),.COLUMS(COLUMS),.ROWS(ROWS) ) fifo_in [ROWS*2+COLUMS*2];
+  driver #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .deep_fifo(fifo_depth)) driver_tb [ROWS*2+COLUMS*2];
   
   mesh_gnrtr #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .fifo_depth(fifo_depth), .bdcst(bdcst)) dut (
     
@@ -62,24 +63,28 @@ module tb;
     
     for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
       
-      fifo_in[i]=new();
-      fifo_in[i].fifo_num=i;
-      //fifo_in[i]=new(i);
-      fifo_in[i].vif=vif_tb;
-      
+      driver_tb[i]=new(i);
+      driver_tb[i].fifo_in.vif=vif_tb;
+   
     end
+    
     #15;
+    
     for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
        
       fork 
         automatic int n=i;
-        fifo_in[n].run();
+        driver_tb[n].run();
       join_none
       
     end
     #15;
-    fifo_in[0].fifo_push({Nxtjp,row,colum,mode,payload});
     
+    driver_tb[0].data_in=({Nxtjp,row,colum,mode,payload});
+    driver_tb[0].cor=1;
+    
+    #5;
+    driver_tb[0].cor=0;
     #20;
     /*
     #15;
