@@ -3,6 +3,7 @@
 //`include "fifo.sv"
 //`include "Library.sv"
 `include "interface.sv"
+`include "fifo_in.sv"
 
 module tb;
   
@@ -19,8 +20,9 @@ module tb;
   
   mesh_gnrtr_vif #( .ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .fifo_depth(fifo_depth), .bdcst(bdcst) ) vif_tb (.clk(clk)); //Aqui instancio mi interface 
   
+  fifo_in #(.pckg_sz(pckg_sz), .deep_fifo(fifo_depth),.COLUMS(COLUMS),.ROWS(ROWS) ) fifo_in [ROWS*2+COLUMS*2];
+  
   mesh_gnrtr #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .fifo_depth(fifo_depth), .bdcst(bdcst)) dut (
-    
     
     .pndng(vif_tb.pndng),
     .data_out(vif_tb.data_out),
@@ -39,7 +41,7 @@ module tb;
     end
   
    initial begin
-     $dumpfile("tb.vcd");
+     //$dumpfile("tb.vcd");
      $dumpvars(0, tb);
     end
   
@@ -52,14 +54,39 @@ module tb;
   
   initial begin
     vif_tb.reset=1;
-    vif_tb.pndng_i_in[1]=0;
+    //vif_tb.pndng_i_in[1]=0;
+    
     #15;
     vif_tb.reset=0;
     #15;
+    
+    for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
+      
+      fifo_in[i]=new();
+      fifo_in[i].fifo_num=i;
+      //fifo_in[i]=new(i);
+      fifo_in[i].vif=vif_tb;
+      
+    end
+    #15;
+    for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
+       
+      fork 
+        automatic int n=i;
+        fifo_in[n].run();
+      join_none
+      
+    end
+    #15;
+    fifo_in[0].fifo_push({Nxtjp,row,colum,mode,payload});
+    
+    #20;
+    /*
+    #15;
     //for (int i=0; i<1,i++) begin
-    $display("row %b colum %b",row,colum);
-    vif_tb.data_out_i_in[0]={Nxtjp,row,colum,mode,payload};
-    $display("data_out_i_in: %b", vif_tb.data_out_i_in[0]);
+    //$display("row %b colum %b",row,colum);
+    //vif_tb.data_out_i_in[0]={Nxtjp,row,colum,mode,payload};
+    //$display("data_out_i_in: %b", vif_tb.data_out_i_in[0]);
     //end
     #15;
     vif_tb.pndng_i_in[0]=1;//5to bit en 1
@@ -71,13 +98,13 @@ module tb;
     #1000;
     vif_tb.pop[2]=0;
     #1000;
-   
+    */
     
     
     $finish;
   end
   initial begin
-    $dumpfile("tb.vcd");
+    //$dumpfile("tb.vcd");
     $dumpvars(0, tb);
   end
  // initial begin
