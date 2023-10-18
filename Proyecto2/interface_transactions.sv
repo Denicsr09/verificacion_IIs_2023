@@ -8,21 +8,21 @@ typedef enum { lectura, escritura, reset} tipo_trans;
 /////////////////////////////////////////////////////////////////////////////////////////
 //Transacción: este objeto representa las transacciones que entran y salen de la fifo. //
 /////////////////////////////////////////////////////////////////////////////////////////
-class trans_fifo #(parameter pckg_sz = 16, parameter drvrs = 4);
+class trans_fifo #(parameter pckg_sz = 40);
   rand int retardo; // tiempo de retardo en ciclos de reloj que se debe esperar antes de ejecutar la transacción
   bit[pckg_sz-1:0] dato ; // este es el dato de la transacción
   rand bit[7:0] ID ; //ID del driver donde se va a enviar
   rand bit[pckg_sz-9:0] payload;//informacion  enviada
-  rand bit [drvrs-1:0] drvSource;//driver de donde sale el dato enviado 
+  rand bit drvSource;//driver de donde sale el dato enviado 
   int tiempo; //Representa el tiempo  de la simulación en el que se ejecutó la transacción 
   rand tipo_trans tipo; // lectura, escritura, reset;
   int max_retardo; //tiempo de retardo entre transaccion
  
   constraint const_retardo {retardo < max_retardo; retardo>0;};
-  constraint const_ID  { ID < (drvrs);ID >= 0;};//el ID mayor igual que cero y menor que numero de drivers definio 
+  //constraint const_ID  { ID < (drvrs);ID >= 0;};//el ID mayor igual que cero y menor que numero de drivers definio 
   constraint const_ID_unique{
     unique{ID};};//otra manera de hacer randc mi dato 
-  constraint const_drvSource {drvSource < (drvrs); drvSource >= 0;};//el driver de salida es del numero de drivers a los que está conectado 
+  //constraint const_drvSource {drvSource < (drvrs); drvSource >= 0;};//el driver de salida es del numero de drivers a los que está conectado 
 
   function new(int ret =0,bit[pckg_sz-1:0] dto = 0,int tmp = 0, tipo_trans tpo = lectura, int mx_rtrd = 10);
     this.retardo = ret;
@@ -78,3 +78,14 @@ endinterface
 // Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
 ///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(trans_fifo) trans_fifo_mbx;
+
+/////////////////////////////////////////////////////////////////////////
+// Definición de estructura para generar comandos hacia el agente      //
+/////////////////////////////////////////////////////////////////////////
+typedef enum {llenado_aleatorio,IDaleatorio,trans_especifica,payload_especifico,ID_especifico,broadcast} instrucciones_agente;
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
+///////////////////////////////////////////////////////////////////////////////////////
+typedef mailbox #(instrucciones_agente) comando_test_agent_mbx;
