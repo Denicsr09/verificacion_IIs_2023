@@ -11,25 +11,29 @@ typedef enum { lectura, escritura, reset} tipo_trans;
 class trans_fifo #(parameter pckg_sz = 40);
   rand int retardo; // tiempo de retardo en ciclos de reloj que se debe esperar antes de ejecutar la transacción
   bit[pckg_sz-1:0] dato ; // este es el dato de la transacción
-  rand bit[7:0] ID ; //ID del driver donde se va a enviar
-  rand bit[pckg_sz-9:0] payload;//informacion  enviada
+  rand bit [pckg_sz-18:0] payload;//informacion  enviada
+  rand bit [pckg_sz-17:pckg_sz-17] mode;
+  rand bit [pckg_sz-9 : pckg_sz-16] target;
+  bit [pckg_sz-9: pckg_sz-12] row;
+  bit [pckg_sz-13: pckg_sz-16] colum;
+  bit [pckg_sz-8 : pckg_sz-1] nxt_jump;
   rand bit drvSource;//driver de donde sale el dato enviado 
   int tiempo; //Representa el tiempo  de la simulación en el que se ejecutó la transacción 
   rand tipo_trans tipo; // lectura, escritura, reset;
   int max_retardo; //tiempo de retardo entre transaccion
  
   constraint const_retardo {retardo < max_retardo; retardo>0;};
-  //constraint const_ID  { ID < (drvrs);ID >= 0;};//el ID mayor igual que cero y menor que numero de drivers definio 
-  constraint const_ID_unique{
-    unique{ID};};//otra manera de hacer randc mi dato 
-  //constraint const_drvSource {drvSource < (drvrs); drvSource >= 0;};//el driver de salida es del numero de drivers a los que está conectado 
+  constraint const_drvSource { drvSource <= 15;};
+  constraint const_target { target inside {01,02,03,04,10,15,20,25,30,35,40,45,51,52,53,54}; };
 
-  function new(int ret =0,bit[pckg_sz-1:0] dto = 0,int tmp = 0, tipo_trans tpo = lectura, int mx_rtrd = 10);
+
+  function new(bit [pckg_sz-8 : pckg_sz-1] nxt_jump = 0,int ret =0,bit[pckg_sz-1:0] dto = 0,int tmp = 0, tipo_trans tpo = lectura, int mx_rtrd = 10);
     this.retardo = ret;
     this.dato = dto;
     this.tiempo = tmp;
     this.tipo = tpo;
     this.max_retardo = mx_rtrd;
+    this.nxt_jump = nxt_jump;
   endfunction
   
   function clean;
@@ -41,16 +45,26 @@ class trans_fifo #(parameter pckg_sz = 40);
   endfunction
   
   function concatena;
-    dato= {ID,payload};//se concatena el ID con el payload 
-    $display("fifo_if: ID: %0h payload: %0h Dato concatenado: %0h",ID,payload,dato);
-
+    row = target/10;
+    colum = target%10;
+    $display("row = %0d colum= %0d target = %d", this.row, this.colum, this.target );
+    dato= {nxt_jump,row,colum,mode,payload};//se concatena el ID con el payload 
+    $display("Dato concatenado:%b", this.dato);
+    $display("dato partes: nxt_jump=%b, row=%b, colum =%b, mode=%b, payload =%b",
+            this.nxt_jump,
+            this.row,
+            this.colum,
+            this.mode,
+            this.payload);
+    
   endfunction;
   
 
   
     
   function void print(string tag = "");
-    $display("[%g] %s Tiempo=%g Tipo=%s Retardo=%g Source= %0d dato=0x%h",$time,tag,tiempo,this.tipo,this.retardo,this.drvSource,this.dato);
+    $display("[%g] %s Tiempo=%g Tipo=%s Retardo=%g Nxt_Jump=%b Target=%0d mode=%0b payload=%b",$time,tag,tiempo,this.tipo,this.retardo, this.nxt_jump, this.target, this.mode, this.payload );
+    
   endfunction
 endclass
 

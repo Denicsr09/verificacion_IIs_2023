@@ -11,7 +11,7 @@ module agent_tb;
   
   parameter pckg_sz = 40;
   parameter deep_fifo = 8;
-  agent #(.width(pckg_sz), .depth(deep_fifo)) agente_prueba;
+  agent #(.pckg_sz(pckg_sz), .deep_fifo(deep_fifo)) agente_prueba;
   
   tipo_trans tpo_spec;
   
