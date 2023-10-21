@@ -17,13 +17,13 @@ class trans_fifo #(parameter pckg_sz = 40);
   bit [pckg_sz-9: pckg_sz-12] row;
   bit [pckg_sz-13: pckg_sz-16] colum;
   bit [pckg_sz-8 : pckg_sz-1] nxt_jump;
-  rand bit drvSource;//driver de donde sale el dato enviado 
+  rand int drvSource;//driver de donde sale el dato enviado 
   int tiempo; //Representa el tiempo  de la simulación en el que se ejecutó la transacción 
   rand tipo_trans tipo; // lectura, escritura, reset;
   int max_retardo; //tiempo de retardo entre transaccion
  
   constraint const_retardo {retardo < max_retardo; retardo>0;};
-  constraint const_drvSource { drvSource <= 15;};
+  constraint const_drvSource { 0 <= drvSource ; drvSource <= 15;};
   constraint const_target { target inside {01,02,03,04,10,15,20,25,30,35,40,45,51,52,53,54}; };
 
 
@@ -47,9 +47,9 @@ class trans_fifo #(parameter pckg_sz = 40);
   function concatena;
     row = target/10;
     colum = target%10;
-    $display("row = %0d colum= %0d target = %d", this.row, this.colum, this.target );
+    //$display("row = %0d colum= %0d target = %d", this.row, this.colum, this.target );
     dato= {nxt_jump,row,colum,mode,payload};//se concatena el ID con el payload 
-    $display("Dato concatenado:%b", this.dato);
+    //$display("Dato concatenado:%b", this.dato);
     $display("dato partes: nxt_jump=%b, row=%b, colum =%b, mode=%b, payload =%b",
             this.nxt_jump,
             this.row,
@@ -63,7 +63,7 @@ class trans_fifo #(parameter pckg_sz = 40);
   
     
   function void print(string tag = "");
-    $display("[%g] %s Tiempo=%g Tipo=%s Retardo=%g Nxt_Jump=%b Target=%0d mode=%0b payload=%b",$time,tag,tiempo,this.tipo,this.retardo, this.nxt_jump, this.target, this.mode, this.payload );
+    $display("[%g] %s Tiempo=%g Tipo=%s Retardo=%g Nxt_Jump=%b Target=%0d mode=%0b payload=%b Source = %0d",$time,tag,tiempo,this.tipo,this.retardo, this.nxt_jump, this.target, this.mode, this.payload, this.drvSource );
     
   endfunction
 endclass

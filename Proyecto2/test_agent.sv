@@ -5,20 +5,24 @@
 //`include "checker.sv"
 `include "agent.sv"
 
-module agent_tb;
+module agent_tb ;
   
   reg clk;
   
   parameter pckg_sz = 40;
   parameter deep_fifo = 8;
-  agent #(.pckg_sz(pckg_sz), .deep_fifo(deep_fifo)) agente_prueba;
+  
   
   tipo_trans tpo_spec;
   
-  trans_fifo_mbx agnt_drv_mbx_tb;
-  trans_fifo_mbx tst_agnt_mbx;
+  
+  
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_drv_mbx_tb;
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) tst_agnt_mbx;
   
   trans_fifo #(.pckg_sz(pckg_sz)) transaccion;
+  agent #(.pckg_sz(pckg_sz), .deep_fifo(deep_fifo)) agente_prueba;
+  
   
   //Comunicacion con el agente para pruebas // Lineas para simular el Test.sv------
   comando_test_agent_mbx test_agent_mbx; // Simulando que el test existe (Mailbox)
@@ -34,7 +38,7 @@ module agent_tb;
     agente_prueba.test_agent_mbx = test_agent_mbx; // MB entre el TB y el agente la
     
     //Instruccion al mailbox del agente
-    instr_agent = trans_especifica;
+    instr_agent = llenado_aleatorio;
     test_agent_mbx.put(instr_agent);
    
    
