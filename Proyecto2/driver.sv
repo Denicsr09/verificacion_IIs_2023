@@ -1,6 +1,10 @@
 class driver  #(parameter ROWS=4, parameter COLUMS=4, parameter pckg_sz = 16, parameter deep_fifo = 4);
   
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_drv_mbx; 
+  
   fifo_in #(.pckg_sz(pckg_sz), .deep_fifo(deep_fifo),.COLUMS(COLUMS),.ROWS(ROWS) ) fifo_in;
+  
+  trans_fifo #(.pckg_sz(pckg_sz)) transaccion;
   
   bit [pckg_sz - 1: 0] data_in=0;
   int drv_num;
@@ -9,14 +13,12 @@ class driver  #(parameter ROWS=4, parameter COLUMS=4, parameter pckg_sz = 16, pa
   bit [pckg_sz-13:pckg_sz-16] colum=0;
   bit mode=0;
   bit [pckg_sz-18:0] payload=0;
-  bit cor=0;
   
   function new(int drv_num);
     
     fifo_in=new();
     this.drv_num=drv_num;
     fifo_in.fifo_num=drv_num;
-    
     
   endfunction
   
@@ -27,16 +29,19 @@ class driver  #(parameter ROWS=4, parameter COLUMS=4, parameter pckg_sz = 16, pa
       join_none
       
      forever begin
-      
-       //this.data_in=({Nxtjp,row,colum,mode,payload});
-       if (cor) fifo_in.fifo_push(this.data_in);
        
-       #3;
+       agnt_drv_mbx.peek(transaccion);
+       if (transaccion.drvSource==drv_num)begin
+         
+         agnt_drv_mbx.get(transaccion);
+         $display("Transaccion RECIBIDA Source= %d dato=%d", drv_num,transaccion.dato);
+         fifo_in.fifo_push(transaccion.dato);
+       end
+       
+       #1;
      end
    endtask
  
-  
-  
   
 endclass
   

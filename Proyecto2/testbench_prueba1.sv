@@ -2,9 +2,11 @@
 `include "Router_library.sv"
 //`include "fifo.sv"
 //`include "Library.sv"
+`include "interface_transactions.sv"
 `include "interface.sv"
 `include "fifo_in.sv"
 `include "driver.sv"
+`include "agent.sv"
 
 module tb;
   
@@ -18,6 +20,19 @@ module tb;
   reg clk;
   reg reset;
 
+  tipo_trans tpo_spec;
+  
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_drv_mbx_tb;
+  
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) tst_agnt_mbx;
+  
+  comando_test_agent_mbx test_agent_mbx; // Simulando que el test existe (Mailbox)
+  instrucciones_agente instr_agent; // Aloja la instrucción que se va a enviar
+  
+  
+  trans_fifo #(.pckg_sz(pckg_sz)) transaccion;
+  
+  agent #(.pckg_sz(pckg_sz), .deep_fifo(fifo_depth)) agente_prueba;
   
   mesh_gnrtr_vif #( .ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .fifo_depth(fifo_depth), .bdcst(bdcst) ) vif_tb (.clk(clk)); //Aqui instancio mi interface 
   
@@ -36,7 +51,8 @@ module tb;
     
   );//conecto mi interface con el RTL
   
-    initial begin
+  
+    initial begin 
         clk = 0;
         forever #1 clk = ~clk;
     end
@@ -52,8 +68,25 @@ module tb;
   bit mode=1;
   bit [pckg_sz-18:0] payload=1;//7
   
+  initial begin 
+    agnt_drv_mbx_tb = new();
+    agente_prueba  = new();
+    transaccion= new();
+    test_agent_mbx = new();
+    agente_prueba.test_agent_mbx = test_agent_mbx; 
+    agente_prueba.agnt_drv_mbx = agnt_drv_mbx_tb;
+
+    fork
+      
+      agente_prueba.run();
+     
+    join_none
+    
+  end
+  
   
   initial begin
+  
     vif_tb.reset=1;
     //vif_tb.pndng_i_in[1]=0;
     
@@ -74,17 +107,14 @@ module tb;
        
       fork 
         automatic int n=i;
+        driver_tb[n].agnt_drv_mbx = agnt_drv_mbx_tb;
         driver_tb[n].run();
       join_none
       
     end
     #15;
     
-    driver_tb[0].data_in=({Nxtjp,row,colum,mode,payload});
-    driver_tb[0].cor=1;
-    
-    #5;
-    driver_tb[0].cor=0;
+    driver_tb[0].data_in=({Nxtjp,row,colum,mode,payload}); 
     #20;
     /*
     #15;
@@ -104,6 +134,12 @@ module tb;
     vif_tb.pop[2]=0;
     #1000;
     */
+    instr_agent = llenado_aleatorio;
+    test_agent_mbx.put(instr_agent);
+    #200;
+
+    
+ 
     
     
     $finish;

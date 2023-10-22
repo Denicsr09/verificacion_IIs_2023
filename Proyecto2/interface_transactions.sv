@@ -47,15 +47,13 @@ class trans_fifo #(parameter pckg_sz = 40);
   function concatena;
     row = target/10;
     colum = target%10;
-    //$display("row = %0d colum= %0d target = %d", this.row, this.colum, this.target );
     dato= {nxt_jump,row,colum,mode,payload};//se concatena el ID con el payload 
-    //$display("Dato concatenado:%b", this.dato);
-    $display("dato partes: nxt_jump=%b, row=%b, colum =%b, mode=%b, payload =%b",
+    /*$display("dato partes: nxt_jump=%b, row=%b, colum =%b, mode=%b, payload =%b",
             this.nxt_jump,
             this.row,
             this.colum,
             this.mode,
-            this.payload);
+            this.payload);*/
     
   endfunction;
   
@@ -72,7 +70,7 @@ endclass
 ////////////////////////////////////////////////////////////////
 // Interface: Esta es la interface que se conecta con la FIFO //
 ////////////////////////////////////////////////////////////////
-interface mesh_gnrtr_vif #(parameter ROWS = 4, parameter COLUMS =4, parameter pckg_sz =40, parameter fifo_depth = 4, parameter bdcst= {8{1'b1}}) (input clk);
+/*interface mesh_gnrtr_vif #(parameter ROWS = 4, parameter COLUMS =4, parameter pckg_sz =40, parameter fifo_depth = 4, parameter bdcst= {8{1'b1}}) (input clk);
   
   logic pndng[ROWS*2+COLUMS*2];
   logic [pckg_sz-1:0] data_out[ROWS*2+COLUMS*2];
@@ -85,7 +83,7 @@ interface mesh_gnrtr_vif #(parameter ROWS = 4, parameter COLUMS =4, parameter pc
 
 endinterface
 
-
+*/
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -103,3 +101,4 @@ typedef enum {llenado_aleatorio,IDaleatorio,trans_especifica,payload_especifico,
 // Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
 ///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(instrucciones_agente) comando_test_agent_mbx;
+

@@ -1,7 +1,7 @@
 class agent #(parameter pckg_sz = 40, parameter deep_fifo = 8);
-  trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_drv_mbx; // Mailbox del agente al driver
-  comando_test_agent_mbx test_agent_mbx; // Mailbox del test al agente
-  int num_transacciones;                 // Número de transacciones para las funciones del agente
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_drv_mbx; 
+  comando_test_agent_mbx test_agent_mbx; 
+  int num_transacciones;             
   int max_retardo; 
   int ret_spec;
   tipo_trans tpo_spec; 
@@ -36,7 +36,7 @@ class agent #(parameter pckg_sz = 40, parameter deep_fifo = 8);
                 agnt_drv_mbx.put(transaccion);
               end
               else begin
-                $display("Iguales target = %0d drvSource = %0d",transaccion.target, terminales[transaccion.drvSource]);
+                $display("No se puede realizar, target = %0d drvSource = %0d",transaccion.target, terminales[transaccion.drvSource]);
                 i=i-1;//como no se pudo realizar, no cuenta como un a transaccion
               end
               
