@@ -38,7 +38,7 @@ module agent_tb ;
     agente_prueba.test_agent_mbx = test_agent_mbx; // MB entre el TB y el agente la
     
     //Instruccion al mailbox del agente
-    instr_agent = llenado_aleatorio;
+    instr_agent = intersec_data_espec;
     test_agent_mbx.put(instr_agent);
    
    
