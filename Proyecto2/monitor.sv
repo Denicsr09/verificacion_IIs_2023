@@ -27,11 +27,11 @@ class monitor #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, par
     forever begin
       @(posedge vif.clk);
       
-      //$display("Señal de pndng y dato, pndng=%d dato de salida= %d",this.vif.pndng[mnr_num],this.vif.data_out[mnr_num]);
-     
+      $display("Señal de pndng y dato, pndng=%d dato de salida= %d",this.vif.pndng[mnr_num],this.vif.data_out[mnr_num]);
+   
       
       if(this.vif.pndng[this.mnr_num]) begin
-        
+   
         transaccion = new(); 
         transaccion.dato=this.vif.data_out[mnr_num];
         mnr_ckr_mbx.put(transaccion);

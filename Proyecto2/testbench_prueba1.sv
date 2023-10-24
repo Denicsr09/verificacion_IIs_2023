@@ -111,7 +111,13 @@ module tb;
   end
   
   initial begin
- 
+    
+    
+    vif_tb.reset=1;
+    
+    #50;
+    vif_tb.reset=0;
+    #15;
     for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
       
       driver_tb[i]=new(i);
@@ -135,16 +141,12 @@ module tb;
       
     end
     
-    #15;
-    vif_tb.reset=1;
     
-  	#150;
-    vif_tb.reset=0;
     #15;
     instr_agent = llenado_aleatorio;
     test_agent_mbx.put(instr_agent);
-   
-    #2000;
+    #15;
+    //#2000;
     
     //$finish;
   end
