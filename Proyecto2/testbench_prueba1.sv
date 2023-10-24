@@ -117,7 +117,7 @@ module tb;
     
     #50;
     vif_tb.reset=0;
-    #15;
+    
     for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
       
       driver_tb[i]=new(i);
