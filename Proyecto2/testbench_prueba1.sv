@@ -2,7 +2,13 @@
 `include "Router_library.sv"
 //`include "fifo.sv"
 //`include "Library.sv"
+`include "interface_transactions.sv"
 `include "interface.sv"
+`include "fifo_in.sv"
+`include "driver.sv"
+`include "agent.sv"
+`include "monitor.sv"
+`include "checker.sv"
 
 module tb;
   
@@ -16,11 +22,28 @@ module tb;
   reg clk;
   reg reset;
 
+  tipo_trans tpo_spec;
+  
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_drv_mbx_tb;
+  
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) tst_agnt_mbx;
+  
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) mnr_ckr_mbx;
+  
+  comando_test_agent_mbx test_agent_mbx; // Simulando que el test existe (Mailbox)
+  instrucciones_agente instr_agent; // Aloja la instrucción que se va a enviar
+  
+  trans_fifo #(.pckg_sz(pckg_sz)) transaccion;
+  
+  agent #(.pckg_sz(pckg_sz), .deep_fifo(fifo_depth)) agente_prueba;
   
   mesh_gnrtr_vif #( .ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .fifo_depth(fifo_depth), .bdcst(bdcst) ) vif_tb (.clk(clk)); //Aqui instancio mi interface 
   
+  driver #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .deep_fifo(fifo_depth)) driver_tb [ROWS*2+COLUMS*2];
+  
+  monitor #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .deep_fifo(fifo_depth)) monitor_tb [ROWS*2+COLUMS*2];
+  
   mesh_gnrtr #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .fifo_depth(fifo_depth), .bdcst(bdcst)) dut (
-    
     
     .pndng(vif_tb.pndng),
     .data_out(vif_tb.data_out),
@@ -33,54 +56,90 @@ module tb;
     
   );//conecto mi interface con el RTL
   
-    initial begin
+  
+    initial begin 
         clk = 0;
         forever #1 clk = ~clk;
     end
   
    initial begin
-     $dumpfile("tb.vcd");
+     //$dumpfile("tb.vcd");
      $dumpvars(0, tb);
     end
   
   bit [pckg_sz-1:pckg_sz-8] Nxtjp=0;
-  bit [pckg_sz-9:pckg_sz-12] row=0;
-  bit [pckg_sz-13:pckg_sz-16] colum=2;
-  bit [pckg_sz-17]mode=1;
-  bit [pckg_sz-18:0] payload=5'b10101;//7
+  bit [pckg_sz-9:pckg_sz-12] row=2;
+  bit [pckg_sz-13:pckg_sz-16] colum=0;
+  bit mode=1;
+  bit [pckg_sz-18:0] payload=1;//7
   
+  initial begin 
+    agnt_drv_mbx_tb = new();
+    agente_prueba  = new();
+    transaccion= new();
+    test_agent_mbx = new();
+    mnr_ckr_mbx=new();
+    agente_prueba.test_agent_mbx = test_agent_mbx; 
+    agente_prueba.agnt_drv_mbx = agnt_drv_mbx_tb;
+
+    fork
+      
+      agente_prueba.run();
+     
+    join_none
+    
+  end
   
   initial begin
+ 
+    for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
+      
+      driver_tb[i]=new(i);
+      monitor_tb[i]=new(i);
+      driver_tb[i].fifo_in.vif=vif_tb;
+      monitor_tb[i].vif=vif_tb;
+      
+    end
+    
+    #15;
+  
+    for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
+       
+      fork 
+        automatic int n=i;
+        driver_tb[n].agnt_drv_mbx = agnt_drv_mbx_tb;
+        monitor_tb[n].mnr_ckr_mbx=mnr_ckr_mbx;
+        driver_tb[n].run();
+        monitor_tb[n].run();
+      join_none
+      
+    end
+    
+    #15;
     vif_tb.reset=1;
-    vif_tb.pndng_i_in[1]=0;
+    
+  	#150;
+    vif_tb.reset=0;
     #15;
-	vif_tb.reset=0;
-    #15;
-    //for (int i=0; i<1,i++) begin
-    vif_tb.data_out_i_in[0]={Nxtjp,row,colum,mode,payload};
-    //end
-    #15;
-    vif_tb.pndng_i_in[0]=1;//5to bit en 1
-    #15;
-    vif_tb.pndng_i_in[0]=0;//5to bit en 1
-    #15;
-    vif_tb.pop[2]=1;
-    #1000;
-    vif_tb.pop[2]=0;
-    #1000;
+    instr_agent = llenado_aleatorio;
+    test_agent_mbx.put(instr_agent);
    
+    #2000;
     
-    
+    //$finish;
+  end
+  
+  initial begin
+    forever begin
+      
+      mnr_ckr_mbx.get(transaccion);
+      $display("Dato tomado desde el monitor,  dato=%d",transaccion.dato);
+      #1;
+    end 
+  end 
+  initial begin
+    #5000;
     $finish;
   end
-  initial begin
-    $dumpfile("tb.vcd");
-    $dumpvars(0, tb);
-  end
- // initial begin
-    //#10000;
-   // $finish;
- // end
-  
   
 endmodule
