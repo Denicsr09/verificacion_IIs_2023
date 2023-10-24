@@ -47,30 +47,39 @@ class trans_fifo #(parameter pckg_sz = 40);
   function concatena;
     row = target/10;
     colum = target%10;
+    //$display("row = %0d colum= %0d target = %d", this.row, this.colum, this.target );
     dato= {nxt_jump,row,colum,mode,payload};//se concatena el ID con el payload 
-    /*$display("dato partes: nxt_jump=%b, row=%b, colum =%b, mode=%b, payload =%b",
+    //$display("Dato concatenado:%b", this.dato);
+    $display("dato partes: nxt_jump=%h, row=%d, colum =%d, mode=%b, payload =%b",
             this.nxt_jump,
             this.row,
             this.colum,
             this.mode,
-            this.payload);*/
-    
+            this.payload);
   endfunction;
   
 
   
     
   function void print(string tag = "");
-    $display("[%g] %s Tiempo=%g Tipo=%s Retardo=%g Nxt_Jump=%b Target=%0d mode=%0b payload=%b Source = %0d",$time,tag,tiempo,this.tipo,this.retardo, this.nxt_jump, this.target, this.mode, this.payload, this.drvSource );
+    $display("[%g] %s Tiempo=%g Tipo=%s Retardo=%g Nxt_Jump=%h Target=%0d mode=%0b payload=%h Source = %0d",$time,tag,tiempo,this.tipo,this.retardo, this.nxt_jump, this.target, this.mode, this.payload, this.drvSource );
     
   endfunction
 endclass
 
 
+class trans_lista;
+  
+  trans_fifo list_sb[];
+  
+endclass
+
 ////////////////////////////////////////////////////////////////
+
 // Interface: Esta es la interface que se conecta con la FIFO //
 ////////////////////////////////////////////////////////////////
-/*interface mesh_gnrtr_vif #(parameter ROWS = 4, parameter COLUMS =4, parameter pckg_sz =40, parameter fifo_depth = 4, parameter bdcst= {8{1'b1}}) (input clk);
+/*
+interface mesh_gnrtr_vif #(parameter ROWS = 4, parameter COLUMS =4, parameter pckg_sz =40, parameter fifo_depth = 4, parameter bdcst= {8{1'b1}}) (input clk);
   
   logic pndng[ROWS*2+COLUMS*2];
   logic [pckg_sz-1:0] data_out[ROWS*2+COLUMS*2];
@@ -91,14 +100,15 @@ endinterface
 ///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(trans_fifo) trans_fifo_mbx;
 
+typedef mailbox #(trans_lista) trans_lista_mbx;
+
 /////////////////////////////////////////////////////////////////////////
 // Definición de estructura para generar comandos hacia el agente      //
 /////////////////////////////////////////////////////////////////////////
-typedef enum {llenado_aleatorio,IDaleatorio,trans_especifica,payload_especifico,ID_especifico,broadcast} instrucciones_agente;
+typedef enum {llenado_aleatorio,trans_filas,trans_colum,intersec_data_espec,intersec_data,envio_especfico} instrucciones_agente;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
 ///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(instrucciones_agente) comando_test_agent_mbx;
-
