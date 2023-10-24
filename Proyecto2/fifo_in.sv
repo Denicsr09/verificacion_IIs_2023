@@ -19,11 +19,12 @@ class fifo_in #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, par
 	endfunction
 
   task run();
-    
+   
     this.vif.pndng_i_in[fifo_num]=0;
     this.vif.data_out_i_in[fifo_num]=0;
+    
     forever begin
-      
+      @(posedge vif.clk);
       if(this.cola.size() == 0) begin
         this.vif.pndng_i_in[fifo_num]=0;
       end
@@ -33,7 +34,8 @@ class fifo_in #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, par
         $display("salió un dato");
         this.vif.data_out_i_in[fifo_num]=this.cola.pop_front();
       end
-      #5;
+      //#5;
+      
     end
     
   endtask

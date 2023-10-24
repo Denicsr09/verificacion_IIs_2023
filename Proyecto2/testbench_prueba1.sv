@@ -8,6 +8,7 @@
 `include "driver.sv"
 `include "agent.sv"
 `include "monitor.sv"
+`include "checker.sv"
 
 module tb;
   
@@ -67,8 +68,8 @@ module tb;
     end
   
   bit [pckg_sz-1:pckg_sz-8] Nxtjp=0;
-  bit [pckg_sz-9:pckg_sz-12] row=0;
-  bit [pckg_sz-13:pckg_sz-16] colum=2;
+  bit [pckg_sz-9:pckg_sz-12] row=2;
+  bit [pckg_sz-13:pckg_sz-16] colum=0;
   bit mode=1;
   bit [pckg_sz-18:0] payload=1;//7
   
@@ -89,16 +90,8 @@ module tb;
     
   end
   
-  
   initial begin
-  
-    vif_tb.reset=1;
-   
-    
-    #50;
-    vif_tb.reset=0;
-    #15;
-    
+ 
     for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
       
       driver_tb[i]=new(i);
@@ -109,7 +102,7 @@ module tb;
     end
     
     #15;
-    
+  
     for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
        
       fork 
@@ -121,16 +114,17 @@ module tb;
       join_none
       
     end
-    #15;
     
+    #15;
+    vif_tb.reset=1;
+    
+  	#150;
+    vif_tb.reset=0;
+    #15;
     instr_agent = llenado_aleatorio;
     test_agent_mbx.put(instr_agent);
    
     #2000;
-
-    
- 
-    
     
     //$finish;
   end

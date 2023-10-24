@@ -22,16 +22,22 @@ class monitor #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, par
  
   task run();
     
-    this.vif.pop[mnr_num]=0;
+    this.vif.pop[this.mnr_num]=0;
     
     forever begin
       @(posedge vif.clk);
-      $display("Señal de pndng y dato, pndng=%d dato de salida= %d",this.vif.pndng[mnr_num],this.vif.data_out[mnr_num]);
+      
+      //$display("Señal de pndng y dato, pndng=%d dato de salida= %d",this.vif.pndng[mnr_num],this.vif.data_out[mnr_num]);
+     
+      
       if(this.vif.pndng[this.mnr_num]) begin
-        transaccion = new; 
+        
+        transaccion = new(); 
         transaccion.dato=this.vif.data_out[mnr_num];
         mnr_ckr_mbx.put(transaccion);
-        $display("Transaccion enviada desde monitor, Source= %d dato=%d", mnr_num,transaccion.dato);
+        
+        $display("Transaccion enviada desde monitor,Source= %d dato=%b", mnr_num,transaccion.dato);
+        
         this.vif.pop[mnr_num]=1;
       end
       else begin
