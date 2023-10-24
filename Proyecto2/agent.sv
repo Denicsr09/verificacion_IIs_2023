@@ -1,12 +1,8 @@
 class agent #(parameter pckg_sz = 40, parameter deep_fifo = 8);
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_drv_mbx; 
-<<<<<<< HEAD
   
   comando_test_agent_mbx test_agent_mbx; 
   
-=======
-  comando_test_agent_mbx test_agent_mbx; 
->>>>>>> bdc0c24b2f074447401b29904cb940c6caafb4eb
   int num_transacciones;             
   int max_retardo; 
   int ret_spec;
@@ -44,10 +40,6 @@ class agent #(parameter pckg_sz = 40, parameter deep_fifo = 8);
                 agnt_drv_mbx.put(transaccion);
               end
               else begin
-<<<<<<< HEAD
-=======
-                $display("No se puede realizar, target = %0d drvSource = %0d",transaccion.target, terminales[transaccion.drvSource]);
->>>>>>> bdc0c24b2f074447401b29904cb940c6caafb4eb
                 i=i-1;//como no se pudo realizar, no cuenta como un a transaccion
               end
             end
@@ -147,8 +139,20 @@ class agent #(parameter pckg_sz = 40, parameter deep_fifo = 8);
               l=l+1;
             end
           end
-          
-          envio_masivo: begin
+          envio_especfico: begin
+            for(int i = 1; i < 16;i++) begin
+              transaccion = new;
+              transaccion.max_retardo = max_retardo;
+              transaccion.randomize();
+              transaccion.drvSource = i;
+              transaccion.target = 01;
+              transaccion.concatena();
+              tpo_spec = escritura;
+              transaccion.tipo = tpo_spec;
+              transaccion.print("Agente: transacción creada");
+              agnt_drv_mbx.put(transaccion);
+              
+            end
             
           end
           

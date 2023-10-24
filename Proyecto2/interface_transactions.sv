@@ -47,23 +47,15 @@ class trans_fifo #(parameter pckg_sz = 40);
   function concatena;
     row = target/10;
     colum = target%10;
+    //$display("row = %0d colum= %0d target = %d", this.row, this.colum, this.target );
     dato= {nxt_jump,row,colum,mode,payload};//se concatena el ID con el payload 
-<<<<<<< HEAD
     //$display("Dato concatenado:%b", this.dato);
     $display("dato partes: nxt_jump=%h, row=%d, colum =%d, mode=%b, payload =%b",
-=======
-    /*$display("dato partes: nxt_jump=%b, row=%b, colum =%b, mode=%b, payload =%b",
->>>>>>> bdc0c24b2f074447401b29904cb940c6caafb4eb
             this.nxt_jump,
             this.row,
             this.colum,
             this.mode,
-<<<<<<< HEAD
             this.payload);
-=======
-            this.payload);*/
-    
->>>>>>> bdc0c24b2f074447401b29904cb940c6caafb4eb
   endfunction;
   
 
@@ -79,12 +71,8 @@ endclass
 ////////////////////////////////////////////////////////////////
 // Interface: Esta es la interface que se conecta con la FIFO //
 ////////////////////////////////////////////////////////////////
-<<<<<<< HEAD
 /*
 interface mesh_gnrtr_vif #(parameter ROWS = 4, parameter COLUMS =4, parameter pckg_sz =40, parameter fifo_depth = 4, parameter bdcst= {8{1'b1}}) (input clk);
-=======
-/*interface mesh_gnrtr_vif #(parameter ROWS = 4, parameter COLUMS =4, parameter pckg_sz =40, parameter fifo_depth = 4, parameter bdcst= {8{1'b1}}) (input clk);
->>>>>>> bdc0c24b2f074447401b29904cb940c6caafb4eb
   
   logic pndng[ROWS*2+COLUMS*2];
   logic [pckg_sz-1:0] data_out[ROWS*2+COLUMS*2];
@@ -108,11 +96,10 @@ typedef mailbox #(trans_fifo) trans_fifo_mbx;
 /////////////////////////////////////////////////////////////////////////
 // Definición de estructura para generar comandos hacia el agente      //
 /////////////////////////////////////////////////////////////////////////
-typedef enum {llenado_aleatorio,trans_filas,trans_colum,intersec_data_espec,intersec_data,envio_masivo,envio_especfico} instrucciones_agente;
+typedef enum {llenado_aleatorio,trans_filas,trans_colum,intersec_data_espec,intersec_data,envio_especfico} instrucciones_agente;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
 ///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(instrucciones_agente) comando_test_agent_mbx;
-
