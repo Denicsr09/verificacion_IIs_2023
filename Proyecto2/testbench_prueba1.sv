@@ -164,7 +164,7 @@ module tb;
   
   
   initial begin
-    #5000;
+    #2000;
     check_tb.lista();
     sb_tb.lista();
     check_tb.run_sb();
