@@ -123,7 +123,7 @@ module tb;
       
     end
     
-    #15;
+    //#15;
   
     for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
        
@@ -137,12 +137,13 @@ module tb;
       
     end
     
+    vif_tb.reset=1;
+    
     
     #15;
     instr_agent = llenado_aleatorio;
     test_agent_mbx.put(instr_agent);
-    #15;
-    vif_tb.reset=1;
+    //#15;
     
     #50;
     vif_tb.reset=0;
