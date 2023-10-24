@@ -1,0 +1,282 @@
+Command: /mnt/vol_NFS_rh003/Est_Verif_II2023/DenisseSolorzano_II_2023/verificacion_IIs_2023/Proyecto2/salida -sml=verdi +UVM_VERDI_TRACE=UVM_AWARE +fsdb+gate=off -ucli2Proc -ucli -l /mnt/vol_NFS_rh003/Est_Verif_II2023/DenisseSolorzano_II_2023/verificacion_IIs_2023/Proyecto2/verdiLog/sim.log
+Warning : License for product VCSRuntime_Net(725) will expire within 1 days, on: 14-oct-2023.
+If you would like to temporarily disable this message, set 
+ the VCS_LIC_EXPIRE_WARNING environment variable to the number of days
+before expiration that you want this message to start (the minimum is 0).
+Chronologic VCS simulator copyright 1991-2020
+Contains Synopsys proprietary information.
+Compiler version R-2020.12-SP2_Full64; Runtime version R-2020.12-SP2_Full64;  Oct 14 21:55 2023
+
+ucli% synUtils::getArch
+linux64
+ucli% loaddl -simv /mnt/vol_NFS_rh003/tools/verdi/R-2020.12-SP2/share/PLI/VCS/LINUXAMD64/libnovas.so LoadFSDBDumpCmd;LoadFSDBDumpCmd
+LoadFSDBDumpCmd success
+ucli% config ckptfsdbcheck off;config endofsim noexit;config onfail {enable all};config followactivescope on;catch {setUcliVerdiConnected};set watch::resultTagsForVerdiBP {<ucli_break_bp_status_begin> <ucli_break_bp_status_end>};set ucliCore::support_restore_through_stask_in_verdi 1;cbug::config pretty_print auto;fsdbDumpfile {/mnt/vol_NFS_rh003/Est_Verif_II2023/DenisseSolorzano_II_2023/verificacion_IIs_2023/Proyecto2/inter.fsdb} ;fsdbDumpflush ; 
+*Verdi* Loading libsscore_vcs202012.so
+FSDB Dumper for VCS, Release Verdi_R-2020.12-SP2, Linux x86_64/64bit, 05/23/2021
+(C) 1996 - 2021 by Synopsys, Inc.
+*Verdi* : Create FSDB file '/mnt/vol_NFS_rh003/Est_Verif_II2023/DenisseSolorzano_II_2023/verificacion_IIs_2023/Proyecto2/inter.fsdb'
+*Verdi* : Flush all FSDB Files at 0 ps.
+
+ucli% synEnv::hasFataled
+0
+ucli% ucliCore::getToolPID
+1497850
+ucli% sps_interactive
+*Verdi* : Enable RPC Server(1497850)
+
+ucli% ucliCore::getToolPID
+1497850
+ucli% ucliCore::getToolPID
+1497850
+ucli% if {[catch {ucliCore::setFocus tool}]} {}
+
+ucli% puts $ucliCore::nativeUcliMode
+0
+
+ucli% ucliCore::getToolTopPID
+1497850
+ucli% pid
+1497868
+ucli% synUtils::sendTool -active {_icl_createSharedMemory /tmp/vcs_dve_general.DenisseSolorzano_II_2023.1497850 }
+
+ucli% if { [info vars watch::vcbp_str_len_limit_of_get_value] != ""} {set watch::vcbp_str_len_limit_of_get_value 1024}
+1024
+ucli% info command stateVerdiChangeCB
+
+ucli% proc stateVerdiChangeCB args { if {$ucliGUI::state eq "terminated"} {puts "\n<VERDI_Terminated>\n";catch {setVerdiSimTerminated}}}
+
+ucli% trace variable ucliGUI::state wu stateVerdiChangeCB
+
+ucli% if {[catch {rename synopsys::restore verdiHack::restore} ]} {puts "0"}
+
+ucli% proc synopsys::restore {args} { verdiHack::restore $args; puts "\n<VERDI_RESTORE>\n"}
+
+ucli% if {[catch {rename quit verdiHack::quit} ]} {puts "0"}
+
+ucli% proc quit {args} { if {[string length $args] == 0} { verdiHack::quit; } elseif {([string equal "-h" $args] == 1)||([string equal "-he" $args] == 1)||([string equal "-hel" $args] == 1)||([string equal "-help" $args] == 1)} { puts "\n quit           # Exit the simulation.\n \[-noprompt\]        (Exit the simulation and Verdi.)\n"} elseif {([string equal "-n" $args] == 1)||([string equal "-no" $args] == 1)||([string equal "-nop" $args] == 1)||([string equal "-nopr" $args] == 1)||([string equal "-nopro" $args] == 1)||([string equal "-noprom" $args] == 1)||([string equal "-nopromp" $args] == 1)||([string equal "-noprompt" $args] == 1)} { puts "\nVERDI_EXIT_N\n" } else { verdiHack::quit $args; } }
+
+ucli% if {[catch {rename exit verdiHack::exit} ]} {puts "0"}
+
+ucli% proc exit {args} { if {[string length $args] == 0} { verdiHack::exit; } elseif {([string equal "-h" $args] == 1)||([string equal "-he" $args] == 1)||([string equal "-hel" $args] == 1)||([string equal "-help" $args] == 1)} { puts "\n exit           # Exit the simulation.\n \[-noprompt\]        (Exit the simulation and Verdi.)\n"} elseif {([string equal "-n" $args] == 1)||([string equal "-no" $args] == 1)||([string equal "-nop" $args] == 1)||([string equal "-nopr" $args] == 1)||([string equal "-nopro" $args] == 1)||([string equal "-noprom" $args] == 1)||([string equal "-nopromp" $args] == 1)||([string equal "-noprompt" $args] == 1)} { puts "\nVERDI_EXIT_N\n" } else { verdiHack::exit $args; } }
+
+ucli% proc checkpoint::beforeRecreate {} { sps_interactive }
+
+ucli% if {[catch {ucliCore::setFocus tool}]} {}
+
+ucli% save::getUserdefinedProcs
+::stateVerdiChangeCB ::LoadFSDBDumpCmd
+ucli% info procs
+ipi_get_str fsdbDumpMDAByFile fsdbDumpMDA echo fsdbDumpMemNow fsdbAutoSwitchDumpfile unknown sps_interactive auto_import stat fsdbDumpfile setenv auto_execok pkg_mkIndex stateVerdiChangeCB fsdbDumpSingle proc_body ipi_begin fsdbDumpoff getenv fsdbDumplimit fsdbDumpPattern ipi_handle ipi_get_prop fsdbDumpvarsByFile fsdbDumpMDAInScope lminus ipi_sim_get ls auto_load_index proc_args fsdbAddRuntimeSignal fsdbDumpSC print_message_info ridbDump fsdbDumpSVAoff fsdbSuppress fsdbDumpvars help fsdbDumpMDAOnChange ipi_control auto_qualify fsdbDumpMem tclPkgUnknown printenv ipi_handle_by_name helpdoc fsdbDumpMemInScope fsdbDumpFinish is_true fsdbDumpon sh fsdbQueryInfo LoadFSDBDumpCmd fsdbDumpPSL fsdbDumpSVA ipi_end wrapperSpecmanSn fsdbDumpSVAon fsdbDumpClassObjectByFile is_false auto_load fsdbDumpPSLon ipi_get_int64 fsdbSubstituteHier ipi_get_value ipi_iterate exit fsdbDumpMemInFile tclLog fsdbDumpflush get_unix_variable mem_debug ipi_scan fsdbDumpPSLoff fsdbDumpClassObject fsdbDumpvarsToFile set_unix_variable bgerror fsdbDumpStrength clock add_group fsdbSwitchDumpfile source add_wave ipi_set_prop unsetenv fsdbDumpvarsES readline fsdbDisplay ipi_handle_free set_group ipi_get quit define_proc_attributes tclPkgSetup fsdbDumpMDANow ipi_init_play_tcl fsdbDumpIO
+ucli% set ucliCore::resultTagsForVerdi [list <?special_verdi_begin?> <?special_verdi_end?>]
+<?special_verdi_begin?> <?special_verdi_end?>
+ucli% if {[catch {ucliCore::setFocus tool}]} {}
+
+ucli% fsdbDumpflush 
+*Verdi* : Flush all FSDB Files at 0 ps.
+
+ucli% senv
+activeDomain: Verilog
+activeFile: fifo.sv
+activeFrame: 
+activeLine: 328
+activeScope: fifo_ltch
+activeThread: 
+endCol: 0
+file: fifo.sv
+frame: 
+fsdbFilename: 
+hasTB: 0
+inputFilename: 
+keyFilename: ucli.key
+line: 328
+logFilename: /mnt/vol_NFS_rh003/Est_Verif_II2023/DenisseSolorzano_II_2023/verificacion_IIs_2023/Proyecto2/verdiLog/sim.log
+macroIndex: -1
+macroOffset: -1
+pid: 1497850
+scope: fifo_ltch
+startCol: 0
+state: stopped
+thread: 
+time: 0
+timePrecision: 1 ps
+vcdFilename: 
+vpdFilename:
+ucli% synUtils::resolveSourceFilename fifo.sv
+fifo.sv
+ucli% puts $::ucliCore::cbug_active
+0
+
+ucli% if {[catch {ucliCore::setFocus tool}]} {}
+
+ucli% checkpoint -list -all
+There are no checkpoints present.
+ucli% stop
+No stop points are set
+ucli% if {[catch {ucliCore::setFocus tool}]} {}
+
+ucli% fsdbDumpvars 0 "tb.dut._rw_\[1\]._clm_\[1\].rtr"  +all +trace_process;fsdbDumpflush 
+*Verdi* : Begin traversing the scope (tb.dut._rw_[1]._clm_[1].rtr), layer (0).
+*Verdi* : Enable +trace_process and +all dumping.
+*Verdi* : End of traversing.
+*Verdi* : Flush all FSDB Files at 0 ps.
+
+ucli% if {[catch {ucliCore::setFocus tool}]} {}
+
+ucli% run
+<slp!&*()_+>
+row 0000 colum 0010
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: testbench_prueba1.sv<sls!&*()_+>line: 60<sls!&*()_+>time: 30000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+data_out_i_in: 0000000000000010100000000000000000000001
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: testbench_prueba1.sv<sls!&*()_+>line: 62<sls!&*()_+>time: 30000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+ntrfs: Message received  in terminal: 0 router ID: 1 1 at time 49
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 122<sls!&*()_+>time: 49000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+trgt_r: 0
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 123<sls!&*()_+>time: 49000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+trgt_c: 2
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 124<sls!&*()_+>time: 49000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+mode: 1
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 125<sls!&*()_+>time: 49000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+src: 0
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 126<sls!&*()_+>time: 49000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+id: 0
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 127<sls!&*()_+>time: 49000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+pyld: 01
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 128<sls!&*()_+>time: 49000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+ntrfs: Message received  in terminal: 3 router ID: 1 2 at time 65
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 122<sls!&*()_+>time: 65000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+trgt_r: 0
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 123<sls!&*()_+>time: 65000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+trgt_c: 2
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 124<sls!&*()_+>time: 65000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+mode: 1
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 125<sls!&*()_+>time: 65000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+src: 0
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 126<sls!&*()_+>time: 65000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+id: 0
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 127<sls!&*()_+>time: 65000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+pyld: 01
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 128<sls!&*()_+>time: 65000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+ntrfs: Message send in terminal: 1 router ID: 1 1 at time 65
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 113<sls!&*()_+>time: 65000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+trgt_r: 0
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 114<sls!&*()_+>time: 65000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+trgt_c: 2
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 115<sls!&*()_+>time: 65000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+mode: 1
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 116<sls!&*()_+>time: 65000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+src: 0
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 117<sls!&*()_+>time: 65000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+id: 0
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 118<sls!&*()_+>time: 65000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+pyld: 01
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 119<sls!&*()_+>time: 65000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+ntrfs: Message send in terminal: 0 router ID: 1 3 at time 75
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 113<sls!&*()_+>time: 75000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+trgt_r: 0
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 114<sls!&*()_+>time: 75000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+trgt_c: 0
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 115<sls!&*()_+>time: 75000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+mode: 0
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 116<sls!&*()_+>time: 75000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+src: 0
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 117<sls!&*()_+>time: 75000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+id: 0
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 118<sls!&*()_+>time: 75000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+<slp!&*()_+>
+pyld: 00
+<slb!&*()_+>---<sls!&*()_+>loc: -1<sls!&*()_+>src: Router_library.sv<sls!&*()_+>line: 119<sls!&*()_+>time: 75000 ps<sls!&*()_+>length: 0<sls!&*()_+>...<sls!&*()_+><sle!&*()_+>
+$finish called from file "testbench_prueba1.sv", line 77.
+$finish at simulation time              2075000
+Simulation complete, time is 2075000 ps.
+testbench_prueba1.sv, 77 :     $finish;
+
+ucli% synEnv::hasFataled
+0
+ucli% ucliCore::getToolPID
+1497850
+ucli% save::getUserdefinedProcs
+::stateVerdiChangeCB ::LoadFSDBDumpCmd
+ucli% if {[catch {ucliCore::setFocus tool}]} {}
+
+ucli% fsdbDumpflush 
+*Verdi* : Flush all FSDB Files at 2,075,000 ps.
+
+ucli% senv
+activeDomain: Verilog
+activeFile: testbench_prueba1.sv
+activeFrame: 
+activeLine: 77
+activeScope: tb
+activeThread: 
+endCol: 0
+file: testbench_prueba1.sv
+frame: 
+fsdbFilename: 
+hasTB: 0
+inputFilename: 
+keyFilename: ucli.key
+line: 77
+logFilename: /mnt/vol_NFS_rh003/Est_Verif_II2023/DenisseSolorzano_II_2023/verificacion_IIs_2023/Proyecto2/verdiLog/sim.log
+macroIndex: -1
+macroOffset: -1
+pid: 1497850
+scope: tb
+startCol: 0
+state: stopped
+thread: 
+time: 2075000
+timePrecision: 1 ps
+vcdFilename: 
+vpdFilename:
+ucli% synUtils::resolveSourceFilename testbench_prueba1.sv
+testbench_prueba1.sv
+ucli% puts $::ucliCore::cbug_active
+0
+
+ucli% if {[catch {ucliCore::setFocus tool}]} {}
+
+ucli% checkpoint -list -all
+There are no checkpoints present.
+ucli% if {[catch {ucliCore::setFocus tool}]} {}
+
+ucli% stop
+No stop points are set
+ucli% if {[catch {ucliCore::setFocus tool}]} {}
+
+ucli% finish; quit
+           V C S   S i m u l a t i o n   R e p o r t 
+Time: 2075000 ps
+CPU Time:      0.260 seconds;       Data structure size:   3.2Mb
+Sat Oct 14 21:57:34 2023
+
+<VERDI_Terminated>
+
