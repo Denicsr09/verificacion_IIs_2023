@@ -113,10 +113,6 @@ module tb;
   initial begin
     
     
-    vif_tb.reset=1;
-    
-    #50;
-    vif_tb.reset=0;
     
     for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
       
@@ -146,6 +142,11 @@ module tb;
     instr_agent = llenado_aleatorio;
     test_agent_mbx.put(instr_agent);
     #15;
+    vif_tb.reset=1;
+    
+    #50;
+    vif_tb.reset=0;
+    
     //#2000;
     
     //$finish;
