@@ -35,7 +35,7 @@ class ambiente  #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, p
     //Conexiones Fifos, driver y Monitor
     //checker
     //scoreboard
-    agente_inst.vif =vif_tb;
+    agente_inst.vif =vif;
     agente_inst.agnt_drv_mbx = agnt_drv_mbx;
     agente_inst.test_agent_mbx = test_agnt_mbx;
     agente_inst.agnt_sb_mbx = agnt_sb_mbx;
@@ -44,7 +44,7 @@ class ambiente  #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, p
   virtual task run();
     $display("[%g]  El ambiente fue inicializado",$time);
     fork
-        agent_inst.run();
+      agent_inst.run();
     join_none
 
 
