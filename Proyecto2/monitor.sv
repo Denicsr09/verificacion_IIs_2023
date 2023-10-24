@@ -39,6 +39,7 @@ class monitor #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, par
         $display("Transaccion enviada desde monitor,Source= %d dato=%b", mnr_num,transaccion.dato);
         
         this.vif.pop[mnr_num]=1;
+        @(posedge vif.clk);
       end
       else begin
         this.vif.pop[mnr_num]=0;
