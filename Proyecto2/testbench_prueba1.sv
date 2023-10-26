@@ -31,7 +31,8 @@ module tb;
   
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) mnr_ckr_mbx;
  
-  trans_lista_mbx #(.pckg_sz(pckg_sz)) sb_ckr_mbx;
+  //trans_lista_mbx #(.pckg_sz(pckg_sz)) sb_ckr_mbx;
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) sb_ckr_mbx;
   
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_sb_mbx;
   
@@ -103,8 +104,8 @@ module tb;
     fork
       
       agente_prueba.run();
-      sb_tb.run();
-      check_tb.run_mnr();
+      
+      
       //check_tb.run_sb();
     join_none
     
@@ -162,14 +163,20 @@ module tb;
     end 
   end */
   
-
-  
-  
   initial begin
+    
+    fork 
+      sb_tb.run();
+      check_tb.run_mnr();
+      check_tb.run_sb();
+      
+
+    join_none
     #2000;
-    check_tb.lista();
+    check_tb.comparar();
+    
     sb_tb.lista();
-    check_tb.run_sb();
+    check_tb.lista();
     $finish;
   end
   

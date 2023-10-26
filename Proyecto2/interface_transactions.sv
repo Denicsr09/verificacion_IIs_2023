@@ -70,7 +70,9 @@ endclass
 
 class trans_lista;
   
-  trans_fifo list_sb[];
+  //trans_fifo list_sb[];
+  //lo tengo que convertir en un arreglo asociativo?
+  trans_fifo list_sb[int];
   
 endclass
 
@@ -101,6 +103,7 @@ endinterface
 typedef mailbox #(trans_fifo) trans_fifo_mbx;
 
 typedef mailbox #(trans_lista) trans_lista_mbx;
+
 
 /////////////////////////////////////////////////////////////////////////
 // Definición de estructura para generar comandos hacia el agente      //
