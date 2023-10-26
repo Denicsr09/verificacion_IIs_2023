@@ -7,7 +7,7 @@
 `define LIB
 //hasta aca
 `include "Router_library.sv"
-`include "interface_transaction.sv"
+`include "interface_transactions.sv"
 `include "interface.sv"
 `include "agent.sv"
 `include "ambiente.sv"
