@@ -68,7 +68,14 @@ class trans_fifo #(parameter pckg_sz = 40);
 endclass
 
 
+class trans_lista;
+  
+  trans_fifo list_sb[];
+  
+endclass
+
 ////////////////////////////////////////////////////////////////
+
 // Interface: Esta es la interface que se conecta con la FIFO //
 ////////////////////////////////////////////////////////////////
 /*
@@ -92,6 +99,8 @@ endinterface
 // Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
 ///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(trans_fifo) trans_fifo_mbx;
+
+typedef mailbox #(trans_lista) trans_lista_mbx;
 
 /////////////////////////////////////////////////////////////////////////
 // Definición de estructura para generar comandos hacia el agente      //
