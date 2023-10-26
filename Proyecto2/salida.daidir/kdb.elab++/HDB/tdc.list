@@ -1,9 +1,0 @@
-Library.sv
-Router_library.sv
-agent.sv
-ambiente.sv
-fifo.sv
-interface.sv
-interface_transactions.sv
-test.sv
-testbench_no_ale.sv
