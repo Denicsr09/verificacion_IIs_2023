@@ -1,9 +1,7 @@
 class agent #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, parameter deep_fifo = 4);
   
   virtual mesh_gnrtr_vif  #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .fifo_depth(deep_fifo)) vif;
-  
-  //por qué el vif??
-  
+ 
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_drv_mbx;
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_sb_mbx;
   
