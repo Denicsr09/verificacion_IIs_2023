@@ -13,7 +13,7 @@ class ambiente  #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, p
   //declaracion de los maiboxes
   //trans_fifo_mbx #(.pckg_sz(pckg_sz)) mnr_ckr_mbx; //Mailbox del agente al driver
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_drv_mbx; //Mailbox del agente al driver
-  trans_fifo_mbx #(.pckg_sz(pckg_sz)) test_agnt_mbx;    //Mailbox del test al agente 
+  comando_test_agent_mbx test_agnt_mbx;    //Mailbox del test al agente 
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_sb_mbx;     //Mailbox agente al scoreboard
   //mailbox del test al scoreboard
   comando_test_agent_mbx test_agent_mbx; //mailbox del test al agente
@@ -22,7 +22,6 @@ class ambiente  #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, p
   function new();
     //Instanciación de los Mailboxes
     agnt_drv_mbx   = new();
-    tst_agnt_mbx   = new();
     agnt_sb_mbx    = new();
     test_agent_mbx = new();
     //mnr_ckr_mbx=new();
@@ -59,7 +58,7 @@ class ambiente  #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, p
   virtual task run();
     $display("[%g]  El ambiente fue inicializado",$time);
     fork
-      agent_inst.run();
+      agente_inst.run();
     join_none
     /*
     for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
