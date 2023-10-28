@@ -86,7 +86,7 @@ module tb;
   bit [pckg_sz-1:pckg_sz-8] Nxtjp=0;
   bit [pckg_sz-9:pckg_sz-12] row=2;
   bit [pckg_sz-13:pckg_sz-16] colum=0;
-  bit mode=1;
+  bit mode=0;
   bit [pckg_sz-18:0] payload=1;//7
   
   initial begin 
@@ -181,9 +181,11 @@ module tb;
       check_tb.run_mnr();
       check_tb.run_sb();
       revision_tb.run();
-	  check_tb.recepcion();
+      check_tb.recepcion();
+      
     join_none
     #2000;
+    check_tb.PATH();
     check_tb.comparar();
     sb_tb.lista();
     check_tb.lista();

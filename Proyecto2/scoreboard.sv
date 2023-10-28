@@ -27,7 +27,7 @@ class scoreboard #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, 
       else list_sb[list_sb.size()-1] = transaccion;
       */
       
-      //voy a crearla  aqui solo para tenerla pero lo que paso aal checker es dato por dato 
+      //voy a crearla  aqui solo para tenerla pero lo que paso al checker es dato por dato 
       list_sb[transaccion.dato]=transaccion;
      
       

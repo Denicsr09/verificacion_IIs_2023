@@ -400,7 +400,7 @@ begin
         transaccion = new();
         transaccion.row = 3;
         transaccion.colum = 2;
-        transaccion.dato =32   tb.dut._rw_[3]._clm_[2].rtr._nu_[1].rtr_ntrfs_.data_out;
+        transaccion.dato =tb.dut._rw_[3]._clm_[2].rtr._nu_[1].rtr_ntrfs_.data_out;
         revision_ckr_mbx.put(transaccion);
     end
 end
