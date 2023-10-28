@@ -68,11 +68,15 @@ class trans_fifo #(parameter pckg_sz = 40);
 endclass
 
 
-class trans_lista;
+class trans_revision #(parameter pckg_sz = 40);
   
-  trans_fifo list_sb[];
+  
+  bit row;//cambiar a hexa 
+  bit colum;
+  bit [pckg_sz-1:0] dato; // este es el dato de la transacción
   
 endclass
+
 
 ////////////////////////////////////////////////////////////////
 
@@ -100,7 +104,9 @@ endinterface
 ///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(trans_fifo) trans_fifo_mbx;
 
-typedef mailbox #(trans_lista) trans_lista_mbx;
+//typedef mailbox #(trans_lista) trans_lista_mbx;
+
+typedef mailbox #(trans_revision) trans_revision_mbx; 
 
 /////////////////////////////////////////////////////////////////////////
 // Definición de estructura para generar comandos hacia el agente      //
