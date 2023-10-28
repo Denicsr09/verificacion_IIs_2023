@@ -3,19 +3,37 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
   
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) mnr_ckr_mbx; 
   
-  //trans_lista_mbx #(.pckg_sz(pckg_sz)) sb_ckr_mbx; 
-  
-  //trans_lista #(.pckg_sz(pckg_sz)) transaccion_sb;
-  
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) sb_ckr_mbx;
   
   trans_fifo #(.pckg_sz(pckg_sz)) transaccion_ck;
   trans_fifo #(.pckg_sz(pckg_sz)) transaccion_sb;
   
+  trans_revision_mbx revision_ckr_mbx; 
+  
+  trans_revision #(.pckg_sz(pckg_sz)) transaccion;
+  
+  
   int drvSource;
   int mnrSource;
-  
   int num_transacciones;
+  
+   
+  trans_revision router11 [int];
+  trans_revision router12 [int];
+  trans_revision router13 [int];
+  trans_revision router14 [int];
+  trans_revision router21 [int];
+  trans_revision router22 [int];
+  trans_revision router23 [int];
+  trans_revision router24 [int];
+  trans_revision router31 [int];
+  trans_revision router32 [int];
+  trans_revision router33 [int];
+  trans_revision router34 [int];
+  trans_revision router41 [int];
+  trans_revision router42 [int];
+  trans_revision router43 [int];
+  trans_revision router44 [int];
   
   trans_fifo list_verificadas[int];
   trans_fifo list_mnr[int];
@@ -71,6 +89,84 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
       
     endtask
  
+  
+  task recepcion();
+    
+    forever begin
+      revision_ckr_mbx.peek(transaccion);
+      $display("row, colum %b",{transaccion.row,transaccion.colum});
+      
+        if ({transaccion.row,transaccion.colum}== 2'b11)begin
+          revision_ckr_mbx.get(transaccion);
+          router11[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      
+      if ({transaccion.row,transaccion.colum}== 2'h12)begin
+          revision_ckr_mbx.get(transaccion);
+          router12[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      
+      if ({transaccion.row,transaccion.colum}== 2'h13)begin
+          revision_ckr_mbx.get(transaccion);
+          router13[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      
+      if ({transaccion.row,transaccion.colum}== 2'h14)begin
+          revision_ckr_mbx.get(transaccion);
+          router14[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      if ({transaccion.row,transaccion.colum}== 2'h21)begin
+          revision_ckr_mbx.get(transaccion);
+          router21[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      if ({transaccion.row,transaccion.colum}== 2'h22)begin
+          revision_ckr_mbx.get(transaccion);
+          router22[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      if ({transaccion.row,transaccion.colum}== 2'h23)begin
+          revision_ckr_mbx.get(transaccion);
+          router23[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      if ({transaccion.row,transaccion.colum}== 2'h24)begin
+          revision_ckr_mbx.get(transaccion);
+          router24[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      if ({transaccion.row,transaccion.colum}== 2'h31)begin
+          revision_ckr_mbx.get(transaccion);
+          router31[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      if ({transaccion.row,transaccion.colum}== 2'h32)begin
+          revision_ckr_mbx.get(transaccion);
+          router32[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      if ({transaccion.row,transaccion.colum}== 2'h33)begin
+          revision_ckr_mbx.get(transaccion);
+          router33[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      if ({transaccion.row,transaccion.colum}== 2'h34)begin
+          revision_ckr_mbx.get(transaccion);
+          router34[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      if ({transaccion.row,transaccion.colum}== 2'h41)begin
+          revision_ckr_mbx.get(transaccion);
+          router41[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      if ({transaccion.row,transaccion.colum}== 2'h42)begin
+          revision_ckr_mbx.get(transaccion);
+          router42[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      if ({transaccion.row,transaccion.colum}== 2'h43)begin
+          revision_ckr_mbx.get(transaccion);
+          router43[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      if ({transaccion.row,transaccion.colum}== 2'h44)begin
+          revision_ckr_mbx.get(transaccion);
+          router44[transaccion.dato[pckg_sz-9:0]]=transaccion;
+        end
+      
+    end
+  endtask
+  
   
   task lista();
   	foreach (list_mnr[i])$display("list_mnr %b",list_mnr[i].dato);
