@@ -1,5 +1,5 @@
 class scoreboard #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, parameter deep_fifo = 4);
-  
+  deep_fifo
   comando_test_sb_mbx test_sb_mbx; //Mailbox de Comunicación entre test y el score board
   
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_sb_mbx;
@@ -98,7 +98,7 @@ class scoreboard #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, 
             ancho_banda:begin
               $display("Score Board: Recibida Orden Ancho de banda");
               ancho_banda_min = (1*pckg_sz)/(retardo_promedio);
-              ancho_banda_max = (transacciones_completadas*pckg_sz )/retardo_promedio;
+              ancho_banda_max = (transacciones_completadas*pckg_sz*16 )/retardo_promedio;
               $display("[%g] Score board: El Ancho de Banda Minimo: %0.3f y el Ancho Banda Maximo  %0.5f", $time, ancho_banda_min, ancho_banda_max);
             end
             reporte: begin
@@ -110,6 +110,24 @@ class scoreboard #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, 
               end
               $display("Se perdieron %d datos", perdidas);
               tamano_sb = this.scoreboard.size();
+
+              fa = $fopen("INFORME.csv","a");
+              $fdisplay(fa,"Reporte Scoreboard");
+              $fdisplay(fa,"pckg_size= %d, depth_fifo= %d, retardo promedio= %d, ancho de banda minima= %d, ancho de banda maximo= %d", pckg_sz,deep_fifo, retardo_promedio,ancho_banda_min,ancho_banda_max );
+              $fclose(fa);
+
+              fa = $fopen("Reporte.csv","a");
+              $fdisplay(fa,"Reporte Scoreboard");
+              $fdisplay(fa,"REPORTE DE TRANSACCIONES REALIZADAS");
+              
+              for(int i=0;i<tamano_sb;i++) begin
+                auxiliar_trans = scoreboard.pop_front;
+                $fdisplay(fa," ID = %d, dato=  %0h , Tiempo de escritura= %d, Driver de salida= %d, Tiempo de lectura= %d, Driver de llegada= %d , Latencia=%d ", auxiliar_trans.ID_pop , auxiliar_trans.dato_enviado , auxiliar_trans.tiempo_push, auxiliar_trans.drvSource_push , auxiliar_trans.tiempo_pop , auxiliar_trans.ID_pop , auxiliar_trans.latencia);
+                //$fdisplay(fa,"data= %0h, tiempo= %0d", auxiliar_trans.dato , auxiliar_trans.tiempo_push );
+                auxiliar_trans.print("SB_Report:");
+                auxiliar_array.push_back(auxiliar_trans);
+              end
+              $fclose(fa);
 
               
               scoreboard = auxiliar_array;
