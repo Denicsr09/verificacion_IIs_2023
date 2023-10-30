@@ -32,7 +32,8 @@ class driver  #(parameter ROWS=4, parameter COLUMS=4, parameter pckg_sz = 16, pa
        
        agnt_drv_mbx.peek(transaccion);
        if (transaccion.drvSource==drv_num)begin
-         
+         assert(transaccion.drvSource==drv_num)
+           else $fatal("El dato se escribio en el driver incorrecto");
          agnt_drv_mbx.get(transaccion);
          $display("Transaccion RECIBIDA Source= %d dato=%d", drv_num,transaccion.dato);
          fifo_in.fifo_push(transaccion.dato);

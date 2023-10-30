@@ -1,8 +1,8 @@
-Command: vcs -Mupdate testbench_prueba1.sv -o salida -full64 -sverilog -kdb -lca \
--debug_acc+all -debug_region+cell+encrypt -l log_test +lint=TFIPC-L -cm line+tgl+cond+fsm+branch+assert \
-
+Command: vcs -Mupdate testbench.sv -o salida_testbench -full64 -R +ntb_random_seed_automatic \
+-sverilog -kdb -lca -debug_acc+all -debug_region+cell+encrypt -l log_test +lint=TFIPC-L \
+-cm line+tgl+cond+fsm+branch+assert
                          Chronologic VCS (TM)
-       Version R-2020.12-SP2_Full64 -- Sat Oct 14 21:54:37 2023
+       Version R-2020.12-SP2_Full64 -- Wed Oct 25 23:17:04 2023
 
                     Copyright (c) 1991 - 2021 Synopsys, Inc.
    This software and the associated documentation are proprietary to Synopsys,
@@ -16,15 +16,25 @@ Warning-[LCA_FEATURES_ENABLED] Usage warning
   information regarding list of LCA features please refer to Chapter "LCA 
   features" in the VCS Release Notes
 
-Parsing design file 'testbench_prueba1.sv'
-Parsing included file 'Router_library.sv'.
+Parsing design file 'testbench.sv'
 Parsing included file 'fifo.sv'.
-Back to file 'Router_library.sv'.
+Back to file 'testbench.sv'.
 Parsing included file 'Library.sv'.
-Back to file 'Router_library.sv'.
-Back to file 'testbench_prueba1.sv'.
+Back to file 'testbench.sv'.
+Parsing included file 'Router_library.sv'.
+Back to file 'testbench.sv'.
+Parsing included file 'interface_transactions.sv'.
+Back to file 'testbench.sv'.
 Parsing included file 'interface.sv'.
-Back to file 'testbench_prueba1.sv'.
+Back to file 'testbench.sv'.
+Parsing included file 'agent.sv'.
+Back to file 'testbench.sv'.
+Parsing included file 'ambiente.sv'.
+Back to file 'testbench.sv'.
+Parsing included file 'test.sv'.
+Back to file 'testbench.sv'.
+Parsing included file 'my_package.sv'.
+Back to file 'testbench.sv'.
 Top Level Modules:
        fifo_ltch
        fifo_ltch_no_rst
@@ -35,7 +45,27 @@ Top Level Modules:
        prll_rgstr
        prll_bs_gnrtr_n_rbtr_fifo
        prll_bus_gnrtr_cn_rbtr
-       tb
+       tb_no_ale
+
+Warning-[AOUP] Attempt to override undefined parameter
+agent.sv, 6
+  Attempting to override undefined parameter "pckg_sz", will ignore it.
+
+
+Warning-[AOUP] Attempt to override undefined parameter
+agent.sv, 7
+  Attempting to override undefined parameter "pckg_sz", will ignore it.
+
+
+Warning-[AOUP] Attempt to override undefined parameter
+ambiente.sv, 15
+  Attempting to override undefined parameter "pckg_sz", will ignore it.
+
+
+Warning-[AOUP] Attempt to override undefined parameter
+ambiente.sv, 17
+  Attempting to override undefined parameter "pckg_sz", will ignore it.
+
 TimeScale is 1 ns / 1 ps
 
 Warning-[SIOB] Select index out of bounds
@@ -50,7 +80,7 @@ Library.sv, 1072
 VCS Coverage Metrics Release R-2020.12-SP2_Full64 Copyright (c) 1991-2020 by Synopsys Inc.
 
 Warning-[INTFDV] VCD dumping of interface/program/package
-testbench_prueba1.sv, 43
+testbench.sv, 79
   Selective VCD dumping of interface 'mesh_gnrtr_vif' is not supported.  
   Selective VCD dumping for interfaces, packages and programs is not 
   supported.
@@ -59,52 +89,202 @@ testbench_prueba1.sv, 43
 
 Notice: Ports coerced to inout, use -notice for details
 Starting vcs inline pass...
-33 modules and 0 UDP read.
+36 modules and 0 UDP read.
+recompiling package vcs_paramclassrepository
 recompiling module prll_d_reg
 recompiling module prll_d_ltch_no_rst
 recompiling module prll_d_ltch
-recompiling module neg_edge
-recompiling module fifo_flops
 recompiling module fifo_ltch
 recompiling module fifo_ltch_no_rst
-recompiling module rst_lgc
 recompiling module ntrpt_cam_fifo
 recompiling module mem_latch
-recompiling module tri_buf
-recompiling module parallel_serial
 recompiling module serializer
-recompiling module Read_st_Mchn
-recompiling module Write_st_Mchn
-recompiling module bs_ntrfs
-recompiling module bs_gnrtr
-recompiling module Arbiter_st_Mchn
-recompiling module bs_ntrfs_n_rbtr
-recompiling module bs_gnrtr_n_rbtr
 recompiling module prll_rgstr
-recompiling module prll_bs_ntrfs
-recompiling module prll_bs_gnrtr_n_rbtr_fifo
 recompiling module conector
 recompiling module router_bus_gnrtr
 recompiling module router_bus_interface
-recompiling module tri_buf_mux
-recompiling module Router_arbiter
 recompiling module mesh_gnrtr
-recompiling module prll_bus_interface_cn_rbtr
-recompiling module prll_bus_gnrtr_cn_rbtr
 recompiling module mesh_gnrtr_vif
-recompiling module tb
-All of 33 modules done
+recompiling package my_package
+recompiling module tb_no_ale
+17 of 36 modules done
+	However, due to incremental compilation, only 17 modules need to be compiled. 
 rm -f _cuarc*.so _csrc*.so pre_vcsobj_*.so share_vcsobj_*.so
-if [ -x ../salida ]; then chmod a-x ../salida; fi
-g++  -o ../salida      -rdynamic  -Wl,-rpath='$ORIGIN'/salida.daidir -Wl,-rpath=./salida.daidir \
--Wl,-rpath=/mnt/vol_NFS_rh003/tools/vcs/R-2020.12-SP2/linux64/lib -L/mnt/vol_NFS_rh003/tools/vcs/R-2020.12-SP2/linux64/lib \
--Wl,-rpath-link=./  /usr/lib64/libnuma.so.1   objs/amcQw_d.o   _1497051_archive_1.so \
-SIM_l.o      rmapats_mop.o rmapats.o rmar.o rmar_nd.o  rmar_llvm_0_1.o rmar_llvm_0_0.o \
--lvirsim -lerrorinf -lsnpsmalloc -lvfs    -lvcsnew -lsimprofile -lreader_common /mnt/vol_NFS_rh003/tools/vcs/R-2020.12-SP2/linux64/lib/libBA.a \
+ld -shared  -Bsymbolic --no-relax  -o .//../salida_testbench.daidir//_cuarc0.so objs/amcQw_d.o \
+
+rm -f _cuarc0.so
+if [ -x ../salida_testbench ]; then chmod a-x ../salida_testbench; fi
+g++  -o ../salida_testbench      -rdynamic  -Wl,-rpath='$ORIGIN'/salida_testbench.daidir \
+-Wl,-rpath=./salida_testbench.daidir -Wl,-rpath=/mnt/vol_NFS_rh003/tools/vcs/R-2020.12-SP2/linux64/lib \
+-L/mnt/vol_NFS_rh003/tools/vcs/R-2020.12-SP2/linux64/lib  -Wl,-rpath-link=./  /usr/lib64/libnuma.so.1 \
+_2735845_archive_1.so _prev_archive_1.so _cuarc0.so  SIM_l.o      rmapats_mop.o rmapats.o \
+rmar.o rmar_nd.o  rmar_llvm_0_1.o rmar_llvm_0_0.o           -lvirsim -lerrorinf -lsnpsmalloc \
+-lvfs    -lvcsnew -lsimprofile -lreader_common /mnt/vol_NFS_rh003/tools/vcs/R-2020.12-SP2/linux64/lib/libBA.a \
 -luclinative /mnt/vol_NFS_rh003/tools/vcs/R-2020.12-SP2/linux64/lib/vcs_tls.o   -Wl,-whole-archive \
 -lvcsucli    -Wl,-no-whole-archive        _vcs_pli_stub_.o   /mnt/vol_NFS_rh003/tools/vcs/R-2020.12-SP2/linux64/lib/vcs_save_restore_new.o \
 /mnt/vol_NFS_rh003/tools/verdi/R-2020.12-SP2/share/PLI/VCS/LINUX64/pli.a -ldl  -lc \
 -lm -lpthread -ldl 
-../salida up to date
-CPU time: 2.100 seconds to compile + .774 seconds to elab + .358 seconds to link
+../salida_testbench up to date
+Command: /mnt/vol_NFS_rh003/Est_Verif_II2023/CarlosQuiros_II_2023/verificacion_IIs_2023/Proyecto2/./salida_testbench +ntb_random_seed_automatic -lca -a log_test +lint=TFIPC-L -cm_runsilent -cm line+tgl+cond+fsm+branch+assert
+Chronologic VCS simulator copyright 1991-2020
+Contains Synopsys proprietary information.
+Compiler version R-2020.12-SP2_Full64; Runtime version R-2020.12-SP2_Full64;  Oct 25 23:17 2023
+NOTE: automatic random seed used: 949827180
+[0]  El Test fue inicializado
+[0]  Test: Enviada la primera instruccion al agente de llenado_aleatorio con num_transacciones 10
+[0]  Test: Enviada la segunda instruccion al agente de trans_filas con num_transacciones 10
+[0]  Test: Enviada la tercera instruccion al agente de trans_colum con num_transacciones 10
+[0]  Test: Enviada la cuarta instruccion al agente de intersec_data_espec
+[0]  Test: Enviada la quinta instruccion al agente de intersec_data
+[0]  Test: Enviada la sexta instruccion al agente de envio_especfico
+[0]  El ambiente fue inicializado
+[1]  Agente: recibe instruccion
+dato partes: nxt_jump=00, row= 5, colum = 4, mode=1, payload =0001100111101001010011101101
+[19] Agente: transacción creada Tiempo=19 Tipo=escritura Retardo=9 Nxt_Jump=00 Target=54 mode=1 payload=19e94ed Source = 15
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=0, payload =0100111011010101010010111100
+[33] Agente: transacción creada Tiempo=33 Tipo=escritura Retardo=7 Nxt_Jump=00 Target=1 mode=0 payload=4ed54bc Source = 4
+dato partes: nxt_jump=00, row= 4, colum = 5, mode=1, payload =1111010111011000101100100010
+[47] Agente: transacción creada Tiempo=47 Tipo=escritura Retardo=7 Nxt_Jump=00 Target=45 mode=1 payload=f5d8b22 Source = 4
+dato partes: nxt_jump=00, row= 3, colum = 5, mode=1, payload =0100101111011010101111101111
+[51] Agente: transacción creada Tiempo=51 Tipo=escritura Retardo=2 Nxt_Jump=00 Target=35 mode=1 payload=4bdabef Source = 6
+dato partes: nxt_jump=00, row= 5, colum = 2, mode=0, payload =1100011100110110011111110101
+[57] Agente: transacción creada Tiempo=57 Tipo=escritura Retardo=3 Nxt_Jump=00 Target=52 mode=0 payload=c7367f5 Source = 4
+dato partes: nxt_jump=00, row= 3, colum = 0, mode=0, payload =1001011100011001010110011000
+[67] Agente: transacción creada Tiempo=67 Tipo=escritura Retardo=5 Nxt_Jump=00 Target=30 mode=0 payload=9719598 Source = 11
+dato partes: nxt_jump=00, row= 5, colum = 3, mode=0, payload =0000001111001010111110000101
+[75] Agente: transacción creada Tiempo=75 Tipo=escritura Retardo=4 Nxt_Jump=00 Target=53 mode=0 payload=03caf85 Source = 12
+dato partes: nxt_jump=00, row= 5, colum = 3, mode=0, payload =0011010000011111010101101011
+[87] Agente: transacción creada Tiempo=87 Tipo=escritura Retardo=6 Nxt_Jump=00 Target=53 mode=0 payload=341f56b Source = 6
+dato partes: nxt_jump=00, row= 2, colum = 5, mode=0, payload =0010110010001001011011101110
+[99] Agente: transacción creada Tiempo=99 Tipo=escritura Retardo=6 Nxt_Jump=00 Target=25 mode=0 payload=2c896ee Source = 8
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=0, payload =1011001110110111101100101111
+[113] Agente: transacción creada Tiempo=113 Tipo=escritura Retardo=7 Nxt_Jump=00 Target=1 mode=0 payload=b3b7b2f Source = 1
+[114]  Agente: recibe instruccion
+dato partes: nxt_jump=00, row= 5, colum = 2, mode=1, payload =1110111001101000011000010011
+[129] Agente: transacción creada Tiempo=129 Tipo=escritura Retardo=8 Nxt_Jump=00 Target=52 mode=1 payload=ee68613 Source = 7
+dato partes: nxt_jump=00, row= 5, colum = 3, mode=1, payload =0100011100010010111100101011
+[133] Agente: transacción creada Tiempo=133 Tipo=escritura Retardo=2 Nxt_Jump=00 Target=53 mode=1 payload=4712f2b Source = 8
+dato partes: nxt_jump=00, row= 4, colum = 5, mode=1, payload =1101001100011101000110010111
+[145] Agente: transacción creada Tiempo=145 Tipo=escritura Retardo=6 Nxt_Jump=00 Target=45 mode=1 payload=d31d197 Source = 7
+dato partes: nxt_jump=00, row= 5, colum = 4, mode=1, payload =0110111111100101101100110011
+[147] Agente: transacción creada Tiempo=147 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=54 mode=1 payload=6fe5b33 Source = 8
+dato partes: nxt_jump=00, row= 5, colum = 4, mode=1, payload =1100110010010101001001111010
+[153] Agente: transacción creada Tiempo=153 Tipo=escritura Retardo=3 Nxt_Jump=00 Target=54 mode=1 payload=cc9527a Source = 7
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=1, payload =0111101100011111011100111110
+[163] Agente: transacción creada Tiempo=163 Tipo=escritura Retardo=5 Nxt_Jump=00 Target=1 mode=1 payload=7b1f73e Source = 2
+dato partes: nxt_jump=00, row= 3, colum = 0, mode=1, payload =1010011110010010011000000101
+[165] Agente: transacción creada Tiempo=165 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=30 mode=1 payload=a792605 Source = 3
+dato partes: nxt_jump=00, row= 5, colum = 1, mode=1, payload =1110111110000011010100111001
+[181] Agente: transacción creada Tiempo=181 Tipo=escritura Retardo=8 Nxt_Jump=00 Target=51 mode=1 payload=ef83539 Source = 15
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=1, payload =0010011100100011010001011111
+[195] Agente: transacción creada Tiempo=195 Tipo=escritura Retardo=7 Nxt_Jump=00 Target=1 mode=1 payload=272345f Source = 15
+dato partes: nxt_jump=00, row= 2, colum = 0, mode=1, payload =1001110101111101101010010011
+[199] Agente: transacción creada Tiempo=199 Tipo=escritura Retardo=2 Nxt_Jump=00 Target=20 mode=1 payload=9d7da93 Source = 11
+[200]  Agente: recibe instruccion
+dato partes: nxt_jump=00, row= 0, colum = 2, mode=0, payload =1101101001110001011100100110
+[209] Agente: transacción creada Tiempo=209 Tipo=escritura Retardo=5 Nxt_Jump=00 Target=2 mode=0 payload=da71726 Source = 2
+dato partes: nxt_jump=00, row= 5, colum = 1, mode=0, payload =0000010101101000001111001000
+[217] Agente: transacción creada Tiempo=217 Tipo=escritura Retardo=4 Nxt_Jump=00 Target=51 mode=0 payload=05683c8 Source = 12
+dato partes: nxt_jump=00, row= 5, colum = 2, mode=0, payload =1001000010011111110100011100
+[225] Agente: transacción creada Tiempo=225 Tipo=escritura Retardo=4 Nxt_Jump=00 Target=52 mode=0 payload=909fd1c Source = 0
+dato partes: nxt_jump=00, row= 1, colum = 5, mode=0, payload =0010100000110000100100101100
+[229] Agente: transacción creada Tiempo=229 Tipo=escritura Retardo=2 Nxt_Jump=00 Target=15 mode=0 payload=283092c Source = 9
+dato partes: nxt_jump=00, row= 2, colum = 5, mode=0, payload =1110101110010111010001001001
+[231] Agente: transacción creada Tiempo=231 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=25 mode=0 payload=eb97449 Source = 4
+dato partes: nxt_jump=00, row= 4, colum = 5, mode=0, payload =0011000011000010000111101000
+[249] Agente: transacción creada Tiempo=249 Tipo=escritura Retardo=9 Nxt_Jump=00 Target=45 mode=0 payload=30c21e8 Source = 14
+dato partes: nxt_jump=00, row= 4, colum = 5, mode=0, payload =1001100011001011101011001100
+[263] Agente: transacción creada Tiempo=263 Tipo=escritura Retardo=7 Nxt_Jump=00 Target=45 mode=0 payload=98cbacc Source = 9
+dato partes: nxt_jump=00, row= 5, colum = 4, mode=0, payload =1101100001110100110011011000
+[279] Agente: transacción creada Tiempo=279 Tipo=escritura Retardo=8 Nxt_Jump=00 Target=54 mode=0 payload=d874cd8 Source = 13
+dato partes: nxt_jump=00, row= 0, colum = 2, mode=0, payload =1001101100001011011101010111
+[293] Agente: transacción creada Tiempo=293 Tipo=escritura Retardo=7 Nxt_Jump=00 Target=2 mode=0 payload=9b0b757 Source = 4
+dato partes: nxt_jump=00, row= 5, colum = 2, mode=0, payload =1010001000110000100001110001
+[301] Agente: transacción creada Tiempo=301 Tipo=escritura Retardo=4 Nxt_Jump=00 Target=52 mode=0 payload=a230871 Source = 5
+[302]  Agente: recibe instruccion
+[303] Agente: transacción creada Tiempo=303 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=51 mode=0 payload=fe9c736 Source = 0
+[305] Agente: transacción creada Tiempo=305 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=51 mode=1 payload=522ca04 Source = 0
+[307] Agente: transacción creada Tiempo=307 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=51 mode=0 payload=51fa510 Source = 0
+[309] Agente: transacción creada Tiempo=309 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=51 mode=0 payload=38db01c Source = 0
+[311] Agente: transacción creada Tiempo=311 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=25 mode=0 payload=5744287 Source = 5
+[313] Agente: transacción creada Tiempo=313 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=25 mode=1 payload=6768bbb Source = 5
+[315] Agente: transacción creada Tiempo=315 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=25 mode=1 payload=f6bf741 Source = 5
+[317] Agente: transacción creada Tiempo=317 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=25 mode=0 payload=2851542 Source = 5
+[318]  Agente: recibe instruccion
+dato partes: nxt_jump=00, row= 5, colum = 1, mode=1, payload =1111111111111111111111111111
+[319] Agente: transacción creada Tiempo=319 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=51 mode=1 payload=fffffff Source = 0
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=1, payload =1111111111111111111111111111
+[321] Agente: transacción creada Tiempo=321 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=1 mode=1 payload=fffffff Source = 8
+dato partes: nxt_jump=00, row= 5, colum = 2, mode=1, payload =0000000000000000000000000000
+[323] Agente: transacción creada Tiempo=323 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=52 mode=1 payload=0000000 Source = 1
+dato partes: nxt_jump=00, row= 0, colum = 2, mode=0, payload =0000000000000000000000000000
+[325] Agente: transacción creada Tiempo=325 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=2 mode=0 payload=0000000 Source = 9
+dato partes: nxt_jump=00, row= 5, colum = 3, mode=0, payload =1010101010101010101010101010
+[327] Agente: transacción creada Tiempo=327 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=53 mode=0 payload=aaaaaaa Source = 2
+dato partes: nxt_jump=00, row= 0, colum = 3, mode=0, payload =1010101010101010101010101010
+[329] Agente: transacción creada Tiempo=329 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=3 mode=0 payload=aaaaaaa Source = 10
+dato partes: nxt_jump=00, row= 5, colum = 4, mode=1, payload =0101010101010101010101010101
+[331] Agente: transacción creada Tiempo=331 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=54 mode=1 payload=5555555 Source = 3
+dato partes: nxt_jump=00, row= 0, colum = 4, mode=0, payload =0101010101010101010101010101
+[333] Agente: transacción creada Tiempo=333 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=4 mode=0 payload=5555555 Source = 11
+dato partes: nxt_jump=00, row= 1, colum = 5, mode=0, payload =1111111111111111111111111111
+[335] Agente: transacción creada Tiempo=335 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=15 mode=0 payload=fffffff Source = 4
+dato partes: nxt_jump=00, row= 1, colum = 0, mode=0, payload =1111111111111111111111111111
+[337] Agente: transacción creada Tiempo=337 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=10 mode=0 payload=fffffff Source = 12
+dato partes: nxt_jump=00, row= 2, colum = 5, mode=0, payload =0000000000000000000000000000
+[339] Agente: transacción creada Tiempo=339 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=25 mode=0 payload=0000000 Source = 5
+dato partes: nxt_jump=00, row= 2, colum = 0, mode=0, payload =0000000000000000000000000000
+[341] Agente: transacción creada Tiempo=341 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=20 mode=0 payload=0000000 Source = 13
+dato partes: nxt_jump=00, row= 3, colum = 5, mode=1, payload =1010101010101010101010101010
+[343] Agente: transacción creada Tiempo=343 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=35 mode=1 payload=aaaaaaa Source = 6
+dato partes: nxt_jump=00, row= 3, colum = 0, mode=1, payload =1010101010101010101010101010
+[345] Agente: transacción creada Tiempo=345 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=30 mode=1 payload=aaaaaaa Source = 14
+dato partes: nxt_jump=00, row= 4, colum = 5, mode=1, payload =0101010101010101010101010101
+[347] Agente: transacción creada Tiempo=347 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=45 mode=1 payload=5555555 Source = 7
+dato partes: nxt_jump=00, row= 4, colum = 0, mode=0, payload =0101010101010101010101010101
+[349] Agente: transacción creada Tiempo=349 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=40 mode=0 payload=5555555 Source = 15
+[350]  Agente: recibe instruccion
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=0, payload =1110101000010101111000110001
+[351] Agente: transacción creada Tiempo=351 Tipo=escritura Retardo=1 Nxt_Jump=00 Target=1 mode=0 payload=ea15e31 Source = 1
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=0, payload =1010101011000011000011000100
+[365] Agente: transacción creada Tiempo=365 Tipo=escritura Retardo=7 Nxt_Jump=00 Target=1 mode=0 payload=aac30c4 Source = 2
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=0, payload =1011110101110011110111000110
+[377] Agente: transacción creada Tiempo=377 Tipo=escritura Retardo=6 Nxt_Jump=00 Target=1 mode=0 payload=bd73dc6 Source = 3
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=0, payload =0001011100010111001111100110
+[385] Agente: transacción creada Tiempo=385 Tipo=escritura Retardo=4 Nxt_Jump=00 Target=1 mode=0 payload=17173e6 Source = 4
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=1, payload =1101001110111111100100101111
+[399] Agente: transacción creada Tiempo=399 Tipo=escritura Retardo=7 Nxt_Jump=00 Target=1 mode=1 payload=d3bf92f Source = 5
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=1, payload =1101100111100011101000000100
+[407] Agente: transacción creada Tiempo=407 Tipo=escritura Retardo=4 Nxt_Jump=00 Target=1 mode=1 payload=d9e3a04 Source = 6
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=0, payload =0000110110100100100001011101
+[421] Agente: transacción creada Tiempo=421 Tipo=escritura Retardo=7 Nxt_Jump=00 Target=1 mode=0 payload=0da485d Source = 7
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=0, payload =1100001100010110010001111100
+[431] Agente: transacción creada Tiempo=431 Tipo=escritura Retardo=5 Nxt_Jump=00 Target=1 mode=0 payload=c31647c Source = 8
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=0, payload =0010010101011101100011000101
+[437] Agente: transacción creada Tiempo=437 Tipo=escritura Retardo=3 Nxt_Jump=00 Target=1 mode=0 payload=255d8c5 Source = 9
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=0, payload =0011100100100101011001011100
+[453] Agente: transacción creada Tiempo=453 Tipo=escritura Retardo=8 Nxt_Jump=00 Target=1 mode=0 payload=392565c Source = 10
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=0, payload =1000111101100000110010010101
+[467] Agente: transacción creada Tiempo=467 Tipo=escritura Retardo=7 Nxt_Jump=00 Target=1 mode=0 payload=8f60c95 Source = 11
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=1, payload =1011100111000011111111110001
+[485] Agente: transacción creada Tiempo=485 Tipo=escritura Retardo=9 Nxt_Jump=00 Target=1 mode=1 payload=b9c3ff1 Source = 12
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=1, payload =0111110110001111001110001100
+[503] Agente: transacción creada Tiempo=503 Tipo=escritura Retardo=9 Nxt_Jump=00 Target=1 mode=1 payload=7d8f38c Source = 13
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=0, payload =1010010101111110111011101110
+[507] Agente: transacción creada Tiempo=507 Tipo=escritura Retardo=2 Nxt_Jump=00 Target=1 mode=0 payload=a57eeee Source = 14
+dato partes: nxt_jump=00, row= 0, colum = 1, mode=0, payload =1000101101001000000011101000
+[513] Agente: transacción creada Tiempo=513 Tipo=escritura Retardo=3 Nxt_Jump=00 Target=1 mode=0 payload=8b480e8 Source = 15
+[10000]  Test: Se alcanza el tiempo límite de la prueba
+Test_bench: Tiempo límite de prueba en el test_bench alcanzado
+$finish called from file "testbench.sv", line 73.
+$finish at simulation time            100001000
+
+---------------------------------------------------------------------------
+VCS Coverage Metrics: during simulation line, cond, FSM, branch, tgl was monitored
+---------------------------------------------------------------------------
+           V C S   S i m u l a t i o n   R e p o r t 
+Time: 100001000 ps
+CPU Time:     15.750 seconds;       Data structure size:   5.2Mb
+Wed Oct 25 23:17:26 2023
+CPU time: 2.360 seconds to compile + .856 seconds to elab + .406 seconds to link + 15.806 seconds in simulation
 Verdi KDB elaboration done and the database successfully generated: 0 error(s), 0 warning(s)

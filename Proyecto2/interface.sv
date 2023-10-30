@@ -1,3 +1,5 @@
+
+//Interface virtual del DUT
 interface mesh_gnrtr_vif #(parameter ROWS = 4, parameter COLUMS =4, parameter pckg_sz =40, parameter fifo_depth = 4, parameter bdcst= {8{1'b1}}) (input clk);
   
   logic pndng[ROWS*2+COLUMS*2];
