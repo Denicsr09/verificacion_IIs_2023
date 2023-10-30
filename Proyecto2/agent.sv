@@ -1,22 +1,22 @@
 class agent #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, parameter deep_fifo = 4);
   
-  virtual mesh_gnrtr_vif  #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .fifo_depth(deep_fifo)) vif;
+  virtual mesh_gnrtr_vif  #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .fifo_depth(deep_fifo)) vif; //Interface virtual
  
-  trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_drv_mbx;
-  trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_sb_mbx;
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_drv_mbx; //Mailbox entre el agente y el driver
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_sb_mbx; //Mailbox entre el agente y el scoreboard
   
-  comando_test_agent_mbx test_agent_mbx; 
+  comando_test_agent_mbx test_agent_mbx;  //mailbox de comunicacion entre el test y el agente
   
-  int num_transacciones;             
-  int max_retardo; 
+  int num_transacciones; // Cantidad de transacciones a realizar en la prueba  
+  int max_retardo;       //maximo retardo por transaccion
   int ret_spec;
-  tipo_trans tpo_spec; 
+  tipo_trans tpo_spec;  
   bit [pckg_sz-1:0] dto_spec;
   instrucciones_agente instruccion; // para guardar la última instruccion leída
   trans_fifo #(.pckg_sz(pckg_sz)) transaccion; //transaccion de tipo trans_fifo 
   int terminales [] = {01,02,03,04,10,20,30,40,51,52,53,54,15,25,35,45};
-  int l; 
-  int espera;
+  int l; //Para recolrrer la lista de datos especificos
+  int espera; //para realizar la espera del retardo
   reg [pckg_sz-18:0] lista_especifica [] = '{{pckg_sz{4'hF}},{pckg_sz{4'h0}},{pckg_sz{4'hA}}, {pckg_sz{4'h5}}};
   
   
@@ -24,7 +24,7 @@ class agent #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
     num_transacciones = 10;
     max_retardo = 10;
   endfunction
-  
+  //Generacion de los pruebas
   task run();
     forever begin
       #1
