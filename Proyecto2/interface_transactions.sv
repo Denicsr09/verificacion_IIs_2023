@@ -21,7 +21,7 @@ class trans_fifo #(parameter pckg_sz = 40);
   int tiempo; //Representa el tiempo  de la simulación en el que se ejecutó la transacción 
   rand tipo_trans tipo; // lectura, escritura, reset;
   int max_retardo; //tiempo de retardo entre transaccion
- 
+  int completo;
   constraint const_retardo {retardo < max_retardo; retardo>0;};
   constraint const_drvSource { 0 <= drvSource ; drvSource <= 15;};
   constraint const_target { target inside {01,02,03,04,10,15,20,25,30,35,40,45,51,52,53,54}; };
@@ -34,6 +34,7 @@ class trans_fifo #(parameter pckg_sz = 40);
     this.tipo = tpo;
     this.max_retardo = mx_rtrd;
     this.nxt_jump = nxt_jump;
+    this.completo = 0;
   endfunction
   
   function clean;
@@ -68,10 +69,61 @@ class trans_fifo #(parameter pckg_sz = 40);
 endclass
 
 
-class trans_lista;
+class trans_revision #(parameter pckg_sz = 40);
   
-  trans_fifo list_sb[];
   
+  bit row;//cambiar a hexa 
+  bit colum;
+  bit [pckg_sz-1:0] dato; // este es el dato de la transacción
+  
+endclass
+
+class trans_sb #(parameter pckg_sz = 40);
+  bit [pckg_sz-1:0] dato_enviado;
+  int drvSource_push;
+  int ID_pop;
+  bit mode;
+  int tiempo_push;
+  int tiempo_pop;
+  bit completado;
+  bit overflow;
+  bit underflow;
+  bit reset;
+  int latencia;
+  
+  function clean();
+    this.dato_enviado = 0;
+    this.drvSource_push = 0;
+    this.ID_pop = 0;
+    this.tiempo_push = 0;
+    this.tiempo_pop = 0;
+    this.completado = 0;
+    this.overflow = 0;
+    this.underflow = 0;
+    this.reset = 0;
+    this.latencia = 0;
+  endfunction
+
+  task calc_latencia;
+    this.latencia = this.tiempo_pop - this.tiempo_push;
+  endtask
+  
+  function print (string tag);
+    $display("[%g] %s dato=%h,mode=%d,t_push=%g,t_pop=%g,cmplt=%g,ovrflw=%g,undrflw=%g,rst=%g,ltncy=%g,desde el driver=%0d, hacia el driver = %0d", 
+             $time,
+             tag, 
+             this.dato_enviado,
+             this.mode,
+             this.tiempo_push,
+             this.tiempo_pop,
+             this.completado,
+             this.overflow,
+             this.underflow,
+             this.reset,
+             this.latencia,
+             this.drvSource_push,
+             this.ID_pop);
+  endfunction
 endclass
 
 ////////////////////////////////////////////////////////////////
@@ -93,22 +145,39 @@ interface mesh_gnrtr_vif #(parameter ROWS = 4, parameter COLUMS =4, parameter pc
 endinterface
 
 */
-
+///////////////////////////////////////////////////////////////////////////////////////
+// Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
+///////////////////////////////////////////////////////////////////////////////////////
+typedef mailbox #(trans_sb) trans_sb_mbx;
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
 ///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(trans_fifo) trans_fifo_mbx;
 
-typedef mailbox #(trans_lista) trans_lista_mbx;
+//typedef mailbox #(trans_lista) trans_lista_mbx;
+
+typedef mailbox #(trans_revision) trans_revision_mbx; 
 
 /////////////////////////////////////////////////////////////////////////
 // Definición de estructura para generar comandos hacia el agente      //
 /////////////////////////////////////////////////////////////////////////
-typedef enum {llenado_aleatorio,trans_filas,trans_colum,intersec_data_espec,intersec_data,envio_especfico} instrucciones_agente;
+typedef enum
+//elimnar envio_especfico_super
+{llenado_aleatorio,trans_filas,trans_colum,intersec_data_espec,intersec_data,envio_especfico,envio_especfico_super} instrucciones_agente;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
 ///////////////////////////////////////////////////////////////////////////////////////
 typedef mailbox #(instrucciones_agente) comando_test_agent_mbx;
+
+/////////////////////////////////////////////////////////////////////////
+// Definición de estructura para generar comandos hacia el scroreboard //
+/////////////////////////////////////////////////////////////////////////
+typedef enum {retardo_promedio,ancho_banda,reporte} solicitud_sb;
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Definicion de mailboxes de tipo definido trans_fifo para comunicar las interfaces //
+///////////////////////////////////////////////////////////////////////////////////////
+typedef mailbox #(solicitud_sb) comando_test_sb_mbx;
