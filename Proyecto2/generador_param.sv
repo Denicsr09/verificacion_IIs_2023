@@ -7,7 +7,7 @@ module generador_param;
         rand int unsigned num_transacciones;
 
         constraint C0 {pckg_sz >= 40 ; pckg_sz < 50;}
-        constraint C1 {fifo_depth >= 4 ; fifo_depth < 15;}
+        constraint C1 {fifo_depth >= 1 ; fifo_depth < 15;}
         constraint C2 {num_transacciones >= 5; num_transacciones <= 15;}
 
         function void print;

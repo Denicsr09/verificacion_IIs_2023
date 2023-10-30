@@ -4,20 +4,37 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) mnr_ckr_mbx; 
   
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) sb_ckr_mbx;
+
+  trans_sb_mbx  #(.pckg_sz(pckg_sz))  ckr_sb_mbx;
+  
   
   trans_fifo #(.pckg_sz(pckg_sz)) transaccion_ck;
   trans_fifo #(.pckg_sz(pckg_sz)) transaccion_sb;
+  trans_sb  #(.pckg_sz(pckg_sz))  transaccion_sb_ckr;
   
   trans_revision_mbx revision_ckr_mbx; 
   
-  trans_revision #(.pckg_sz(pckg_sz)) transaccion;
+  trans_revision transaccion;
+
   
   
   int drvSource;
   int mnrSource;
   int num_transacciones;
+
+  int router_num;
+  int row_source;
+  int colum_source;
+  int terminales [] = {01,02,03,04,10,20,30,40,51,52,53,54,15,25,35,45};
+  int contador;
+  int caminador;
+  int destino;
+  int source;
+  int posicion;
   
-   
+  string dato_string; 
+  int gold_path[string][int]; 
+  
   trans_revision router11 [int];
   trans_revision router12 [int];
   trans_revision router13 [int];
@@ -35,62 +52,239 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
   trans_revision router43 [int];
   trans_revision router44 [int];
   
+
+  trans_fifo #(.pckg_sz(pckg_sz)) list_verificadas[int];
+  trans_fifo #(.pckg_sz(pckg_sz)) list_mnr[int];
+  trans_fifo #(.pckg_sz(pckg_sz)) list_sb[int];
+  
+  int list_transaccion_path[int];
+
   trans_fifo list_verificadas[int];
   trans_fifo list_mnr[int];
   trans_fifo list_sb[int];
+
   
   task run_mnr();
     
     forever begin   
-      
+      transaccion_sb_ckr = new();
       mnr_ckr_mbx.get(transaccion_ck);
       //$display("Dato del mnr al checker %b", transaccion_ck.dato);
-      
+
       list_mnr[transaccion_ck.dato[pckg_sz-9:0]]=transaccion_ck;
       $display("tiempo de transaccion del monitor en checker %d",transaccion_ck.tiempo);
-      
+      foreach (list_sb[i]) begin
+        if(list_sb[i].dato[pckg_sz-9:0]==transaccion_ck.dato[pckg_sz-9:0]) begin
+          $display("si hay un dato igual");
+          $display("list_sb %b",list_sb[i].dato);
+          $display("list_mnr %b",transaccion_ck.dato);
+          list_verificadas[list_sb[i].dato[pckg_sz-9:0]]=list_sb[i];
+          transaccion_sb_ckr.clean();
+          transaccion_sb_ckr.dato_enviado = list_sb[i].dato;
+          transaccion_sb_ckr.tiempo_push =  list_sb[i].tiempo;
+          transaccion_sb_ckr.tiempo_pop  = transaccion_ck.tiempo;
+          transaccion_sb_ckr.drvSource_push = terminales[list_sb[i].drvSource];
+          transaccion_sb_ckr.ID_pop = list_sb[i].target;
+          transaccion_sb_ckr.mode = list_sb[i].mode;
+          transaccion_sb_ckr.calc_latencia();
+          transaccion_sb_ckr.completado = 1;
+          transaccion_sb_ckr.print("Checker:Transaccion Completada");
+          ckr_sb_mbx.put(transaccion_sb_ckr);
+        end
+        
+      end
+
     end
      
   endtask
   
   task run_sb();
-    
      forever begin   
-      
-      sb_ckr_mbx.get(transaccion_sb);
-      //$display("Dato del mnr al checker %b", transaccion_ck.dato);
-      
-      list_sb[transaccion_sb.dato[pckg_sz-9:0]]=transaccion_sb;
+       sb_ckr_mbx.get(transaccion_sb);
+       contador = 1;
+       posicion = 0;
+       dato_string = $sformatf("%0h", transaccion_sb.dato[pckg_sz-9:0]);
+       //$display("Dato del mnr al checker %b", transaccion_ck.dato);
+       list_sb[transaccion_sb.dato[pckg_sz-9:0]]=transaccion_sb;
        $display("tiempo de transaccion del scoreboard en checker %d",transaccion_sb.tiempo);
-      
+       source = terminales[transaccion_sb.drvSource];
+       row_source = terminales[transaccion_sb.drvSource]/10;
+       colum_source = terminales[transaccion_sb.drvSource]%10;
+       $display(" En DrvSource = %d, row = %d, colum = %d", transaccion_sb.drvSource, row_source, colum_source);
+       $display("En el target = %d, row = %d, colum = %d",transaccion_sb.target, transaccion_sb.row,transaccion_sb.colum );
+       $display("Checker creando golden path");
+       transaccion_sb.print();
+       if(transaccion_sb.row == 5) begin
+         destino = transaccion_sb.target -10;
+         $display("Destino = %d", destino);
+       end
+       else if (transaccion_sb.colum == 5) begin
+         destino = transaccion_sb.target - 1;
+         $display("Destino = %d", destino);
+       end
+       else if (transaccion_sb.row == 0) begin
+         destino = transaccion_sb.target + 10;
+         $display("Destino = %d", destino);
+       end
+       else if (transaccion_sb.colum == 0) begin
+         destino = transaccion_sb.target + 1;
+         $display("Destino = %d", destino);
+       end
+       else begin
+         destino = transaccion_sb.target;
+         $display("Destino = %d", destino);
+       end
+       
+       
+       if(row_source == 5) begin
+         source = terminales[transaccion_sb.drvSource] -10;
+         $display("Source = %d", source);
+       end
+       else if(colum_source == 5)begin
+         source = terminales[transaccion_sb.drvSource] - 1;
+         $display("Source = %d", source);
+       end
+       else if(row_source == 0) begin
+         source = terminales[transaccion_sb.drvSource] + 10;
+         $display("Source = %d", source);
+       end
+       else if(colum_source == 0) begin
+         source = terminales[transaccion_sb.drvSource] + 1;
+         $display("Source = %d", source);
+       end
+       else begin
+         source = terminales[transaccion_sb.drvSource];
+         $display("Source = %d", source);
+       end
+       row_source = source/10;
+       colum_source = source%10;
+       $display(" row = %d, colum = %d", row_source, colum_source);
+       
+       
+       if(transaccion_sb.mode == 0) begin
+         $display("Entramos modo 0");
+         contador = 1;
+         contador = source%10;
+         $display("Contador=%d,Caminador =%d , destino colum =%d",contador,caminador,destino%10);
+         if(colum_source < destino%10) begin
+           caminador = source - 1;
+           while(contador <= destino%10) begin
+             caminador = caminador + 1;
+             gold_path[dato_string][posicion]=caminador;
+             posicion = posicion +1;
+             $display("columnas movidas = %d", caminador );
+             contador = contador + 1;
+           end
+         end
+         else if (colum_source > destino%10)begin
+           $display("Entro al otro");
+           caminador = source +1;
+           contador = destino%10;
+           while(contador <= source%10) begin  
+             caminador = caminador - 1;
+             gold_path[dato_string][posicion]=caminador;
+             posicion = posicion +1;
+             $display("columnas movidas = %d", caminador );
+             contador = contador +1 ;
+           end
+         end
+         else begin
+           caminador = source;
+           gold_path[dato_string][posicion]=caminador;
+           posicion = posicion +1;
+           $display("filas movidas = %d",caminador);
+         end
+         if(caminador < transaccion_sb.target)begin
+           while(caminador < destino) begin
+             caminador = caminador + 10;
+             gold_path[dato_string][posicion]=caminador;
+             posicion = posicion +1;
+             $display("filas movidas = %d", caminador);
+           end
+         end
+         else if((caminador > transaccion_sb.target)) begin
+           while(caminador > destino) begin
+             caminador = caminador - 10;
+             gold_path[dato_string][posicion]=caminador;
+             posicion = posicion +1;
+             $display("filas movidas = %d", caminador);
+           end
+         end
+         $display("El golden path para este dato llega hasta: %d",caminador);
+       end
+       else begin
+         $display("Modo 1");
+         //contador = 1;
+         $display("Contador=%d,Caminador =%d , destino row =%d",contador,caminador,destino%10);
+         if(row_source < destino/10) begin
+           caminador = source-10;
+           contador = source/10;
+           while(contador <= destino/10) begin
+             caminador = caminador + 10;
+             gold_path[dato_string][posicion]=caminador;
+             posicion = posicion +1;
+             $display("filas movidas = %d", caminador );
+             contador = contador + 1;
+           end
+         end
+         else if (row_source > destino/10) begin
+           $display("Entro al otro");
+           caminador = source +10;
+           contador = destino/10;
+           while(contador <= source/10) begin  
+             caminador = caminador - 10;
+             gold_path[dato_string][posicion]=caminador;
+             posicion = posicion +1;
+             $display("filas movidas = %d", caminador );
+             contador = contador +1 ;
+           end
+         end
+         else begin
+           caminador = source;
+           gold_path[dato_string][posicion]=caminador;
+           posicion = posicion +1;
+           $display("filas movidas = %d",caminador);
+         end
+         if(caminador < destino)begin
+           while(caminador < destino) begin
+             caminador = caminador + 1;
+             gold_path[dato_string][posicion]=caminador;
+             posicion = posicion +1;
+             $display("columnas movidas = %d", caminador);
+           end
+         end
+         else if((caminador > destino)) begin
+           while(caminador > destino) begin
+             caminador = caminador - 1;
+             gold_path[dato_string][posicion]=caminador;
+             posicion = posicion +1;
+             $display("columnas movidas = %d", caminador);
+           end
+         end
+         $display("El golden path para este dato llega hasta: %d",caminador); 
+       end
+       
+       $display("El camino de esta dato=%s:", dato_string);
+       foreach (gold_path[dato_string][i]) begin
+          $display("  Valor: %0d", gold_path[dato_string][i]);
+    	end
+       
     end
+    
   endtask
     task comparar();
-      
-      $display("list_sb %d",list_sb.size());
-      $display("list_mnr %d",list_mnr.size());
-      
-      
-      foreach (list_sb[i]) begin
-      
-       $display("list_sb %b",list_sb[i].dato);
-       $display("list_mnr %b",list_mnr[i].dato);
-        
-        
-       if(list_sb[i].dato[pckg_sz-9:0]==this.list_mnr[i].dato[pckg_sz-9:0]) begin
-         $display("si hay un dato igual");
-         list_verificadas[list_sb[i].dato[pckg_sz-9:0]]=list_sb[i];
-       
-         
-       end
+      $display("task comparar inicializado");
+      //areglar para no esperar tanto tiempo
+      // Las lista tenian que ser iguales pero si hay overflow no iba a hacer iguales por eso mejor
+      //Lo hice en el checker
 
-     end
       
       
     endtask
  
   
   task recepcion();
+
     
     forever begin
       revision_ckr_mbx.peek(transaccion);
@@ -167,13 +361,113 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
     end
   endtask
   
+  task PATH();
+    
+    foreach (list_sb[i]) begin
+      
+      //modo 0 
+      row_source = (terminales[list_sb[i].drvSource])/10;
+      colum_source = (terminales[list_sb[i].drvSource])%10;
+      $display(" En path DrvSource = %d, row = %d, colum = %d",list_sb[i].drvSource, row_source, colum_source);
+      
+      $display("row sb %d, colum sb %d",list_sb[i].row,list_sb[i].colum);
+      $display("row mnr %d, colum mnr  %d",list_mnr[i].dato[pckg_sz-9:pckg_sz-12],list_mnr[i].dato[pckg_sz-13:pckg_sz-16]);
+      
+      if ((list_sb[i].row < (list_mnr[i].dato[pckg_sz-9:pckg_sz-12])) & (list_sb[i].colum < (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]))) begin
+        $display("Entro if 1 ");
+        foreach(list_verificadas[i])begin
+          
+          for (int n=list_sb[i].colum; n <= (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]);n++)begin
+            for (int r=list_sb[i].row; r <= (list_mnr[i].dato[pckg_sz-9:pckg_sz-12]); r++)begin
+              $display("Entro for 1 ");
+              router_num={r,n};
+              list_transaccion_path[transaccion.dato[pckg_sz-9:0]]=router_num;//hay que revisar 
+             
+            end
+          end
+        end
+        
+        //aqui está con whiles para probar después pero no esta bieen
+        
+        /*foreach (list_verificadas[i]) begin
+   			 int n = list_sb[i].colum;
+   			 while (n <= (list_mnr[i].dato[pckg_sz-13:pckg_sz-16])) begin
+       			 int r = list_sb[i].row;
+      			  while (r <= (list_mnr[i].dato[pckg_sz-9:pckg_sz-12])) begin
+           			 $display("Entro if 1 ");
+           			 router_num = {r, n};
+          			  list_transaccion_path[transaccion.dato[pckg_sz-9:0]] = router_num;
+            r = r + 1; // Incrementa la variable r en cada iteración del bucle while.
+        end
+        n = n + 1; // Incrementa la variable n en cada iteración del bucle while.
+    end
+end*/
+
+        
+      end
+    
+    
+      if ((list_sb[i].row < (list_mnr[i].dato[pckg_sz-9:pckg_sz-12])) & (list_sb[i].colum > (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]))) begin
+        $display("Entro if 2");
+        foreach(list_verificadas[i])begin
+          
+          for (int n=list_sb[i].colum; n <= (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]);n++)begin
+            for (int r=list_sb[i].row; r >= (list_mnr[i].dato[pckg_sz-9:pckg_sz-12]); r--)begin
+              
+              router_num={r,n};
+              list_transaccion_path[transaccion.dato[pckg_sz-9:0]]=router_num;
+             
+            end
+          end
+        end
+      end
+      
+      if ((list_sb[i].row > (list_mnr[i].dato[pckg_sz-9:pckg_sz-12])) & (list_sb[i].colum > (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]))) begin
+        $display("Entro if 3");
+        foreach(list_verificadas[i])begin
+          
+          for (int n=list_sb[i].colum; n >= (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]);n--)begin
+            for (int r=list_sb[i].row; r >= (list_mnr[i].dato[pckg_sz-9:pckg_sz-12]); r--)begin
+              $display("Entro al for 3");
+              router_num={r,n};
+              list_transaccion_path[transaccion.dato[pckg_sz-9:0]]=router_num;
+             
+            end
+          end
+        end
+      end
+      
+      if ((list_sb[i].row > (list_mnr[i].dato[pckg_sz-9:pckg_sz-12])) & (list_sb[i].colum < (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]))) begin
+        $display("Entro if 4");
+        foreach(list_verificadas[i])begin
+          
+          for (int n=list_sb[i].colum; n >= (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]);n--)begin
+            for (int r=list_sb[i].row; r <= (list_mnr[i].dato[pckg_sz-9:pckg_sz-12]); r++)begin
+              
+              router_num={r,n};
+              list_transaccion_path[transaccion.dato[pckg_sz-9:0]]=router_num;
+             
+            end
+          end
+        end
+      end
+   
+    end //end del foreach
+  endtask 
+  
+  
+
+  
   
   task lista();
   	foreach (list_mnr[i])$display("list_mnr %b",list_mnr[i].dato);
     foreach (list_sb[i])$display("list_mnr %b",list_sb[i].dato);
     foreach (list_verificadas[i])$display("list_verificadas %b",list_verificadas[i].dato);
+
+    //foreach (list_transaccion_path[i])$display("list_transaccion_path %b",list_transaccion_path[i].router_num);
+    $display("list_transaccion_path %b",list_transaccion_path.size());
+
   endtask
   
   
 endclass
-

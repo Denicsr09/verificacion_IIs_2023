@@ -1,20 +1,25 @@
 `timescale 1ns/1ps
-`timescale 1ns/1ps
 //Puse esto
-`define FIFOS
-`include "fifo.sv"
-`include "Library.sv"
-`define LIB
+//`define FIFOS
+//`include "fifo.sv"
+//`include "Library.sv"
+//`define LIB
 //hasta aca
 `include "Router_library.sv"
 `include "interface_transactions.sv"
 `include "interface.sv"
+`include "fifo_in.sv"
 `include "agent.sv"
+`include "driver.sv"
+`include "monitor.sv"
+`include "check.sv"
+`include "scoreboard.sv"
+`include "revision.sv"
 `include "ambiente.sv"
 `include "test.sv"
 `include "my_package.sv"
 
-module tb_no_ale;
+module tb;
   
   reg clk;
 
@@ -46,7 +51,7 @@ module tb_no_ale;
     
   );//conecto mi interface con el RTL
   
-  //Comunicacion con el agente para pruebas // Lineas para simular el Test.sv------
+   //Comunicacion con el agente para pruebas // Lineas para simular el Test.sv------
   comando_test_agent_mbx test_agent_mbx; // Simulando que el test existe (Mailbox)
   instrucciones_agente instr_agent; // Aloja la instrucción que se va a enviar
   
@@ -61,6 +66,13 @@ module tb_no_ale;
     //t0.ambiente_inst.agente_inst.num_transacciones = num_transacciones;
     t0.vif =vif_tb;
     t0.ambiente_inst.agente_inst.vif = vif_tb;
+    for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
+      t0.ambiente_inst.monitor_inst[i].vif=vif_tb;
+      t0.ambiente_inst.driver_inst[i].fifo_in.vif=vif_tb;
+    end
+    vif_tb.reset=1;
+    #20;
+    vif_tb.reset=0;
     fork
       t0.run();
     join_none
@@ -76,6 +88,6 @@ module tb_no_ale;
   
   initial begin
     //$dumpfile("agent_tb.vcd");
-    $dumpvars(0, tb_no_ale);
+    $dumpvars(0, tb);
   end
 endmodule

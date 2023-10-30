@@ -1,19 +1,24 @@
 class test #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, parameter deep_fifo = 4, parameter num_transacciones);
     //Nose si va el mailbox al score board 
     comando_test_agent_mbx test_agent_mbx;
+    comando_test_sb_mbx   test_sb_mbx;
   
     parameter max_retardo = 10;
   	instrucciones_agente instr_agent;
-
+    
+    solicitud_sb instr_sb;
+   
     ambiente #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .deep_fifo(deep_fifo)) ambiente_inst;
     // Definición de la interface a la que se conectará el DUT
     virtual mesh_gnrtr_vif  #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .fifo_depth(deep_fifo)) vif;
     
     function new;
         test_agent_mbx = new();
+        test_sb_mbx = new();
         ambiente_inst = new();
         ambiente_inst.vif = vif; 
         ambiente_inst.agente_inst.test_agent_mbx = test_agent_mbx;
+      	ambiente_inst.sb_inst.test_sb_mbx = test_sb_mbx;
         ambiente_inst.agente_inst.num_transacciones = num_transacciones;
         ambiente_inst.agente_inst.max_retardo = max_retardo;
     endfunction
@@ -21,7 +26,7 @@ class test #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, parame
     task run;
         $display("[%g]  El Test fue inicializado",$time);
         fork
-        ambiente_inst.run();
+        	ambiente_inst.run();
         join_none
 
         instr_agent = llenado_aleatorio; 
@@ -51,6 +56,16 @@ class test #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, parame
        #10000
        $display("[%g]  Test: Se alcanza el tiempo límite de la prueba",$time);
        //Envios al scoreboard
-
+       instr_sb = retardo_promedio;
+       test_sb_mbx.put(instr_sb);
+  
+       instr_sb = ancho_banda;
+       test_sb_mbx.put(instr_sb);
+   
+       instr_sb = reporte;
+       test_sb_mbx.put(instr_sb);
+  
+      #20
+      $finish;
     endtask
 endclass
