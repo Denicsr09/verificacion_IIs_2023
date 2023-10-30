@@ -71,6 +71,12 @@ endclass
 
 class trans_revision #(parameter pckg_sz = 40);
   
+
+  
+  bit row;//cambiar a hexa 
+  bit colum;
+  bit [pckg_sz-1:0] dato; // este es el dato de la transacción
+
   
   bit row;//cambiar a hexa 
   bit colum;
@@ -125,6 +131,7 @@ class trans_sb #(parameter pckg_sz = 40);
              this.ID_pop);
   endfunction
 endclass
+
 
 ////////////////////////////////////////////////////////////////
 

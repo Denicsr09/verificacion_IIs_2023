@@ -10,9 +10,11 @@ class monitor #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, par
 	bit [pckg_sz -1 : 0] cola [$:deep_fifo];
     int mnr_num;
   	//int tiempo_out; 
+
   int terminales [] = {01,02,03,04,10,20,30,40,51,52,53,54,15,25,35,45};
   int compr_row;
   int compr_colum;
+
   function new(int mnr_num);
       
 
@@ -36,8 +38,7 @@ class monitor #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, par
         
         transaccion = new(); 
         transaccion.dato=this.vif.data_out[mnr_num];
-        
-          
+
         transaccion.tiempo=$time;
         mnr_ckr_mbx.put(transaccion);
         

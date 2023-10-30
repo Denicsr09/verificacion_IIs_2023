@@ -4,12 +4,14 @@ class scoreboard #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, 
   
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_sb_mbx;
   
+
   trans_sb  #(.pckg_sz(pckg_sz))  transaccion_entrante;
   
   //trans_lista_mbx #(.pckg_sz(pckg_sz)) sb_ckr_mbx
   
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) sb_ckr_mbx;
   trans_sb_mbx   #(.pckg_sz(pckg_sz)) ckr_sb_mbx;
+
   
   trans_fifo #(.pckg_sz(pckg_sz)) transaccion;
   
@@ -17,6 +19,7 @@ class scoreboard #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, 
   //trans_fifo #(.pckg_sz(pckg_sz)) transaccion_sb_ckr;
   
   trans_fifo #(.pckg_sz(pckg_sz)) list_sb[int];//arreglo asoc con indice de tipo int 
+
   
   trans_sb #(.pckg_sz(pckg_sz)) scoreboard[$]; // esta es la estructura dinámica que maneja el scoreboard  
   trans_sb #(.pckg_sz(pckg_sz)) auxiliar_array[$]; // estructura auxiliar usada para explorar el scoreboard;  
@@ -37,15 +40,18 @@ class scoreboard #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, 
     forever begin 
       
       agnt_sb_mbx.get(transaccion);
+
       $display("Dato del agente al sb %0b", transaccion.dato);
 
       /*list_sb = new [list_sb.size() + 1] (list_sb);  
       if (list_sb.size() == 0) list_sb[0] = transaccion;
       else list_sb[list_sb.size()-1] = transaccion;
       */
+
       //voy a crearla  aqui solo para tenerla pero lo que paso al checker es dato por dato 
       list_sb[transaccion.dato[pckg_sz-9:0]]=transaccion;
       sb_ckr_mbx.put(transaccion); 
+
     end
     
     
@@ -59,6 +65,7 @@ class scoreboard #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, 
         $display("lista en scoreboard creada, key: %0d, dato: %b",i,list_sb[i].dato);
       end
       
+
   endtask
   
   task reporte();
@@ -113,6 +120,7 @@ class scoreboard #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, 
 
   endtask
   
+
 
   
   

@@ -4,6 +4,7 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) mnr_ckr_mbx; 
   
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) sb_ckr_mbx;
+
   trans_sb_mbx  #(.pckg_sz(pckg_sz))  ckr_sb_mbx;
   
   
@@ -14,11 +15,13 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
   trans_revision_mbx revision_ckr_mbx; 
   
   trans_revision transaccion;
+
   
   
   int drvSource;
   int mnrSource;
   int num_transacciones;
+
   int router_num;
   int row_source;
   int colum_source;
@@ -49,11 +52,17 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
   trans_revision router43 [int];
   trans_revision router44 [int];
   
+
   trans_fifo #(.pckg_sz(pckg_sz)) list_verificadas[int];
   trans_fifo #(.pckg_sz(pckg_sz)) list_mnr[int];
   trans_fifo #(.pckg_sz(pckg_sz)) list_sb[int];
   
   int list_transaccion_path[int];
+
+  trans_fifo list_verificadas[int];
+  trans_fifo list_mnr[int];
+  trans_fifo list_sb[int];
+
   
   task run_mnr();
     
@@ -61,6 +70,7 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
       transaccion_sb_ckr = new();
       mnr_ckr_mbx.get(transaccion_ck);
       //$display("Dato del mnr al checker %b", transaccion_ck.dato);
+
       list_mnr[transaccion_ck.dato[pckg_sz-9:0]]=transaccion_ck;
       $display("tiempo de transaccion del monitor en checker %d",transaccion_ck.tiempo);
       foreach (list_sb[i]) begin
@@ -83,6 +93,7 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
         end
         
       end
+
     end
      
   endtask
@@ -266,12 +277,14 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
       //areglar para no esperar tanto tiempo
       // Las lista tenian que ser iguales pero si hay overflow no iba a hacer iguales por eso mejor
       //Lo hice en el checker
+
       
       
     endtask
  
   
   task recepcion();
+
     
     forever begin
       revision_ckr_mbx.peek(transaccion);
@@ -443,13 +456,17 @@ end*/
   endtask 
   
   
+
+  
   
   task lista();
   	foreach (list_mnr[i])$display("list_mnr %b",list_mnr[i].dato);
     foreach (list_sb[i])$display("list_mnr %b",list_sb[i].dato);
     foreach (list_verificadas[i])$display("list_verificadas %b",list_verificadas[i].dato);
+
     //foreach (list_transaccion_path[i])$display("list_transaccion_path %b",list_transaccion_path[i].router_num);
     $display("list_transaccion_path %b",list_transaccion_path.size());
+
   endtask
   
   
