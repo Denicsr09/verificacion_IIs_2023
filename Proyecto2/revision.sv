@@ -4,24 +4,9 @@ class revision #(parameter pckg_sz = 40);
   
   trans_revision #(.pckg_sz(pckg_sz)) transaccion;
   
-  int router11 [int];
-  int router12 [int];
-  int router13 [int];
-  int router14 [int];
-  int router21 [int];
-  int router22 [int];
-  int router23 [int];
-  int router24 [int];
-  int router31 [int];
-  int router32 [int];
-  int router33 [int];
-  int router34 [int];
-  int router41 [int];
-  int router42 [int];
-  int router43 [int];
-  int router44 [int];
 
-
+// En esta funcion, por cada pop que se detecte desde el DUT se hace el eenvio del dato por medio de un mailbox, en el cual se le definen los atributos de fila y columna dependiendo de cual router vienen. 
+  
   task run(); 
     fork
 begin
