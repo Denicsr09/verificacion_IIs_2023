@@ -17,7 +17,7 @@ class scoreboard #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, 
   
   //trans_lista #(.pckg_sz(pckg_sz)) transaccion_sb_ckr;
   //trans_fifo #(.pckg_sz(pckg_sz)) transaccion_sb_ckr;
-  
+  //a
   trans_fifo #(.pckg_sz(pckg_sz)) list_sb[int];//arreglo asoc con indice de tipo int 
 
   
