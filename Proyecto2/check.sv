@@ -22,6 +22,7 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
   int mnrSource;
   int num_transacciones;
 
+
   int router_num;
   int row_source;
   int colum_source;
@@ -35,22 +36,7 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
   string dato_string; 
   int gold_path[string][int]; 
   
-  trans_revision router11 [int];
-  trans_revision router12 [int];
-  trans_revision router13 [int];
-  trans_revision router14 [int];
-  trans_revision router21 [int];
-  trans_revision router22 [int];
-  trans_revision router23 [int];
-  trans_revision router24 [int];
-  trans_revision router31 [int];
-  trans_revision router32 [int];
-  trans_revision router33 [int];
-  trans_revision router34 [int];
-  trans_revision router41 [int];
-  trans_revision router42 [int];
-  trans_revision router43 [int];
-  trans_revision router44 [int];
+
   
 
   trans_fifo #(.pckg_sz(pckg_sz)) list_verificadas[int];
@@ -63,6 +49,8 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
   trans_fifo list_mnr[int];
   trans_fifo list_sb[int];
 
+  
+  int list_transaccion_path[int];
   
   task run_mnr();
     
@@ -272,15 +260,9 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
     end
     
   endtask
-    task comparar();
-      $display("task comparar inicializado");
-      //areglar para no esperar tanto tiempo
-      // Las lista tenian que ser iguales pero si hay overflow no iba a hacer iguales por eso mejor
-      //Lo hice en el checker
+ 
 
-      
-      
-    endtask
+  
  
   
   task recepcion();
@@ -361,111 +343,12 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
     end
   endtask
   
-  task PATH();
-    
-    foreach (list_sb[i]) begin
-      
-      //modo 0 
-      row_source = (terminales[list_sb[i].drvSource])/10;
-      colum_source = (terminales[list_sb[i].drvSource])%10;
-      $display(" En path DrvSource = %d, row = %d, colum = %d",list_sb[i].drvSource, row_source, colum_source);
-      
-      $display("row sb %d, colum sb %d",list_sb[i].row,list_sb[i].colum);
-      $display("row mnr %d, colum mnr  %d",list_mnr[i].dato[pckg_sz-9:pckg_sz-12],list_mnr[i].dato[pckg_sz-13:pckg_sz-16]);
-      
-      if ((list_sb[i].row < (list_mnr[i].dato[pckg_sz-9:pckg_sz-12])) & (list_sb[i].colum < (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]))) begin
-        $display("Entro if 1 ");
-        foreach(list_verificadas[i])begin
-          
-          for (int n=list_sb[i].colum; n <= (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]);n++)begin
-            for (int r=list_sb[i].row; r <= (list_mnr[i].dato[pckg_sz-9:pckg_sz-12]); r++)begin
-              $display("Entro for 1 ");
-              router_num={r,n};
-              list_transaccion_path[transaccion.dato[pckg_sz-9:0]]=router_num;//hay que revisar 
-             
-            end
-          end
-        end
-        
-        //aqui está con whiles para probar después pero no esta bieen
-        
-        /*foreach (list_verificadas[i]) begin
-   			 int n = list_sb[i].colum;
-   			 while (n <= (list_mnr[i].dato[pckg_sz-13:pckg_sz-16])) begin
-       			 int r = list_sb[i].row;
-      			  while (r <= (list_mnr[i].dato[pckg_sz-9:pckg_sz-12])) begin
-           			 $display("Entro if 1 ");
-           			 router_num = {r, n};
-          			  list_transaccion_path[transaccion.dato[pckg_sz-9:0]] = router_num;
-            r = r + 1; // Incrementa la variable r en cada iteración del bucle while.
-        end
-        n = n + 1; // Incrementa la variable n en cada iteración del bucle while.
-    end
-end*/
-
-        
-      end
-    
-    
-      if ((list_sb[i].row < (list_mnr[i].dato[pckg_sz-9:pckg_sz-12])) & (list_sb[i].colum > (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]))) begin
-        $display("Entro if 2");
-        foreach(list_verificadas[i])begin
-          
-          for (int n=list_sb[i].colum; n <= (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]);n++)begin
-            for (int r=list_sb[i].row; r >= (list_mnr[i].dato[pckg_sz-9:pckg_sz-12]); r--)begin
-              
-              router_num={r,n};
-              list_transaccion_path[transaccion.dato[pckg_sz-9:0]]=router_num;
-             
-            end
-          end
-        end
-      end
-      
-      if ((list_sb[i].row > (list_mnr[i].dato[pckg_sz-9:pckg_sz-12])) & (list_sb[i].colum > (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]))) begin
-        $display("Entro if 3");
-        foreach(list_verificadas[i])begin
-          
-          for (int n=list_sb[i].colum; n >= (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]);n--)begin
-            for (int r=list_sb[i].row; r >= (list_mnr[i].dato[pckg_sz-9:pckg_sz-12]); r--)begin
-              $display("Entro al for 3");
-              router_num={r,n};
-              list_transaccion_path[transaccion.dato[pckg_sz-9:0]]=router_num;
-             
-            end
-          end
-        end
-      end
-      
-      if ((list_sb[i].row > (list_mnr[i].dato[pckg_sz-9:pckg_sz-12])) & (list_sb[i].colum < (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]))) begin
-        $display("Entro if 4");
-        foreach(list_verificadas[i])begin
-          
-          for (int n=list_sb[i].colum; n >= (list_mnr[i].dato[pckg_sz-13:pckg_sz-16]);n--)begin
-            for (int r=list_sb[i].row; r <= (list_mnr[i].dato[pckg_sz-9:pckg_sz-12]); r++)begin
-              
-              router_num={r,n};
-              list_transaccion_path[transaccion.dato[pckg_sz-9:0]]=router_num;
-             
-            end
-          end
-        end
-      end
-   
-    end //end del foreach
-  endtask 
-  
-  
-
-  
+ 
   
   task lista();
   	foreach (list_mnr[i])$display("list_mnr %b",list_mnr[i].dato);
     foreach (list_sb[i])$display("list_mnr %b",list_sb[i].dato);
     foreach (list_verificadas[i])$display("list_verificadas %b",list_verificadas[i].dato);
-
-    //foreach (list_transaccion_path[i])$display("list_transaccion_path %b",list_transaccion_path[i].router_num);
-    $display("list_transaccion_path %b",list_transaccion_path.size());
 
   endtask
   

@@ -50,6 +50,7 @@ class scoreboard #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, 
 
       //voy a crearla  aqui solo para tenerla pero lo que paso al checker es dato por dato 
       list_sb[transaccion.dato[pckg_sz-9:0]]=transaccion;
+
       sb_ckr_mbx.put(transaccion); 
 
     end
