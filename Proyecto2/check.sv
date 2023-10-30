@@ -4,7 +4,6 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) mnr_ckr_mbx; 
   
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) sb_ckr_mbx;
-
   trans_sb_mbx  #(.pckg_sz(pckg_sz))  ckr_sb_mbx;
   
   
@@ -14,15 +13,12 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
   
   trans_revision_mbx revision_ckr_mbx; 
   
-  trans_revision transaccion;
-
+  trans_revision #(.pckg_sz(pckg_sz)) transaccion;
   
   
   int drvSource;
   int mnrSource;
   int num_transacciones;
-
-
   int router_num;
   int row_source;
   int colum_source;
@@ -32,23 +28,17 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
   int destino;
   int source;
   int posicion;
+  int router;
   
   string dato_string; 
+  string dato_revision;
   int gold_path[string][int]; 
+  int revision_path[string][int];
   
-
-  
-
-  trans_fifo #(.pckg_sz(pckg_sz)) list_verificadas[int];
-  trans_fifo #(.pckg_sz(pckg_sz)) list_mnr[int];
-  trans_fifo #(.pckg_sz(pckg_sz)) list_sb[int];
-  
-  int list_transaccion_path[int];
-
+ 
   trans_fifo list_verificadas[int];
   trans_fifo list_mnr[int];
   trans_fifo list_sb[int];
-
   
   int list_transaccion_path[int];
   
@@ -58,7 +48,7 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
       transaccion_sb_ckr = new();
       mnr_ckr_mbx.get(transaccion_ck);
       //$display("Dato del mnr al checker %b", transaccion_ck.dato);
-
+      
       list_mnr[transaccion_ck.dato[pckg_sz-9:0]]=transaccion_ck;
       $display("tiempo de transaccion del monitor en checker %d",transaccion_ck.tiempo);
       foreach (list_sb[i]) begin
@@ -78,14 +68,15 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
           transaccion_sb_ckr.completado = 1;
           transaccion_sb_ckr.print("Checker:Transaccion Completada");
           ckr_sb_mbx.put(transaccion_sb_ckr);
+          //Agregar clase de interface_transactions
         end
-        
       end
-
     end
      
   endtask
   
+  
+  //Aqui se recibe el dato del scoreboard y se inicia la creacion del camino que debe de realizar cada uno de los datos, primeramente se limitan las sumas y restas a los limites de la cantidad de filas y columnas (numeros  de routers), luego se realizan los movimientos para llegar al destino y se van guardando en orden en el gold_path[string][int].  
   task run_sb();
      forever begin   
        sb_ckr_mbx.get(transaccion_sb);
@@ -159,6 +150,7 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
            while(contador <= destino%10) begin
              caminador = caminador + 1;
              gold_path[dato_string][posicion]=caminador;
+          
              posicion = posicion +1;
              $display("columnas movidas = %d", caminador );
              contador = contador + 1;
@@ -171,6 +163,7 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
            while(contador <= source%10) begin  
              caminador = caminador - 1;
              gold_path[dato_string][posicion]=caminador;
+           
              posicion = posicion +1;
              $display("columnas movidas = %d", caminador );
              contador = contador +1 ;
@@ -179,6 +172,7 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
          else begin
            caminador = source;
            gold_path[dato_string][posicion]=caminador;
+          
            posicion = posicion +1;
            $display("filas movidas = %d",caminador);
          end
@@ -186,6 +180,7 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
            while(caminador < destino) begin
              caminador = caminador + 10;
              gold_path[dato_string][posicion]=caminador;
+             
              posicion = posicion +1;
              $display("filas movidas = %d", caminador);
            end
@@ -252,105 +247,59 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
          $display("El golden path para este dato llega hasta: %d",caminador); 
        end
        
-       $display("El camino de esta dato=%s:", dato_string);
+       $display("El camino de este dato=%s:", dato_string);
        foreach (gold_path[dato_string][i]) begin
+         
           $display("  Valor: %0d", gold_path[dato_string][i]);
+        
     	end
        
     end
     
   endtask
- 
-
   
- 
+  //inicio de revision si el dato cumplio el camino correcto, la idea es la creación de otra lista con los datos que provienen de "revision.sv", esos datos son por cada pop que venga de los routers y de esa manera  se  revisa si el arreglo creado es igual al arreglo del gold reference. 
   
   task recepcion();
-
-    
-    forever begin
-      revision_ckr_mbx.peek(transaccion);
-      $display("row, colum %b",{transaccion.row,transaccion.colum});
       
-        if ({transaccion.row,transaccion.colum}== 2'b11)begin
-          revision_ckr_mbx.get(transaccion);
-          router11[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
       
-      if ({transaccion.row,transaccion.colum}== 2'h12)begin
-          revision_ckr_mbx.get(transaccion);
-          router12[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
+      forever begin 
+        #1;
+        revision_ckr_mbx.get(transaccion);
+        dato_revision = $sformatf("%0h", transaccion.dato[pckg_sz-9:0]);
+        foreach (gold_path[dato_revision][i]) begin
+        router={transaccion.row,transaccion.colum};
+          if (router==gold_path[dato_revision][i])begin
+            $display("  if de recepcion");
+            revision_path[dato_revision][i]=router;
+            
+            
+          end
+    	end
+         foreach (revision_path[dato_revision][i]) begin
+         
+        $display("  revision path: %0d", revision_path[dato_revision][i]);
+        
+      end
       
-      if ({transaccion.row,transaccion.colum}== 2'h13)begin
-          revision_ckr_mbx.get(transaccion);
-          router13[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
-      
-      if ({transaccion.row,transaccion.colum}== 2'h14)begin
-          revision_ckr_mbx.get(transaccion);
-          router14[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
-      if ({transaccion.row,transaccion.colum}== 2'h21)begin
-          revision_ckr_mbx.get(transaccion);
-          router21[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
-      if ({transaccion.row,transaccion.colum}== 2'h22)begin
-          revision_ckr_mbx.get(transaccion);
-          router22[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
-      if ({transaccion.row,transaccion.colum}== 2'h23)begin
-          revision_ckr_mbx.get(transaccion);
-          router23[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
-      if ({transaccion.row,transaccion.colum}== 2'h24)begin
-          revision_ckr_mbx.get(transaccion);
-          router24[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
-      if ({transaccion.row,transaccion.colum}== 2'h31)begin
-          revision_ckr_mbx.get(transaccion);
-          router31[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
-      if ({transaccion.row,transaccion.colum}== 2'h32)begin
-          revision_ckr_mbx.get(transaccion);
-          router32[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
-      if ({transaccion.row,transaccion.colum}== 2'h33)begin
-          revision_ckr_mbx.get(transaccion);
-          router33[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
-      if ({transaccion.row,transaccion.colum}== 2'h34)begin
-          revision_ckr_mbx.get(transaccion);
-          router34[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
-      if ({transaccion.row,transaccion.colum}== 2'h41)begin
-          revision_ckr_mbx.get(transaccion);
-          router41[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
-      if ({transaccion.row,transaccion.colum}== 2'h42)begin
-          revision_ckr_mbx.get(transaccion);
-          router42[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
-      if ({transaccion.row,transaccion.colum}== 2'h43)begin
-          revision_ckr_mbx.get(transaccion);
-          router43[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
-      if ({transaccion.row,transaccion.colum}== 2'h44)begin
-          revision_ckr_mbx.get(transaccion);
-          router44[transaccion.dato[pckg_sz-9:0]]=transaccion;
-        end
-      
-    end
-  endtask
-  
+      end
+       
+     
+    endtask
  
+  
+  
+  //EN esta funcion solo se se realizan  displays de arreglos. 
   
   task lista();
   	foreach (list_mnr[i])$display("list_mnr %b",list_mnr[i].dato);
     foreach (list_sb[i])$display("list_mnr %b",list_sb[i].dato);
     foreach (list_verificadas[i])$display("list_verificadas %b",list_verificadas[i].dato);
-
+    //foreach (list_transaccion_path[i])$display("list_transaccion_path %b",list_transaccion_path[i].router_num);
+    $display("list_transaccion_path %b",list_transaccion_path.size());
+     
   endtask
   
   
 endclass
+

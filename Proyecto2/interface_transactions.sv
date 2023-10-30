@@ -21,7 +21,6 @@ class trans_fifo #(parameter pckg_sz = 40);
   int tiempo; //Representa el tiempo  de la simulación en el que se ejecutó la transacción 
   rand tipo_trans tipo; // lectura, escritura, reset;
   int max_retardo; //tiempo de retardo entre transaccion
-  int completo;
   constraint const_retardo {retardo < max_retardo; retardo>0;};
   constraint const_drvSource { 0 <= drvSource ; drvSource <= 15;};
   constraint const_target { target inside {01,02,03,04,10,15,20,25,30,35,40,45,51,52,53,54}; };
@@ -34,7 +33,6 @@ class trans_fifo #(parameter pckg_sz = 40);
     this.tipo = tpo;
     this.max_retardo = mx_rtrd;
     this.nxt_jump = nxt_jump;
-    this.completo = 0;
   endfunction
   
   function clean;
@@ -71,15 +69,9 @@ endclass
 
 class trans_revision #(parameter pckg_sz = 40);
   
-
   
-  bit row;//cambiar a hexa 
-  bit colum;
-  bit [pckg_sz-1:0] dato; // este es el dato de la transacción
-
-  
-  bit row;//cambiar a hexa 
-  bit colum;
+  reg [4:0]row;//cambiar a hexa 
+  reg [4:0]colum;
   bit [pckg_sz-1:0] dato; // este es el dato de la transacción
   
 endclass
@@ -131,7 +123,6 @@ class trans_sb #(parameter pckg_sz = 40);
              this.ID_pop);
   endfunction
 endclass
-
 
 ////////////////////////////////////////////////////////////////
 
