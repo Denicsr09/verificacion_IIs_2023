@@ -63,18 +63,21 @@ class ambiente  #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, p
     sb_inst.test_sb_mbx = test_sb_mbx;
     revision_inst.revision_ckr_mbx=revision_ckr_mbx;
     
-
+//Se llaman a las funciones de new() de cada uno de los modulos, por medio de un for limitado por laa cantidad de filas y columnas
+//se van creando  cada driver y monitor 
     for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
       
       driver_inst[i]=new(i);
       monitor_inst[i]=new(i);
       monitor_inst[i].vif=vif;
       monitor_inst[i].mnr_ckr_mbx=mnr_ckr_mbx;
-      driver_inst[i].fifo_in.vif=vif;
+      driver_inst[i].fifo_in.vif=vif;//se conectan cada una de las interfaces conforme se van creando 
       driver_inst[i].agnt_drv_mbx = agnt_drv_mbx;
     end
   
   endfunction
+
+//se utiliza un automatic para no perder el "valor anterior", ya que al crearse solo se crea un último
 
   virtual task run();
     $display("[%g]  El ambiente fue inicializado",$time);
