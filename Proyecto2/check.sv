@@ -13,7 +13,7 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
   
   trans_revision_mbx revision_ckr_mbx; 
   
-  trans_revision #(.pckg_sz(pckg_sz)) transaccion;
+  trans_revision  transaccion;
   
   
   int drvSource;
@@ -36,9 +36,9 @@ class check #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, param
   int revision_path[string][int];
   
  
-  trans_fifo list_verificadas[int];
-  trans_fifo list_mnr[int];
-  trans_fifo list_sb[int];
+  trans_fifo #(.pckg_sz(pckg_sz))  list_verificadas[int];
+  trans_fifo #(.pckg_sz(pckg_sz)) list_mnr[int];
+  trans_fifo #(.pckg_sz(pckg_sz)) list_sb[int];
   
   int list_transaccion_path[int];
   

@@ -1,5 +1,5 @@
 class scoreboard #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, parameter deep_fifo = 4);
-  deep_fifo
+
   comando_test_sb_mbx test_sb_mbx; //Mailbox de Comunicación entre test y el score board
   
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_sb_mbx;
