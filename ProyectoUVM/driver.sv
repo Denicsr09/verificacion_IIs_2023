@@ -30,7 +30,7 @@ class driver extends uvm_driver#(transaction);
     forever begin
       seq_item_port.get_next_item(req);
 	  
-      $display("dato de llegada %b", req.dato);
+      $display("dato de llegada %b, target row= %0d colum= %0d", req.dato, req.row, req.colum);
       
       vif.data_out_i_in[drv_num]=req.dato;
       vif.pndng_i_in[drv_num]=1;
@@ -54,4 +54,5 @@ class driver extends uvm_driver#(transaction);
   endtask
   
 endclass
+
 

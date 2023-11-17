@@ -1,6 +1,6 @@
 `include "driver.sv"
 `include "monitor.sv"
-
+`include "macros.sv"
 
 class agent extends uvm_agent;
   
@@ -19,17 +19,18 @@ class agent extends uvm_agent;
     function void build_phase(uvm_phase phase);
       
       
-      for (int i=0; i<16;  i++) begin
+      for (int i=0;  i<(`ROWS*2+`COLUMS*2);  i++) begin
         automatic int n=i;
         driver_ag[n] = driver::type_id::create($sformatf("driver%0d",n), this);
         monitor_ag[n] = monitor::type_id::create($sformatf("monitor%0d",n), this);
+        monitor_ag[n].drv_num=n;
         sequencer_ag[n] = uvm_sequencer #(transaction)::type_id::create($sformatf("uvm_sequencer%0d",n), this);
       end
       
     endfunction
     
   function void connect_phase(uvm_phase phase);
-    for (int i=0; i<16;  i++) begin
+    for (int i=0; i<(`ROWS*2+`COLUMS*2);  i++) begin
        automatic int n=i;
       
       driver_ag[n].seq_item_port.connect(sequencer_ag[n].seq_item_export);
@@ -45,9 +46,9 @@ class agent extends uvm_agent;
       begin
         my_sequence secuencia;
         secuencia = my_sequence::type_id::create("secuencia");
-         for (int i=0; i<16;  i++) begin
+         for (int i=0; i<(`ROWS*2+`COLUMS*2);  i++) begin
       		 automatic int n=i;
-           secuencia.start(sequencer_ag[n]);
+           secuencia.start(sequencer_ag[n]);//aqui envia los paquetes
          end
       end
       phase.drop_objection(this);
