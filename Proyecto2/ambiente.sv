@@ -1,6 +1,6 @@
 class ambiente  #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, parameter deep_fifo = 4);
   
-
+  //creando instancias de las clases 
   agent #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .deep_fifo(deep_fifo)) agente_inst;
    
   driver #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .deep_fifo(deep_fifo)) driver_inst [ROWS*2+COLUMS*2];
@@ -10,7 +10,7 @@ class ambiente  #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, p
   check #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .deep_fifo(deep_fifo)) check_inst;
   scoreboard #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .deep_fifo(deep_fifo)) sb_inst;
   
-  revision #(.pckg(pckg_sz)) revision_inst;
+  revision #(.pckg(pckg_sz)) revision_inst; //clase para revisar las señales internas del DUT;
   
   //Declaración de la interface que conecta el DUT
   virtual mesh_gnrtr_vif  #(.ROWS(ROWS), .COLUMS(COLUMS), .pckg_sz(pckg_sz), .fifo_depth(deep_fifo)) vif;
@@ -18,14 +18,14 @@ class ambiente  #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, p
   //declaracion de los maiboxes
   //trans_fifo_mbx #(.pckg_sz(pckg_sz)) mnr_ckr_mbx; //Mailbox del agente al driver
   trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_drv_mbx; //Mailbox del agente al driver
-  trans_fifo_mbx #(.pckg_sz(pckg_sz)) mnr_ckr_mbx;
-  trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_sb_mbx;     //Mailbox agente al scoreboard
-  trans_sb_mbx  #(.pckg_sz(pckg_sz))  ckr_sb_mbx;
-  trans_fifo_mbx #(.pckg_sz(pckg_sz)) sb_ckr_mbx;
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) mnr_ckr_mbx;  //Mailbox del monitor al checker
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) agnt_sb_mbx;  //Mailbox agente al scoreboard
+  trans_sb_mbx  #(.pckg_sz(pckg_sz))  ckr_sb_mbx;   //Mailbox del checker al scoreboard
+  trans_fifo_mbx #(.pckg_sz(pckg_sz)) sb_ckr_mbx;   //Mailbox del scoreboard al checker
 
-  trans_revision_mbx revision_ckr_mbx; 
+  trans_revision_mbx revision_ckr_mbx;      //Mailbox de revision al checker
   comando_test_agent_mbx test_agent_mbx;    //Mailbox del test al agente 
-  comando_test_sb_mbx   test_sb_mbx;
+  comando_test_sb_mbx   test_sb_mbx;        //Mailbox del test al score board
   
 
   function new();
@@ -63,18 +63,21 @@ class ambiente  #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, p
     sb_inst.test_sb_mbx = test_sb_mbx;
     revision_inst.revision_ckr_mbx=revision_ckr_mbx;
     
-
+//Se llaman a las funciones de new() de cada uno de los modulos, por medio de un for limitado por laa cantidad de filas y columnas
+//se van creando  cada driver y monitor 
     for (int i=0; i<(ROWS*2+COLUMS*2);  i++) begin
       
       driver_inst[i]=new(i);
       monitor_inst[i]=new(i);
       monitor_inst[i].vif=vif;
       monitor_inst[i].mnr_ckr_mbx=mnr_ckr_mbx;
-      driver_inst[i].fifo_in.vif=vif;
+      driver_inst[i].fifo_in.vif=vif;//se conectan cada una de las interfaces conforme se van creando 
       driver_inst[i].agnt_drv_mbx = agnt_drv_mbx;
     end
   
   endfunction
+
+//se utiliza un automatic para no perder el "valor anterior", ya que al crearse solo se crea un último
 
   virtual task run();
     $display("[%g]  El ambiente fue inicializado",$time);
@@ -86,9 +89,6 @@ class ambiente  #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, p
       join_none
     end
     
-    //vif.reset=1;
-    //#20;
-    //vif.reset=0;
     fork
       agente_inst.run();
       revision_inst.run();

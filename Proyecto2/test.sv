@@ -1,9 +1,9 @@
 class test #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, parameter deep_fifo = 4, parameter num_transacciones);
     //Nose si va el mailbox al score board 
-    comando_test_agent_mbx test_agent_mbx;
-    comando_test_sb_mbx   test_sb_mbx;
+    comando_test_agent_mbx test_agent_mbx; //Mailbox del test al agente
+    comando_test_sb_mbx   test_sb_mbx;     //Mailbox del test al scoreboard
   
-    parameter max_retardo = 10;
+    parameter max_retardo = 10;       
   	instrucciones_agente instr_agent;
     
     solicitud_sb instr_sb;
@@ -28,7 +28,7 @@ class test #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, parame
         fork
         	ambiente_inst.run();
         join_none
-
+        // Generacion de instrucciones para el agente/generador
         instr_agent = llenado_aleatorio; 
         test_agent_mbx.put(instr_agent);//envia la instruccion que se desea al agente 
         $display("[%g]  Test: Enviada la primera instruccion al agente de llenado_aleatorio con num_transacciones %g",$time,num_transacciones);

@@ -2,9 +2,15 @@ Library.sv
 Router_library.sv
 agent.sv
 ambiente.sv
+check.sv
+driver.sv
 fifo.sv
+fifo_in.sv
 interface.sv
 interface_transactions.sv
+monitor.sv
 my_package.sv
+revision.sv
+scoreboard.sv
 test.sv
 testbench.sv

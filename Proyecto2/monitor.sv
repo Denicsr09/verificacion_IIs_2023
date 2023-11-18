@@ -23,7 +23,8 @@ class monitor #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, par
     	//this.tiempo_out=tiempo;
 
 	endfunction
- 
+ //el monitor funciona muy similar al driver, en este caso solo hace una recepcion  de las señales de salida del 
+ //dut para enviarlosposteriormente al checker 
   task run();
     
     this.vif.pop[this.mnr_num]=0;
@@ -37,7 +38,7 @@ class monitor #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, par
       if(this.vif.pndng[this.mnr_num]) begin
         
         transaccion = new(); 
-        transaccion.dato=this.vif.data_out[mnr_num];
+        transaccion.dato=this.vif.data_out[mnr_num];//se toma la señal de salida del dut
 
         transaccion.tiempo=$time;
         mnr_ckr_mbx.put(transaccion);
@@ -46,7 +47,7 @@ class monitor #(parameter ROWS=4,parameter COLUMS=4, parameter pckg_sz = 40, par
         
         if(vif.data_out[mnr_num] != 0) begin
           $display("target %d y terminal %d,dato %b",transaccion.dato[pckg_sz-9 : pckg_sz-16],terminales[mnr_num],transaccion.dato);
-          assert(transaccion.dato[pckg_sz-9 : pckg_sz-16] == terminales[mnr_num])
+          assert(transaccion.dato[pckg_sz-9 : pckg_sz-16] == terminales[mnr_num])//assert para detectar si el dato llego a la terminal correcta 
           else $warning("Dato no llego a la terminal correcta");
         end
         
