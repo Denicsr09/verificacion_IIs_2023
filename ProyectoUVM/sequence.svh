@@ -3,6 +3,7 @@ class transaction extends uvm_sequence_item;
   
   `uvm_object_utils(transaction)
   
+ 
   rand int retardo; // tiempo de retardo en ciclos de reloj que se debe esperar antes de ejecutar la transacción
   bit[`pckg_sz-1:0] dato ; // este es el dato de la transacción
   rand bit [`pckg_sz-18:0] payload;//informacion  enviada
@@ -19,6 +20,11 @@ class transaction extends uvm_sequence_item;
   constraint const_target { if (row==0 | row==`ROWS+1) colum!=0 & colum!=`COLUMS+1 ;};
   constraint const_target2 { if (colum==0 | colum==`COLUMS+1) row!=0 & row!=`ROWS+1 ;};
   constraint const_target3 { if (row!=0 & row!=`ROWS+1) colum==0 | colum==`COLUMS+1 ;};
+  constraint const_target4 { if (colum!=0 & colum!=`ROWS+1) row==0 | row==`COLUMS+1 ;};
+  
+  
+  
+  
   
   function new (string name = "");
       super.new(name);
@@ -36,7 +42,12 @@ endclass
 class my_sequence extends uvm_sequence #(transaction);
   
     `uvm_object_utils(my_sequence)
-    
+    randc int numTrans=1; 
+  	constraint const_numTrans { numTrans>=0; numTrans<=4 ;};
+  	
+  
+  
+  
     function new (string name = "");
       super.new(name);
     endfunction
@@ -45,15 +56,18 @@ class my_sequence extends uvm_sequence #(transaction);
       /*if (starting_phase != null)
         starting_phase.raise_objection(this);
 */
-      repeat(1)
-      begin
+      
         req = transaction::type_id::create("req");
         start_item(req);
         if( !req.randomize() )
+          
           `uvm_error("", "Randomize failed")
           req.dato={req.nxt_jump,req.row,req.colum,req.mode,req.payload};
+          $display("Prueba num trans %0d",numTrans );
+     
         finish_item(req);
-      end
+    
+      
       
   /*    if (starting_phase != null)
         starting_phase.drop_objection(this);*/

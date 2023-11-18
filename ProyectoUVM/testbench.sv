@@ -3,10 +3,8 @@
 `include "Router_library.sv"
 `include "interface.sv"
 `include "test.sv"
-//`include "env.sv"
-//`include "agent.sv"
-//`include "driver.sv"
-//`include "monitor.sv"
+
+
 
 module tb_top;
   import uvm_pkg::*;
@@ -33,8 +31,6 @@ module tb_top;
     $dumpfile("dump.vcd");
     $dumpvars(0,tb_top);
   end
-  /*initial begin
-    $finish; 
-  end*/
+  
   
 endmodule
