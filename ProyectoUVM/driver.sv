@@ -19,7 +19,7 @@ class driver extends uvm_driver#(transaction);
   endfunction
   
   virtual task run_phase(uvm_phase phase);
-   
+    super.run_phase(phase);
    // phase.raise_objection(this, "starting test_seq");
     vif.reset=1;
   	#10;
@@ -28,8 +28,10 @@ class driver extends uvm_driver#(transaction);
     vif.pndng_i_in[drv_num]=0;
   	#10;
     forever begin
+      transaction req;
+      //`uvm_info("DRV",$sformatf("Wait for item from sequencer"), UVM_LOW);
       seq_item_port.get_next_item(req);
-	  
+      
       $display("dato enviado %b, drvSource %0d ,target row= %0d colum= %0d", req.dato,drv_num , req.row, req.colum);
       
       vif.data_out_i_in[drv_num]=req.dato;
@@ -49,10 +51,7 @@ class driver extends uvm_driver#(transaction);
     
    // phase.drop_objection(this, "finished test_seq");
       
-    
-    
   endtask
   
 endclass
-
 
