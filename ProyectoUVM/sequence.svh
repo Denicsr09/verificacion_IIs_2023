@@ -94,6 +94,9 @@ class my_sequence extends uvm_sequence #(transaction);
   
   int terminales [] = {01,02,03,04,10,20,30,40,51,52,53,54,15,25,35,45};
   int max_retardo = 10;
+  int l = 0;
+  int i = 0;
+  reg [`pckg_sz-18:0] lista_especifica [] = '{{`pckg_sz{4'hF}},{`pckg_sz{4'h0}},{`pckg_sz{4'hA}}, {`pckg_sz{4'h5}}};
   rand int seqdrvSource;
   pruebas instr_agnt;
   
@@ -112,7 +115,8 @@ class my_sequence extends uvm_sequence #(transaction);
         m_trans.tipo = tpo_spec;
         $display("Dato: %0d", m_trans.dato);
         `uvm_info("SEQ", $sformatf("Generate new item: %s", m_trans.convert2str()),UVM_LOW)
-        `uvm_info("SEQ",$sformatf("Generate new item:Retardo: %0d Tipo: %s", m_trans.retardo,m_trans.tipo),UVM_LOW);
+        `uvm_info("SEQ",$sformatf("Generate new item:Dato: %0d Retardo: %0d Tipo: %s", 
+                                  m_trans.dato,m_trans.retardo,m_trans.tipo),UVM_LOW);
         //m_trans.print();
     	finish_item(m_trans);
       end
@@ -127,7 +131,8 @@ class my_sequence extends uvm_sequence #(transaction);
         tpo_spec = escritura;
         m_trans.tipo = tpo_spec;
         `uvm_info("SEQ", $sformatf("Generate new item: %s", m_trans.convert2str()),UVM_LOW)
-        `uvm_info("SEQ",$sformatf("Generate new item:Retardo: %0d Tipo: %s", m_trans.retardo,m_trans.tipo),UVM_LOW);
+        `uvm_info("SEQ",$sformatf("Generate new item:Dato: %0d Retardo: %0d Tipo: %s", 
+                                  m_trans.dato,m_trans.retardo,m_trans.tipo),UVM_LOW);
         //m_trans.print();
     	finish_item(m_trans);
       end
@@ -142,7 +147,80 @@ class my_sequence extends uvm_sequence #(transaction);
         tpo_spec = escritura;
         m_trans.tipo = tpo_spec;
         `uvm_info("SEQ", $sformatf("Generate new item: %s", m_trans.convert2str()),UVM_LOW)
-        `uvm_info("SEQ",$sformatf("Generate new item:Retardo: %0d Tipo: %s", m_trans.retardo,m_trans.tipo),UVM_LOW);
+        `uvm_info("SEQ",$sformatf("Generate new item:Dato: %0d Retardo: %0d Tipo: %s", 
+                                  m_trans.dato,m_trans.retardo,m_trans.tipo),UVM_LOW);
+        //m_trans.print();
+    	finish_item(m_trans);
+      end
+      intersec_data_espec: begin
+        transaction m_trans = transaction :: type_id::create("m_trans");
+        start_item(m_trans);
+        m_trans.max_retardo = max_retardo;
+        m_trans.randomize();
+        m_trans.retardo = 1;
+        if (seqdrvSource  == 0) begin
+          m_trans.row = 5;
+          m_trans.colum = 1;
+          m_trans.drvSource = seqdrvSource;
+        end
+        else begin
+          m_trans.row = 2;
+          m_trans.colum = 5;
+          m_trans.drvSource = seqdrvSource;
+        end
+        m_trans.concatena();
+        tpo_spec = escritura;
+        m_trans.tipo = tpo_spec;
+        `uvm_info("SEQ", $sformatf("Generate new item: %s", m_trans.convert2str()),UVM_LOW)
+        `uvm_info("SEQ",$sformatf("Generate new item:Dato: %0d Retardo: %0d Tipo: %s", 
+                                  m_trans.dato,m_trans.retardo,m_trans.tipo),UVM_LOW);
+        //m_trans.print();
+    	finish_item(m_trans);
+      end
+      intersec_data: begin
+        transaction m_trans = transaction :: type_id::create("m_trans");
+        if(l == 4) begin
+          l=0;
+        end
+        start_item(m_trans);
+        m_trans.max_retardo = max_retardo;
+        m_trans.randomize();
+        m_trans.retardo = 1;
+        if(seqdrvSource >= 8)begin
+          m_trans.drvSource = seqdrvSource;
+          m_trans.row = terminales[seqdrvSource-8]/10;
+          m_trans.colum = terminales[seqdrvSource-8]%10;
+          m_trans.payload = lista_especifica[l];
+        end
+        else begin
+          m_trans.drvSource = seqdrvSource;
+          m_trans.row = terminales[seqdrvSource+8]/10;
+          m_trans.colum = terminales[seqdrvSource+8]%10;
+          m_trans.payload = lista_especifica[l];
+        end
+        m_trans.concatena();
+        tpo_spec = escritura;
+        m_trans.tipo = tpo_spec;
+        `uvm_info("SEQ", $sformatf("Generate new item: %s", m_trans.convert2str()),UVM_LOW)
+        `uvm_info("SEQ",$sformatf("Generate new item:Dato: %0h Retardo: %0d Tipo: %s", 
+                                  m_trans.dato,m_trans.retardo,m_trans.tipo),UVM_LOW);
+        l = l+1;
+        finish_item(m_trans);
+      end
+      envio_especfico: begin
+        transaction m_trans = transaction :: type_id::create("m_trans");
+        start_item(m_trans);
+        m_trans.max_retardo = max_retardo;
+        m_trans.randomize();
+        m_trans.drvSource = seqdrvSource;
+        m_trans.row = 0;
+        m_trans.colum = 1;
+        m_trans.concatena();
+        tpo_spec = escritura;
+        m_trans.tipo = tpo_spec;
+        `uvm_info("SEQ", $sformatf("Generate new item: %s", m_trans.convert2str()),UVM_LOW)
+        `uvm_info("SEQ",$sformatf("Generate new item:Dato: %0d Retardo: %0d Tipo: %s", 
+                                  m_trans.dato,m_trans.retardo,m_trans.tipo),UVM_LOW);
         //m_trans.print();
     	finish_item(m_trans);
       end

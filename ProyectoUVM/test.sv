@@ -33,17 +33,17 @@ class test extends uvm_test;
   
   virtual task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    /*
+    
     instr_test = llenado_aleatorio;
     seq_test.instr_agnt =instr_test;
     `uvm_info("SEQ",$sformatf("Prueba de llenado aleatorio"), UVM_LOW)
     for (int i=0; i< cant_trans;i++)begin
       seq_test.randomize() with {seqdrvSource inside{[0:15]};};
-      $display("El Driver randomizado desde afuera es %0d",seq_test.seqdrvSource);
+      //$display("El Driver randomizado desde afuera es %0d",seq_test.seqdrvSource);
       seq_test.start(env_test.agent_env.sequencer_ag[seq_test.seqdrvSource]);
       `uvm_info("TEST", $sformatf("Done of generation of %0d items",i), UVM_LOW)
     end
-    
+    /*
     instr_test = trans_filas;
     seq_test.instr_agnt =instr_test;
     `uvm_info("TEST", $sformatf("Prueba de transaccion filas"), UVM_LOW)
@@ -53,7 +53,7 @@ class test extends uvm_test;
       `uvm_info("TEST", $sformatf("Done of generation of %0d items",i), UVM_LOW)
     end
     
-    */
+    
     instr_test = trans_colum;
     seq_test.instr_agnt =instr_test;
     `uvm_info("TEST", $sformatf("Prueba de transaccion columnas"), UVM_LOW)
@@ -63,6 +63,42 @@ class test extends uvm_test;
       `uvm_info("TEST", $sformatf("Done of generation of %0d items",i), UVM_LOW)
     end
     
+    instr_test = intersec_data_espec;
+    seq_test.instr_agnt =instr_test;
+    `uvm_info("TEST", $sformatf("Prueba de intersección de dato especifico"), UVM_LOW)
+    for(int i = 0; i < 4;i++) begin
+      seq_test.seqdrvSource =0;
+      seq_test.start(env_test.agent_env.sequencer_ag[seq_test.seqdrvSource]);
+      `uvm_info("TEST", $sformatf("Done of generation of %0d items",i), UVM_LOW)
+    end
+    for(int i = 0; i < 4;i++) begin
+      seq_test.seqdrvSource =5;
+      seq_test.start(env_test.agent_env.sequencer_ag[seq_test.seqdrvSource]);
+      `uvm_info("TEST", $sformatf("Done of generation of %0d items",i), UVM_LOW)
+    end
+    
+    instr_test = intersec_data;
+    seq_test.instr_agnt =instr_test;
+    `uvm_info("TEST", $sformatf("Prueba de intersección de datos"), UVM_LOW)
+    for(int i = 0; i < 8;i++) begin
+      seq_test.seqdrvSource = i;
+      seq_test.start(env_test.agent_env.sequencer_ag[seq_test.seqdrvSource]);
+      `uvm_info("TEST", $sformatf("Done of generation of %0d items",i), UVM_LOW)
+      seq_test.seqdrvSource = i+8;
+      seq_test.start(env_test.agent_env.sequencer_ag[seq_test.seqdrvSource]);
+      `uvm_info("TEST", $sformatf("Done of generation of %0d items",i+2), UVM_LOW)
+      
+    end
+    
+    instr_test = envio_especfico;
+    seq_test.instr_agnt =instr_test;
+    `uvm_info("TEST", $sformatf("Prueba de envio especifico"), UVM_LOW)
+    for(int i = 0; i < 16;i++) begin
+      seq_test.seqdrvSource = i;
+      seq_test.start(env_test.agent_env.sequencer_ag[seq_test.seqdrvSource]);
+      `uvm_info("TEST", $sformatf("Done of generation of %0d items",i+2), UVM_LOW)
+    end
+    */
     
     #2000
     phase.drop_objection(this);
