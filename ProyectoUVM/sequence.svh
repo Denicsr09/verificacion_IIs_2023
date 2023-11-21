@@ -1,4 +1,18 @@
 `include "macros.sv"
+
+/////////////////////////////////////////////////////////////////////////
+// Definición de estructura para las pruebas a realizar                //
+/////////////////////////////////////////////////////////////////////////
+
+typedef enum {llenado_aleatorio,trans_filas,trans_colum,intersec_data_espec,intersec_data,envio_especfico} pruebas;
+
+
+//////////////////////////////////////////////////////////////
+// Definición del tipo de transacciones posibles en la fifo //
+//////////////////////////////////////////////////////////////
+
+typedef enum { lectura, escritura, reset} tipo_trans; 
+
 class transaction extends uvm_sequence_item;
   
   `uvm_object_utils(transaction)
@@ -14,11 +28,11 @@ class transaction extends uvm_sequence_item;
   bit [`pckg_sz-8 : `pckg_sz-1] nxt_jump;
   rand int drvSource;//driver de donde sale el dato enviado
   int tiempo; //Representa el tiempo  de la simulación en el que se ejecutó la transacción 
-  //rand tipo_trans tipo; // lectura, escritura, reset;
+  tipo_trans tipo; // lectura, escritura, reset;
   int max_retardo; //tiempo de retardo entre transaccion
   int completo;
   
-  constraint const_retardo {retardo < 15; retardo>0;};
+  constraint const_retardo {retardo < max_retardo; retardo>0;};
   constraint const_payload {payload>0;};
   //constraint const_mode {mode==1;};
   constraint const_drvSource { 0 <= drvSource ; drvSource <= 15;};
@@ -51,7 +65,9 @@ class transaction extends uvm_sequence_item;
     //row = target/10;
     //colum = target%10;
     //$display("row = %0d colum= %0d target = %d", this.row, this.colum, this.target );
+    
     dato= {nxt_jump,row,colum,mode,payload};//se concatena el ID con el payload 
+    /*
     //$display("Dato concatenado:%b", this.dato);
     $display("dato partes: nxt_jump=%h, row=%d, colum =%d, mode=%b, payload =%b",
             this.nxt_jump,
@@ -59,6 +75,7 @@ class transaction extends uvm_sequence_item;
             this.colum,
             this.mode,
             this.payload);
+            */
   endfunction;
    
    
@@ -74,19 +91,65 @@ class my_sequence extends uvm_sequence #(transaction);
   
   randc int numTrans=1; 
   constraint const_numTrans { numTrans>=0; numTrans<=4 ;};
-  	
   
+  int terminales [] = {01,02,03,04,10,20,30,40,51,52,53,54,15,25,35,45};
+  int max_retardo = 10;
+  rand int seqdrvSource;
+  pruebas instr_agnt;
+  
+  tipo_trans tpo_spec;  
   
   virtual task body();
-    for (int i = 0; i < numTrans; i ++)begin
-      transaction m_trans = transaction :: type_id::create("m_trans");
-      start_item(m_trans);
-      m_trans.randomize();
-      m_trans.concatena();
-      `uvm_info("SEQ", $sformatf("Generate new item: %s", m_trans.convert2str()),UVM_LOW)
-      finish_item(m_trans);
-    end
-    `uvm_info("SEQ", $sformatf("Done of generation of %0d items",numTrans), UVM_LOW)
+    case(instr_agnt)
+      llenado_aleatorio: begin
+        transaction m_trans = transaction :: type_id::create("m_trans");
+        start_item(m_trans);
+        m_trans.max_retardo = max_retardo;
+        m_trans.randomize() with { row != terminales[seqdrvSource]/10; colum != terminales[seqdrvSource]%10;};
+        m_trans.drvSource = seqdrvSource;
+        m_trans.concatena();
+        tpo_spec = escritura;
+        m_trans.tipo = tpo_spec;
+        $display("Dato: %0d", m_trans.dato);
+        `uvm_info("SEQ", $sformatf("Generate new item: %s", m_trans.convert2str()),UVM_LOW)
+        `uvm_info("SEQ",$sformatf("Generate new item:Retardo: %0d Tipo: %s", m_trans.retardo,m_trans.tipo),UVM_LOW);
+        //m_trans.print();
+    	finish_item(m_trans);
+      end
+      trans_filas:begin
+        transaction m_trans = transaction :: type_id::create("m_trans");
+        start_item(m_trans);
+        m_trans.max_retardo = max_retardo;
+        m_trans.randomize() with { row != terminales[seqdrvSource]/10; colum != terminales[seqdrvSource]%10;};
+        m_trans.mode = 1;
+        m_trans.drvSource = seqdrvSource;
+        m_trans.concatena();
+        tpo_spec = escritura;
+        m_trans.tipo = tpo_spec;
+        `uvm_info("SEQ", $sformatf("Generate new item: %s", m_trans.convert2str()),UVM_LOW)
+        `uvm_info("SEQ",$sformatf("Generate new item:Retardo: %0d Tipo: %s", m_trans.retardo,m_trans.tipo),UVM_LOW);
+        //m_trans.print();
+    	finish_item(m_trans);
+      end
+      trans_colum: begin
+        transaction m_trans = transaction :: type_id::create("m_trans");
+        start_item(m_trans);
+        m_trans.max_retardo = max_retardo;
+        m_trans.randomize() with { row != terminales[seqdrvSource]/10; colum != terminales[seqdrvSource]%10;};
+        m_trans.mode = 0;
+        m_trans.drvSource = seqdrvSource;
+        m_trans.concatena();
+        tpo_spec = escritura;
+        m_trans.tipo = tpo_spec;
+        `uvm_info("SEQ", $sformatf("Generate new item: %s", m_trans.convert2str()),UVM_LOW)
+        `uvm_info("SEQ",$sformatf("Generate new item:Retardo: %0d Tipo: %s", m_trans.retardo,m_trans.tipo),UVM_LOW);
+        //m_trans.print();
+    	finish_item(m_trans);
+      end
+    endcase
+    
+  
+    
   endtask
   
     

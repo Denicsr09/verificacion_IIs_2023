@@ -5,6 +5,7 @@ class driver extends uvm_driver#(transaction);
   
   virtual dut_if vif;
   int drv_num;
+  transaction req;
 
   function new(string  name, uvm_component parent);
     super.new(name,parent);
@@ -28,22 +29,23 @@ class driver extends uvm_driver#(transaction);
     vif.pndng_i_in[drv_num]=0;
   	#10;
     forever begin
-      transaction req;
+      @(posedge vif.clk);
       //`uvm_info("DRV",$sformatf("Wait for item from sequencer"), UVM_LOW);
       seq_item_port.get_next_item(req);
-      
-      $display("dato enviado %b, drvSource %0d ,target row= %0d colum= %0d", req.dato,drv_num , req.row, req.colum);
-      
-      vif.data_out_i_in[drv_num]=req.dato;
-      vif.pndng_i_in[drv_num]=1;
-      
-      @(posedge vif.popin[drv_num])begin
+      //$display("DatoSource: %0d y drv_num: %0d",req.drvSource,drv_num);
+      if(req.drvSource == drv_num) begin
+    
+        $display("dato enviado %b, drvSource %0d ,target row= %0d colum= %0d", req.dato,drv_num , req.row, req.colum);
+        vif.data_out_i_in[drv_num]=req.dato;
+        vif.pndng_i_in[drv_num]=1;
         
-        vif.pndng_i_in[drv_num]=0;
-        
+        @(posedge vif.popin[drv_num])begin
+          vif.pndng_i_in[drv_num]=0;
+        end
+       
       end
-      
       seq_item_port.item_done();
+      
       
       
       
