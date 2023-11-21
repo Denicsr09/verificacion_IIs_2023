@@ -1,6 +1,5 @@
 `include "agent.sv"
 `include "scoreboard.sv"
-
 class env extends uvm_env;
   `uvm_component_utils(env)
     
@@ -26,7 +25,7 @@ class env extends uvm_env;
        automatic int n=i;
       
        agent_env.monitor_ag[n].mon_analysis_port.connect(scoreboard_env.m_analysis_imp);
-       //agent_env.driver_ag[n].drv_analysis_port.connect(scoreboard_env.m_analysis_imp);
+       agent_env.driver_ag[n].drv_analysis_port.connect(scoreboard_env.drv_analysis_imp);
     end
     
   endfunction

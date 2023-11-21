@@ -1,4 +1,6 @@
 `include "macros.sv"
+
+
 class transaction_monitor extends uvm_object;
   
   int retardo; 
@@ -16,7 +18,6 @@ class transaction_monitor extends uvm_object;
   endfunction
     
  endclass
-
 
 
 

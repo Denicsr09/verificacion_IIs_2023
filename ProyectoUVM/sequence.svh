@@ -45,7 +45,7 @@ class transaction extends uvm_sequence_item;
   
   
   virtual function string convert2str();
-    return $sformatf("Nxt Jump: %b, Row: %0d, Colum: %0d, Mode: %0b, Payload: %0d, DrvSource: %0d, dato:%0b"
+    return $sformatf("Nxt Jump: %b, Row: %0d, Colum: %0d, Mode: %0b, Payload: %0d, DrvSource: %0d, dato:%b"
                      ,nxt_jump,row,colum,mode, payload, drvSource, dato);
   endfunction
   

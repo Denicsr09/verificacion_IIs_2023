@@ -6,7 +6,7 @@ class driver extends uvm_driver#(transaction);
   virtual dut_if vif;
   int drv_num;
   transaction req;
-  
+  int espera;
   
   
   function new(string  name, uvm_component parent);
@@ -14,8 +14,9 @@ class driver extends uvm_driver#(transaction);
   endfunction
   
   //Puerto de analisis para enviar los datos escritos del driver al scoreboard
-  transaction_driver transaction_drv; 
-  uvm_analysis_port#(transaction_driver) drv_analysis_port;
+  //transaction_driver transaction_drv; 
+  
+  uvm_analysis_port#(transaction) drv_analysis_port;
 
   virtual function void build_phase(uvm_phase phase);
     super.build_phase (phase);//fase de construccion
@@ -38,12 +39,21 @@ class driver extends uvm_driver#(transaction);
       @(posedge vif.clk);
       //`uvm_info("DRV",$sformatf("Wait for item from sequencer"), UVM_LOW);
       seq_item_port.get_next_item(req);
+      espera = 0;
       $display("DatoSource: %0d y drv_num: %0d",req.drvSource,drv_num);
       if(req.drvSource == drv_num) begin
-    
-        $display("dato enviado %b, drvSource %0d ,target row= %0d colum= %0d", req.dato,drv_num , req.row, req.colum);
-        vif.data_out_i_in[drv_num]=req.dato;
-        vif.pndng_i_in[drv_num]=1;
+        while(espera < req.retardo)begin
+          if(espera == req.retardo -1) begin
+            vif.data_out_i_in[drv_num]=req.dato;
+            vif.pndng_i_in[drv_num]=1;
+            req.tiempo = $time;
+            `uvm_info("DRIVER", $sformatf("Dato enviado %d, Tiempo: %0d, drvSource %0d ,target row= %0d colum= %0d", 
+                                          req.dato,$time,drv_num , req.row, req.colum), UVM_LOW)
+            drv_analysis_port.write(req);
+            
+          end
+          espera = espera + 1;
+        end
         
         @(posedge vif.popin[drv_num])begin
           vif.pndng_i_in[drv_num]=0;
