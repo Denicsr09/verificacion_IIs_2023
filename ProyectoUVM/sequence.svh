@@ -113,7 +113,6 @@ class my_sequence extends uvm_sequence #(transaction);
         m_trans.concatena();
         tpo_spec = escritura;
         m_trans.tipo = tpo_spec;
-        $display("Dato: %0d", m_trans.dato);
         `uvm_info("SEQ", $sformatf("Generate new item: %s", m_trans.convert2str()),UVM_LOW)
         `uvm_info("SEQ",$sformatf("Generate new item:Dato: %0d Retardo: %0d Tipo: %s", 
                                   m_trans.dato,m_trans.retardo,m_trans.tipo),UVM_LOW);

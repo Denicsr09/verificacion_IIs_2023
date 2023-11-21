@@ -33,7 +33,7 @@ class test extends uvm_test;
   
   virtual task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    
+    apply_reset();
     instr_test = llenado_aleatorio;
     seq_test.instr_agnt =instr_test;
     `uvm_info("SEQ",$sformatf("Prueba de llenado aleatorio"), UVM_LOW)
@@ -104,5 +104,18 @@ class test extends uvm_test;
     phase.drop_objection(this);
   endtask
   
+  virtual task apply_reset();
+    vif.reset <= 1;
+    for (int i=0; i< 16;i++)begin
+      automatic int n=i;
+      vif.data_out_i_in[i]=0;
+      vif.pndng_i_in[i]=0;
+      vif.pop[i]=0;
+    end
+    repeat(5) @(posedge vif.clk);
+    vif.reset <=0;
+    repeat(10) @(posedge vif.clk);
+  endtask
+    
 
  endclass

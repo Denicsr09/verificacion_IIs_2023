@@ -1,4 +1,3 @@
-`include "objects.sv"
 `include "macros.sv"
 class monitor extends uvm_monitor;
   `uvm_component_utils (monitor)
@@ -28,8 +27,8 @@ class monitor extends uvm_monitor;
   
   virtual task run_phase(uvm_phase phase);
 	
-    vif.pop[drv_num]=0;
-    #10;
+    //vif.pop[drv_num]=0;
+    //#10;
     phase.raise_objection(this);
      forever begin
       
@@ -60,5 +59,4 @@ class monitor extends uvm_monitor;
   endtask
   
 endclass
-
 
