@@ -230,12 +230,12 @@ class scoreboard extends uvm_scoreboard;
       `uvm_info("SB",$sformatf("INICIANDO LA FASE DE chequeo"),UVM_LOW)
       foreach(list_sb[i])begin
         foreach(list_mnr[j])begin 
-          if(list_sb[i].dato[`pckg_sz-9:0]==list_sb[j].dato[`pckg_sz-9:0]) begin
+          if(list_sb[i].dato[`pckg_sz-9:0]==list_mnr[j].dato[`pckg_sz-9:0]) begin
             list_verif[transacciones_completadas] = trans_sb::type_id::create($sformatf("list_verif[%0d]", transacciones_completadas));
           	list_verif[transacciones_completadas].dato_enviado = list_sb[i].dato;
           	list_verif[transacciones_completadas].dato_enviado = list_sb[i].dato;
           	list_verif[transacciones_completadas].tiempo_push  = list_sb[i].tiempo;
-          	list_verif[transacciones_completadas].tiempo_pop   = list_sb[j].tiempo;
+          	list_verif[transacciones_completadas].tiempo_pop   = list_mnr[j].tiempo;
           	list_verif[transacciones_completadas].drvSource_push = terminales[list_sb[i].drvSource];
           	list_verif[transacciones_completadas].ID_pop = list_sb[i].target;
           	list_verif[transacciones_completadas].mode = list_sb[i].mode;
