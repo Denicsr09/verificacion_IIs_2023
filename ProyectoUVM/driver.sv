@@ -1,5 +1,4 @@
 `include "sequence.svh"
-`include "objects.sv"
 class driver extends uvm_driver#(transaction);
   `uvm_component_utils (driver)
   
@@ -40,7 +39,7 @@ class driver extends uvm_driver#(transaction);
       //`uvm_info("DRV",$sformatf("Wait for item from sequencer"), UVM_LOW);
       seq_item_port.get_next_item(req);
       espera = 0;
-      $display("DatoSource: %0d y drv_num: %0d",req.drvSource,drv_num);
+      //$display("DatoSource: %0d y drv_num: %0d",req.drvSource,drv_num);
       if(req.drvSource == drv_num) begin
         while(espera < req.retardo)begin
           if(espera == req.retardo -1) begin

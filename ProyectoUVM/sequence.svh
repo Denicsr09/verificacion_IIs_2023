@@ -22,7 +22,7 @@ class transaction extends uvm_sequence_item;
   bit[`pckg_sz-1:0] dato ; // este es el dato de la transacción
   rand bit [`pckg_sz-18:0] payload;//informacion  enviada
   rand bit [`pckg_sz-17:`pckg_sz-17] mode;
-  //rand bit [31 : 24] target;
+  bit [31 : 24] target;
   rand bit [`pckg_sz-9: `pckg_sz-12] row;
   rand bit [`pckg_sz-13: `pckg_sz-16] colum;
   bit [`pckg_sz-8 : `pckg_sz-1] nxt_jump;
@@ -65,7 +65,7 @@ class transaction extends uvm_sequence_item;
     //row = target/10;
     //colum = target%10;
     //$display("row = %0d colum= %0d target = %d", this.row, this.colum, this.target );
-    
+    target = row*10+colum; 
     dato= {nxt_jump,row,colum,mode,payload};//se concatena el ID con el payload 
     /*
     //$display("Dato concatenado:%b", this.dato);
@@ -114,7 +114,7 @@ class my_sequence extends uvm_sequence #(transaction);
         tpo_spec = escritura;
         m_trans.tipo = tpo_spec;
         `uvm_info("SEQ", $sformatf("Generate new item: %s", m_trans.convert2str()),UVM_LOW)
-        `uvm_info("SEQ",$sformatf("Generate new item:Dato: %0d Retardo: %0d Tipo: %s", 
+        `uvm_info("SEQ",$sformatf("Generate new item:Dato: %0h Retardo: %0d Tipo: %s", 
                                   m_trans.dato,m_trans.retardo,m_trans.tipo),UVM_LOW);
         //m_trans.print();
     	finish_item(m_trans);
