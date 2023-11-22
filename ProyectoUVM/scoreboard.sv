@@ -10,6 +10,7 @@ class scoreboard extends uvm_scoreboard;
   uvm_analysis_imp #(transaction,scoreboard) drv_analysis_imp;
   
   transaction list_sb[int];//arreglo asoc con indice de tipo int 
+  transaction list_mnr[int]; //Lista para guardar los datos del monitor
   trans_sb    list_verif[int];
   
   //Variables utilizadas para generar el gold reference
@@ -214,27 +215,7 @@ class scoreboard extends uvm_scoreboard;
       //$display("Dato recibido desde el monitor %b", transaction_sb.dato);
       `uvm_info("SB", $sformatf("En el tiempo: %0d se recibe desde el monitor el dato: %h",
                                 transaction_sb.tiempo,transaction_sb.dato ), UVM_LOW)
-      foreach(list_sb[i])begin
-        if(list_sb[i].dato[`pckg_sz-9:0]==transaction_sb.dato[`pckg_sz-9:0]) begin
-          list_verif[transacciones_completadas] = trans_sb::type_id::create($sformatf("list_verif[%0d]", transacciones_completadas));
-          list_verif[transacciones_completadas].dato_enviado = list_sb[i].dato;
-          list_verif[transacciones_completadas].dato_enviado = list_sb[i].dato;
-          list_verif[transacciones_completadas].tiempo_push  = list_sb[i].tiempo;
-          list_verif[transacciones_completadas].tiempo_pop   = transaction_sb.tiempo;
-          list_verif[transacciones_completadas].drvSource_push = terminales[list_sb[i].drvSource];
-          list_verif[transacciones_completadas].ID_pop = list_sb[i].target;
-          list_verif[transacciones_completadas].mode = list_sb[i].mode;
-          list_verif[transacciones_completadas].calc_latencia();
-          list_verif[transacciones_completadas].completado = 1;
-          list_verif[transacciones_completadas].print();
-          list_sb[i].completo = 1;
-          retardo_total = retardo_total + list_verif[transacciones_completadas].latencia;
-          transacciones_completadas =transacciones_completadas +1;
-         
-        end
-      end
-      
-  		
+      list_mnr[transaction_sb.dato[`pckg_sz-9:0]] = transaction_sb;	
       
     end
     else begin
@@ -245,9 +226,31 @@ class scoreboard extends uvm_scoreboard;
   
 
   
-    task run_phase(uvm_phase phase);
+    virtual function void check_phase (uvm_phase phase);
+      `uvm_info("SB",$sformatf("INICIANDO LA FASE DE chequeo"),UVM_LOW)
+      foreach(list_sb[i])begin
+        foreach(list_mnr[j])begin 
+          if(list_sb[i].dato[`pckg_sz-9:0]==list_sb[j].dato[`pckg_sz-9:0]) begin
+            list_verif[transacciones_completadas] = trans_sb::type_id::create($sformatf("list_verif[%0d]", transacciones_completadas));
+          	list_verif[transacciones_completadas].dato_enviado = list_sb[i].dato;
+          	list_verif[transacciones_completadas].dato_enviado = list_sb[i].dato;
+          	list_verif[transacciones_completadas].tiempo_push  = list_sb[i].tiempo;
+          	list_verif[transacciones_completadas].tiempo_pop   = list_sb[j].tiempo;
+          	list_verif[transacciones_completadas].drvSource_push = terminales[list_sb[i].drvSource];
+          	list_verif[transacciones_completadas].ID_pop = list_sb[i].target;
+          	list_verif[transacciones_completadas].mode = list_sb[i].mode;
+          	list_verif[transacciones_completadas].calc_latencia();
+          	list_verif[transacciones_completadas].completado = 1;
+          	list_verif[transacciones_completadas].print();
+          	list_sb[i].completo = 1;
+          	retardo_total = retardo_total + list_verif[transacciones_completadas].latencia;
+          	transacciones_completadas =transacciones_completadas +1;
+          end
+          
+        end
+      end
       
         
-    endtask
+    endfunction
 
  endclass
