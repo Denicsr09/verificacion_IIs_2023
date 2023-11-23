@@ -1,7 +1,7 @@
 module generador_param;
     class generador;
         integer f;
-        rand int unsigned pckg_size;
+        rand int unsigned pckg_sz;
         rand int unsigned deep_fifo;
         rand int unsigned num_transacciones;
         int unsigned ROWS = 4;
@@ -13,7 +13,7 @@ module generador_param;
 
         function void printmacros;
             f = $fopen("macros2.sv","w");
-            $fdisplay(f, "`define pckg_size %0d", pckg_size );
+            $fdisplay(f, "`define pckg_size %0d", pckg_sz);
             $fdisplay(f, "`define deep_fifo %0d", deep_fifo );
             $fdisplay(f, "`define num_transacciones %0d", num_transacciones );
             $fdisplay(f, "`define ROWS %0d", ROWS );
