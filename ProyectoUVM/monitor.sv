@@ -31,7 +31,7 @@ class monitor extends uvm_monitor;
 	
     //vif.pop[drv_num]=0;
     //#10;
-    phase.raise_objection(this);
+    //phase.raise_objection(this);
      forever begin
       
       
@@ -39,7 +39,7 @@ class monitor extends uvm_monitor;
         	
          	if(this.vif.pndng[drv_num]) begin
               
-        	  transaction_mnr = transaction::type_id::create("transaction_mnr", this);
+              transaction_mnr = transaction::type_id::create("transaction_mnr", this);
               transaction_mnr.dato=vif.data_out[drv_num][`pckg_sz-9:0];
               transaction_mnr.tiempo = $time;
               transaction_mnr.tipo = lectura;
@@ -49,15 +49,15 @@ class monitor extends uvm_monitor;
               
               @(posedge vif.clk);
       		end
-           else begin
+           else begins
            vif.pop[drv_num]=0;
       	   end
-           if (tiempo>30000)break;
-           tiempo=tiempo+1;
+           //if (tiempo>30000)break;
+           //tiempo=tiempo+1;
          end
            
     end
-    phase.drop_objection(this);
+    //phase.drop_objection(this);
   
   endtask
   
