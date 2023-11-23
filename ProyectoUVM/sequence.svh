@@ -38,6 +38,7 @@ class transaction extends uvm_sequence_item;
   constraint const_drvSource { 0 <= drvSource ; drvSource <= 15;};
   constraint const_row { row inside {0,1,2,3,4,5}; };
   constraint const_colum { colum inside {0,1,2,3,4,5}; };
+  //los siguientes cuatro constraints no permiten que se de el caso de que haga targets que se salgan de los rangos 
   constraint const_target { if (row==0 | row==`ROWS+1) colum!=0 & colum!=`COLUMS+1 ;};
   constraint const_target2 { if (colum==0 | colum==`COLUMS+1) row!=0 & row!=`ROWS+1 ;};
   constraint const_target3 { if (row!=0 & row!=`ROWS+1) colum==0 | colum==`COLUMS+1 ;};
@@ -56,26 +57,14 @@ class transaction extends uvm_sequence_item;
   
 
    function void build_phase(uvm_phase phase);
-    /* if(! uvm_config_db #(int)::get (this,"*","pckg_sz",pckg_sz))begin
-      `uvm_fatal(get_type_name(),"Didn't get handle to virtual interface dut_if");
-      end*/
+ 
    endfunction
   
   function void concatena;
-    //row = target/10;
-    //colum = target%10;
-    //$display("row = %0d colum= %0d target = %d", this.row, this.colum, this.target );
+   
     target = row*10+colum; 
     dato= {nxt_jump,row,colum,mode,payload};//se concatena el ID con el payload 
-    /*
-    //$display("Dato concatenado:%b", this.dato);
-    $display("dato partes: nxt_jump=%h, row=%d, colum =%d, mode=%b, payload =%b",
-            this.nxt_jump,
-            this.row,
-            this.colum,
-            this.mode,
-            this.payload);
-            */
+ 
   endfunction;
    
    

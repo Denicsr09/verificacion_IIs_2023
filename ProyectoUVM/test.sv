@@ -7,7 +7,7 @@ class test extends uvm_test;
   int cant_trans;
   virtual dut_if vif; 
   
-  //typedef enum {prueba1, prueba2} pruebas;
+
   pruebas instr_test;
 
   function new(string name = "test", uvm_component parent = null);
@@ -17,8 +17,7 @@ class test extends uvm_test;
   virtual function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     env_test = env::type_id::create("env_test", this);
-    // Get vitual IF handle from top level and pass it to everything
-    //In env level
+ 
     if(!uvm_config_db#(virtual dut_if)::get(this, "", "dut_if",vif))
       `uvm_fatal("TEST", "Did not get vif")
     uvm_config_db #(virtual dut_if)::set(this,"env_test.agent_env.*","dut_if" ,vif);
@@ -26,7 +25,6 @@ class test extends uvm_test;
       
     seq_test= my_sequence :: type_id::create("seq_test");
     seq_test.randomize();
-    //cant_trans = seq_test.numTrans;
     cant_trans = `num_transaciones;
     
   endfunction

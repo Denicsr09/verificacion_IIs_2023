@@ -1,4 +1,9 @@
 `include "macros.sv"
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* Se realizan cuatro grupos de cobertura, donde se toman las señales del DUT para revisar si sí se hizo un cambio en esos puntos
+cada uno de estos se realizan en macros, excepto el de filas, para su rápida visualización */
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class my_cov extends uvm_component;
   
   `uvm_component_utils(my_cov)
@@ -11,11 +16,11 @@ class my_cov extends uvm_component;
 		pop = new();
     endfunction
   
-  covergroup pop_drv_coverG;
+  covergroup pop_drv_coverG;//grupo de cobertura para revisar si se utilizaron todos los drivers
 		`pop_drv_coverG
 	endgroup
 
-	covergroup row_covG;
+	covergroup row_covG;//grupo de cobertura para revisar si se usaron todas las filas posibles
 	  coverpoint tb_top.dut_wr0.dut.data_out[0][`pckg_sz-9:`pckg_sz-12]{bins r = {[0:5]};}
       coverpoint tb_top.dut_wr0.dut.data_out[1][`pckg_sz-9:`pckg_sz-12]{bins r = {[0:5]};}
       coverpoint tb_top.dut_wr0.dut.data_out[2][`pckg_sz-9:`pckg_sz-12]{bins r = {[0:5]};}
@@ -35,15 +40,15 @@ class my_cov extends uvm_component;
 
 	endgroup	
 
-	covergroup colum_covG;
+	covergroup colum_covG;//grupo de cobertura para revisar si se usaron todas las columnas posibles
            `colum_cov
         endgroup
 
-	covergroup pop;
+	covergroup pop;//grupo de cobertura para revisar si se usaron todas las terminales de los routers internos 
 	`terminal_cov
 	endgroup
 
-   virtual task run_phase(uvm_phase phase);
+   virtual task run_phase(uvm_phase phase);//se toman las muestras en el run phase 
      forever begin 
 			#5
 			pop_drv_coverG.sample();
@@ -54,7 +59,7 @@ class my_cov extends uvm_component;
       
    endtask 
   
-   virtual function void check_phase (uvm_phase phase);
+   virtual function void check_phase (uvm_phase phase);//se crean los informes de UVM para indicar el porcentaje de cobertura de cobertura
      `uvm_info("COV",$sformatf("INICIANDO LA FASE DE CHEQUEO"),UVM_LOW)
      `uvm_info("COV",$sformatf("COBERTURA POP: %0.2f",  pop_drv_coverG.get_coverage()),UVM_LOW)
      `uvm_info("COV",$sformatf("COBERTURA ROW: %0.2f",  row_covG.get_coverage()),UVM_LOW)
