@@ -297,10 +297,10 @@ class scoreboard extends uvm_scoreboard;
     `uvm_info("SB",$sformatf("El retardo promedio es de %0.3f", retardo_promedio),UVM_LOW)
     
     ancho_banda_min = (1*`pckg_sz)/retardo_promedio;
-    `uvm_info("SB",$sformatf("El ancho de manda minimo es de %0.3f", ancho_banda_min),UVM_LOW)
+    `uvm_info("SB",$sformatf("El ancho de banda minimo es de %0.3f", ancho_banda_min),UVM_LOW)
     
     ancho_banda_max = (transacciones_completadas*`pckg_sz*16)/retardo_promedio;
-    `uvm_info("SB",$sformatf("El ancho de manda minimo es de %0.3f", ancho_banda_max),UVM_LOW)
+    `uvm_info("SB",$sformatf("El ancho de banda minimo es de %0.3f", ancho_banda_max),UVM_LOW)
     
     
     //Creacion del REPORTE CSV
