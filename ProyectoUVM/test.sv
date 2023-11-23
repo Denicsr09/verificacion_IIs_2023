@@ -33,6 +33,8 @@ class test extends uvm_test;
   
   virtual task run_phase(uvm_phase phase);
     phase.raise_objection(this);
+    set_timeout(1us/1ps);
+    
     apply_reset();
     instr_test = llenado_aleatorio;
     seq_test.instr_agnt =instr_test;
