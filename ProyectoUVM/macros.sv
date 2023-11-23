@@ -1,5 +1,10 @@
 `include "macros2.sv"
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*Por cada señal del pop proveniente del DUT, recorre los datos del gold_path y compara si el dato de salida del DUT
+es igual al dato del gold_path en cuestion, si es así, recorre el gold_path de ese dato y si se encuentra el
+camino (router interno) entonces  lo elimina del arreglo. Los arreglos en cero indican que se hizo bien. */
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 `define revision\
 fork \
 begin \
