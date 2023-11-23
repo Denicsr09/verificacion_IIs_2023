@@ -5,12 +5,11 @@
 `include "test.sv"
 
 
-
 module tb_top;
   import uvm_pkg::*;
   
   bit clk;
-  int pckg_sz = 40;
+  int pckg_sz = `pckg_sz;
   
   always #10 clk <= ~clk;
   

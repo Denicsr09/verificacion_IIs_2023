@@ -27,7 +27,7 @@ class test extends uvm_test;
     seq_test= my_sequence :: type_id::create("seq_test");
     seq_test.randomize();
     //cant_trans = seq_test.numTrans;
-    cant_trans = 3;
+    cant_trans = `num_transaciones;
     
   endfunction
   

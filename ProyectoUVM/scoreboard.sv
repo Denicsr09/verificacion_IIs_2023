@@ -24,9 +24,16 @@ class scoreboard extends uvm_scoreboard;
   int caminador; //numero de fifo que se guarda enel golden reference
   int gold_path[int][int]; //donde se guardan las numeros del golden reference
   
-  int transacciones_completadas = 0; 
+  int transacciones_totales = 0;
+  int transacciones_completadas = 0;
+  int transacciones_perdidas = 0;
   int retardo_total = 0; 
   //Variables utilizadas para el reporte
+  int fa;
+  shortreal  retardo_promedio;
+  shortreal ancho_banda_min;
+  shortreal ancho_banda_max;
+  
     virtual function void build_phase(uvm_phase phase);
       super.build_phase(phase);
       
@@ -44,6 +51,7 @@ class scoreboard extends uvm_scoreboard;
     if (transaction_sb.tipo ==  escritura)begin
       `uvm_info("SB", $sformatf("En el tiempo: %0h se recibe desde el driver el dato %h",
                                 transaction_sb.tiempo,transaction_sb.dato[`pckg_sz-9:0] ), UVM_LOW)
+      transaction_sb.completo = 0;
       list_sb[transaction_sb.dato[`pckg_sz-9:0]] = transaction_sb;
       source = terminales[transaction_sb.drvSource];
       row_source = terminales[transaction_sb.drvSource]/10;
@@ -227,9 +235,18 @@ class scoreboard extends uvm_scoreboard;
 
   
     virtual function void check_phase (uvm_phase phase);
-      `uvm_info("SB",$sformatf("INICIANDO LA FASE DE chequeo"),UVM_LOW)
+      `uvm_info("SB",$sformatf("INICIANDO LA FASE DE CHEQUEO"),UVM_LOW)
       foreach(list_sb[i])begin
         foreach(list_mnr[j])begin 
+          
+          $display("Dato list_sb %b",list_sb[i].dato);
+          $display("Dato list_sb %h",list_sb[i].dato);
+          $display("Dato list_mnr %b",list_mnr[j].dato);
+          $display("Dato list_mnr %h",list_mnr[j].dato);
+          
+          $display("Dato list_sb cortado %b",list_sb[i].dato[`pckg_sz-9:0]);
+          $display("Dato list_mnr cortado %b",list_mnr[j].dato[`pckg_sz-9:0]);
+          
           if(list_sb[i].dato[`pckg_sz-9:0]==list_mnr[j].dato[`pckg_sz-9:0]) begin
             list_verif[transacciones_completadas] = trans_sb::type_id::create($sformatf("list_verif[%0d]", transacciones_completadas));
           	list_verif[transacciones_completadas].dato_enviado = list_sb[i].dato;
@@ -252,5 +269,42 @@ class scoreboard extends uvm_scoreboard;
       
         
     endfunction
+  virtual function void report_phase (uvm_phase phase);
+    `uvm_info("SB",$sformatf("INICIANDO LA FASE DE REPORTE"),UVM_LOW)
+    `uvm_info("SB",$sformatf("El retardo total es de %0d", retardo_total),UVM_LOW)
+    foreach(list_sb[i]) begin
+      if(list_sb[i].completo != 1) begin
+        transacciones_perdidas = transacciones_perdidas +1;
+      end
+      transacciones_totales =transacciones_totales +1;
+    end
+    retardo_promedio = retardo_total/transacciones_completadas;
+    `uvm_info("SB",$sformatf("El retardo promedio es de %0.3f", retardo_promedio),UVM_LOW)
+    
+    ancho_banda_min = (1*`pckg_sz)/retardo_promedio;
+    `uvm_info("SB",$sformatf("El ancho de manda minimo es de %0.3f", ancho_banda_min),UVM_LOW)
+    
+    ancho_banda_max = (transacciones_completadas*`pckg_sz*16)/retardo_promedio;
+    `uvm_info("SB",$sformatf("El ancho de manda minimo es de %0.3f", ancho_banda_max),UVM_LOW)
+    
+    
+    //Creacion del REPORTE CSV
+    fa = $fopen("INFORME.csv","a");
+    $fdisplay(fa,"Reporte Scoreboard");
+    $fdisplay(fa,"pckg_size= %d, depth_fifo= %d, retardo promedio= %0.3f, ancho de banda minima= %0.3f, ancho de banda maximo= %0.3f",
+              `pckg_sz,`deep_fifo, retardo_promedio,ancho_banda_min,ancho_banda_max );
+    $fclose(fa);
+    
+    fa = $fopen("Reporte.csv","a");
+    $fdisplay(fa,"Reporte Scoreboard");
+    $fdisplay(fa,"REPORTE DE TRANSACCIONES REALIZADAS");
+    foreach(list_verif[i]) begin
+      $fdisplay(fa,"dato=  %0h , Tiempo de escritura= %d, Driver de salida= %d, Tiempo de lectura= %d, Driver de llegada= %d , Latencia=%d "
+                , list_verif[i].dato_enviado , list_verif[i].tiempo_push, list_verif[i].drvSource_push , list_verif[i].tiempo_pop , list_verif[i].ID_pop , list_verif[i].latencia);
+    end
+    `uvm_info("SB",$sformatf("Se realizo un total de %0d, se completaron %0d y se perdieron %0d transacciones",
+                             transacciones_totales, transacciones_completadas, transacciones_perdidas),UVM_LOW)
+    
+  endfunction
 
  endclass
