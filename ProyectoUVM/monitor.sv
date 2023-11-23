@@ -49,7 +49,7 @@ class monitor extends uvm_monitor;
               
               @(posedge vif.clk);
       		end
-           else begins
+           else begin
            vif.pop[drv_num]=0;
       	   end
            //if (tiempo>30000)break;
