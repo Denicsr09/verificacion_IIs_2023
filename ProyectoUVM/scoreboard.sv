@@ -232,6 +232,14 @@ class scoreboard extends uvm_scoreboard;
       
   endfunction
   
+   virtual task run_phase(uvm_phase phase);
+       phase.raise_objection(this);
+     
+     `revision
+     
+       phase.drop_objection(this);
+   endtask 
+  
 
   
     virtual function void check_phase (uvm_phase phase);
