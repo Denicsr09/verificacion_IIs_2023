@@ -274,14 +274,14 @@ class scoreboard extends uvm_scoreboard;
           
           
         end
-        foreach (gold_path[i])begin
+       
+      end
+       foreach (gold_path[i])begin
           //$display("  Tamaño del goldpath: %0d", gold_path[i].size());
           if (gold_path[i].size()!=0)begin  
-           `uvm_info("SB",$sformatf("El tamaño del gold path %0d", gold_path[i].size()),UVM_LOW)
+           `uvm_info("SB",$sformatf("Dato perdido %0b ,tamaño del goldpath %0d", i ,gold_path[i].size()),UVM_LOW)
            end 
         end
-      end
-      
         
     endfunction
   virtual function void report_phase (uvm_phase phase);
