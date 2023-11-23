@@ -102,7 +102,7 @@ class test extends uvm_test;
     end
     
     
-    #2000
+    //#2000
     phase.drop_objection(this);
   endtask
   
