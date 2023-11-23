@@ -52,7 +52,7 @@ class monitor extends uvm_monitor;
            else begin
            vif.pop[drv_num]=0;
       	   end
-           if (tiempo>1000)break;
+           if (tiempo>2500)break;
            tiempo=tiempo+1;
          end
            
