@@ -1,4 +1,5 @@
 `include "objects.sv"
+`include "my_cov.sv"
 class scoreboard extends uvm_scoreboard;
   `uvm_component_utils(scoreboard)
   
@@ -9,6 +10,7 @@ class scoreboard extends uvm_scoreboard;
   uvm_analysis_imp #(transaction,scoreboard) m_analysis_imp;
   uvm_analysis_imp #(transaction,scoreboard) drv_analysis_imp;
   
+  my_cov coverage_sb;
   transaction list_sb[int];//arreglo asoc con indice de tipo int 
   transaction list_mnr[int]; //Lista para guardar los datos del monitor
   trans_sb    list_verif[int];
@@ -36,12 +38,10 @@ class scoreboard extends uvm_scoreboard;
   
     virtual function void build_phase(uvm_phase phase);
       super.build_phase(phase);
-      
-      //list_verif = trans_sb::type_id::create($sformatf("list_verif[%0d]", i));
-      //list_verif = trans_sb::type_id::create("list_veri");
-      //list_verif = trans_sb::type_id::create("list_verif");
+     
       m_analysis_imp=new("m_analysis_imp",this);
       drv_analysis_imp=new("drv_analysis_imp",this);
+      coverage_sb = my_cov::type_id::create("coverage_sb ", this);
     endfunction
     
   
@@ -216,7 +216,7 @@ class scoreboard extends uvm_scoreboard;
       end
       `uvm_info("SB", $sformatf("El camino del dato %h es el siguiente ", transaction_sb.dato[`pckg_sz-9:0]), UVM_LOW)
       foreach (gold_path[transaction_sb.dato[`pckg_sz-9:0]][i]) begin
-         $display("  Valor: %0d", gold_path[transaction_sb.dato[`pckg_sz-9:0]][i]);
+         //$display("  Valor: %0d", gold_path[transaction_sb.dato[`pckg_sz-9:0]][i]);
       end
     end
     else if (transaction_sb.tipo ==  lectura) begin
@@ -247,13 +247,13 @@ class scoreboard extends uvm_scoreboard;
       foreach(list_sb[i])begin
         foreach(list_mnr[j])begin 
           
-          $display("Dato list_sb %b",list_sb[i].dato);
-          $display("Dato list_sb %h",list_sb[i].dato);
-          $display("Dato list_mnr %b",list_mnr[j].dato);
-          $display("Dato list_mnr %h",list_mnr[j].dato);
+          //$display("Dato list_sb %b",list_sb[i].dato);
+          //$display("Dato list_sb %h",list_sb[i].dato);
+          //$display("Dato list_mnr %b",list_mnr[j].dato);
+          //$display("Dato list_mnr %h",list_mnr[j].dato);
           
-          $display("Dato list_sb cortado %b",list_sb[i].dato[`pckg_sz-9:0]);
-          $display("Dato list_mnr cortado %b",list_mnr[j].dato[`pckg_sz-9:0]);
+          //$display("Dato list_sb cortado %b",list_sb[i].dato[`pckg_sz-9:0]);
+          //$display("Dato list_mnr cortado %b",list_mnr[j].dato[`pckg_sz-9:0]);
           
           if(list_sb[i].dato[`pckg_sz-9:0]==list_mnr[j].dato[`pckg_sz-9:0]) begin
             list_verif[transacciones_completadas] = trans_sb::type_id::create($sformatf("list_verif[%0d]", transacciones_completadas));
@@ -272,9 +272,10 @@ class scoreboard extends uvm_scoreboard;
           	transacciones_completadas =transacciones_completadas +1;
           end
           
+          
         end
         foreach (gold_path[i])begin
-          $display("  Tamaño del goldpath: %0d", gold_path[i].size());
+          //$display("  Tamaño del goldpath: %0d", gold_path[i].size());
         end
       end
       
@@ -301,17 +302,17 @@ class scoreboard extends uvm_scoreboard;
     
     //Creacion del REPORTE CSV
     fa = $fopen("INFORME.csv","a");
-    $fdisplay(fa,"Reporte Scoreboard");
-    $fdisplay(fa,"pckg_size= %d, depth_fifo= %d, retardo promedio= %0.3f, ancho de banda minima= %0.3f, ancho de banda maximo= %0.3f",
-              `pckg_sz,`deep_fifo, retardo_promedio,ancho_banda_min,ancho_banda_max );
+    //$fdisplay(fa,"Reporte Scoreboard");
+    //$fdisplay(fa,"pckg_size= %d, depth_fifo= %d, retardo promedio= %0.3f, ancho de banda minima= %0.3f, ancho de banda maximo= %0.3f",
+              //`pckg_sz,`deep_fifo, retardo_promedio,ancho_banda_min,ancho_banda_max );
     $fclose(fa);
     
     fa = $fopen("Reporte.csv","a");
-    $fdisplay(fa,"Reporte Scoreboard");
-    $fdisplay(fa,"REPORTE DE TRANSACCIONES REALIZADAS");
+    //$fdisplay(fa,"Reporte Scoreboard");
+    //$fdisplay(fa,"REPORTE DE TRANSACCIONES REALIZADAS");
     foreach(list_verif[i]) begin
-      $fdisplay(fa,"dato=  %0h , Tiempo de escritura= %d, Driver de salida= %d, Tiempo de lectura= %d, Driver de llegada= %d , Latencia=%d "
-                , list_verif[i].dato_enviado , list_verif[i].tiempo_push, list_verif[i].drvSource_push , list_verif[i].tiempo_pop , list_verif[i].ID_pop , list_verif[i].latencia);
+      //$fdisplay(fa,"dato=  %0h , Tiempo de escritura= %d, Driver de salida= %d, Tiempo de lectura= %d, Driver de llegada= %d , Latencia=%d "
+                //, list_verif[i].dato_enviado , list_verif[i].tiempo_push, list_verif[i].drvSource_push , list_verif[i].tiempo_pop , list_verif[i].ID_pop , list_verif[i].latencia);
     end
     `uvm_info("SB",$sformatf("Se realizo un total de %0d, se completaron %0d y se perdieron %0d transacciones",
                              transacciones_totales, transacciones_completadas, transacciones_perdidas),UVM_LOW)

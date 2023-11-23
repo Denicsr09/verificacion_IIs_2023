@@ -43,7 +43,7 @@ class test extends uvm_test;
       seq_test.start(env_test.agent_env.sequencer_ag[seq_test.seqdrvSource]);
       `uvm_info("TEST", $sformatf("Done of generation of %0d items",i), UVM_LOW)
     end
-    /*
+    
     instr_test = trans_filas;
     seq_test.instr_agnt =instr_test;
     `uvm_info("TEST", $sformatf("Prueba de transaccion filas"), UVM_LOW)
@@ -98,7 +98,7 @@ class test extends uvm_test;
       seq_test.start(env_test.agent_env.sequencer_ag[seq_test.seqdrvSource]);
       `uvm_info("TEST", $sformatf("Done of generation of %0d items",i+2), UVM_LOW)
     end
-    */
+    
     
     #2000
     phase.drop_objection(this);
