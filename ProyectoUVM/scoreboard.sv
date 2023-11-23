@@ -7,13 +7,13 @@ class scoreboard extends uvm_scoreboard;
       super.new(name, parent);
     endfunction
     
-  uvm_analysis_imp #(transaction,scoreboard) m_analysis_imp;
-  uvm_analysis_imp #(transaction,scoreboard) drv_analysis_imp;
+  uvm_analysis_imp #(transaction,scoreboard) m_analysis_imp; //Puerto de analisis proveniente del monitor
+  uvm_analysis_imp #(transaction,scoreboard) drv_analysis_imp; // Puerto de analisis proveniente del driver
   
   my_cov coverage_sb;
   transaction list_sb[int];//arreglo asoc con indice de tipo int 
   transaction list_mnr[int]; //Lista para guardar los datos del monitor
-  trans_sb    list_verif[int];
+  trans_sb    list_verif[int];// Lista para guardar los datos verificados
   
   //Variables utilizadas para generar el gold reference
   int contador;//utilizado para recorrer las fifo 
@@ -26,9 +26,9 @@ class scoreboard extends uvm_scoreboard;
   int caminador; //numero de fifo que se guarda enel golden reference
   int gold_path[int][int]; //donde se guardan las numeros del golden reference
   
-  int transacciones_totales = 0;
-  int transacciones_completadas = 0;
-  int transacciones_perdidas = 0;
+  int transacciones_totales = 0; //Variable para transacciones total que se generaron
+  int transacciones_completadas = 0; //Variable para transacciones completas que llegaron al monitor
+  int transacciones_perdidas = 0; // Variables trasacciones perdidas 
   int retardo_total = 0; 
   //Variables utilizadas para el reporte
   int fa;
@@ -49,6 +49,7 @@ class scoreboard extends uvm_scoreboard;
     
     
     if (transaction_sb.tipo ==  escritura)begin
+      //En este condicional entran los datos provenientes del driver y se genera el golden reference y el gold path
       `uvm_info("SB", $sformatf("En el tiempo: %0h se recibe desde el driver el dato %h",
                                 transaction_sb.tiempo,transaction_sb.dato[`pckg_sz-9:0] ), UVM_LOW)
       transaction_sb.completo = 0;
@@ -220,6 +221,7 @@ class scoreboard extends uvm_scoreboard;
       end
     end
     else if (transaction_sb.tipo ==  lectura) begin
+      //En este condicional entran los datos provenientes del monitor  y se guardan en una lista
       //$display("Dato recibido desde el monitor %b", transaction_sb.dato);
       `uvm_info("SB", $sformatf("En el tiempo: %0d se recibe desde el monitor el dato: %h",
                                 transaction_sb.tiempo,transaction_sb.dato ), UVM_LOW)
@@ -243,6 +245,7 @@ class scoreboard extends uvm_scoreboard;
 
   
     virtual function void check_phase (uvm_phase phase);
+    //Se revisan los datos que llegaron para compararlos con los generados para realizar conteos de transacciones completadas
       `uvm_info("SB",$sformatf("INICIANDO LA FASE DE CHEQUEO"),UVM_LOW)
       foreach(list_sb[i])begin
         foreach(list_mnr[j])begin 
@@ -266,7 +269,7 @@ class scoreboard extends uvm_scoreboard;
           	list_verif[transacciones_completadas].mode = list_sb[i].mode;
           	list_verif[transacciones_completadas].calc_latencia();
           	list_verif[transacciones_completadas].completado = 1;
-          	//list_verif[transacciones_completadas].print();
+          	list_verif[transacciones_completadas].print();
           	list_sb[i].completo = 1;
           	retardo_total = retardo_total + list_verif[transacciones_completadas].latencia;
           	transacciones_completadas =transacciones_completadas +1;

@@ -80,7 +80,9 @@ class transaction extends uvm_sequence_item;
    
    
 endclass
-
+//////////////////////////////////////////////////////////////
+// Generador de sequence item utilizados para las pruebas   //
+//////////////////////////////////////////////////////////////
 class my_sequence extends uvm_sequence #(transaction);
   
   `uvm_object_utils(my_sequence)
@@ -93,12 +95,12 @@ class my_sequence extends uvm_sequence #(transaction);
   constraint const_numTrans { numTrans>=0; numTrans<=4 ;};
   
   int terminales [] = {01,02,03,04,10,20,30,40,51,52,53,54,15,25,35,45};
-  int max_retardo = 10;
+  int max_retardo = 10; //Maximo tiempo de espera en 
   int l = 0;
   int i = 0;
-  reg [`pckg_sz-18:0] lista_especifica [] = '{{`pckg_sz{4'hF}},{`pckg_sz{4'h0}},{`pckg_sz{4'hA}}, {`pckg_sz{4'h5}}};
-  rand int seqdrvSource;
-  pruebas instr_agnt;
+  reg [`pckg_sz-18:0] lista_especifica [] = '{{`pckg_sz{4'hF}},{`pckg_sz{4'h0}},{`pckg_sz{4'hA}}, {`pckg_sz{4'h5}}};//Lista de payload especificos
+  rand int seqdrvSource; //Para aleatorizar el el driver en el cual se escribe
+  pruebas instr_agnt; //Contiene la instruccion de cual prueba se va a realizar
   
   tipo_trans tpo_spec;  
   
