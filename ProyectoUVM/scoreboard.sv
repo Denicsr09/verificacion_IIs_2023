@@ -266,7 +266,7 @@ class scoreboard extends uvm_scoreboard;
           	list_verif[transacciones_completadas].mode = list_sb[i].mode;
           	list_verif[transacciones_completadas].calc_latencia();
           	list_verif[transacciones_completadas].completado = 1;
-          	list_verif[transacciones_completadas].print();
+          	//list_verif[transacciones_completadas].print();
           	list_sb[i].completo = 1;
           	retardo_total = retardo_total + list_verif[transacciones_completadas].latencia;
           	transacciones_completadas =transacciones_completadas +1;
@@ -296,26 +296,26 @@ class scoreboard extends uvm_scoreboard;
     retardo_promedio = retardo_total/transacciones_completadas;
     `uvm_info("SB",$sformatf("El retardo promedio es de %0.3f", retardo_promedio),UVM_LOW)
     
-    ancho_banda_min = (1*`pckg_sz)/retardo_promedio;
+    ancho_banda_min = ((1*`pckg_sz)*(1e9))/retardo_promedio;
     `uvm_info("SB",$sformatf("El ancho de banda minimo es de %0.3f", ancho_banda_min),UVM_LOW)
     
-    ancho_banda_max = (transacciones_completadas*`pckg_sz*16)/retardo_promedio;
-    `uvm_info("SB",$sformatf("El ancho de banda minimo es de %0.3f", ancho_banda_max),UVM_LOW)
+    ancho_banda_max = ((transacciones_completadas*`pckg_sz*16)*(1e9))/retardo_promedio;
+    `uvm_info("SB",$sformatf("El ancho de banda maximo es de %0.3f", ancho_banda_max),UVM_LOW)
     
     
     //Creacion del REPORTE CSV
     fa = $fopen("INFORME.csv","a");
-    //$fdisplay(fa,"Reporte Scoreboard");
-    //$fdisplay(fa,"pckg_size= %d, depth_fifo= %d, retardo promedio= %0.3f, ancho de banda minima= %0.3f, ancho de banda maximo= %0.3f",
-              //`pckg_sz,`deep_fifo, retardo_promedio,ancho_banda_min,ancho_banda_max );
+    $fdisplay(fa,"Reporte Scoreboard");
+    $fdisplay(fa,"pckg_size= %d, depth_fifo= %d, retardo promedio= %0.3f, ancho de banda minima= %0.3f, ancho de banda maximo= %0.3f",
+              `pckg_sz,`deep_fifo, retardo_promedio,ancho_banda_min,ancho_banda_max );
     $fclose(fa);
     
     fa = $fopen("Reporte.csv","a");
-    //$fdisplay(fa,"Reporte Scoreboard");
-    //$fdisplay(fa,"REPORTE DE TRANSACCIONES REALIZADAS");
+    $fdisplay(fa,"Reporte Scoreboard");
+    $fdisplay(fa,"REPORTE DE TRANSACCIONES REALIZADAS");
     foreach(list_verif[i]) begin
-      //$fdisplay(fa,"dato=  %0h , Tiempo de escritura= %d, Driver de salida= %d, Tiempo de lectura= %d, Driver de llegada= %d , Latencia=%d "
-                //, list_verif[i].dato_enviado , list_verif[i].tiempo_push, list_verif[i].drvSource_push , list_verif[i].tiempo_pop , list_verif[i].ID_pop , list_verif[i].latencia);
+      $fdisplay(fa,"dato=  %0h , Tiempo de escritura= %d, Driver de salida= %d, Tiempo de lectura= %d, Driver de llegada= %d , Latencia=%d "
+                , list_verif[i].dato_enviado , list_verif[i].tiempo_push, list_verif[i].drvSource_push , list_verif[i].tiempo_pop , list_verif[i].ID_pop , list_verif[i].latencia);
     end
     `uvm_info("SB",$sformatf("Se realizo un total de %0d, se completaron %0d y se perdieron %0d transacciones",
                              transacciones_totales, transacciones_completadas, transacciones_perdidas),UVM_LOW)

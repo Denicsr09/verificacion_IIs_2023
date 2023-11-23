@@ -1,4 +1,4 @@
-`include "macros.sv"
+`include "macros2.sv"
 class monitor extends uvm_monitor;
   `uvm_component_utils (monitor)
   

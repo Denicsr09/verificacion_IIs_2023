@@ -1,4 +1,4 @@
-`include "macros.sv"
+`include "macros2.sv"
 
 /////////////////////////////////////////////////////////////////////////
 // Definición de estructura para las pruebas a realizar                //

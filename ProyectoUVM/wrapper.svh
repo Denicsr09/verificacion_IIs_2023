@@ -1,4 +1,5 @@
-`include "macros.sv"
+`include "macros2.sv"
+
 module dut_wrapper(dut_if vif_tb);
   mesh_gnrtr  #(.ROWS(`ROWS), .COLUMS(`COLUMS), .pckg_sz(`pckg_sz), .fifo_depth(`deep_fifo)) dut(
     

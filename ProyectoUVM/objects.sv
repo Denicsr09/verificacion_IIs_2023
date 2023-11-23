@@ -1,4 +1,4 @@
-`include "macros.sv"
+`include "macros2.sv"
 
 
 class trans_sb extends uvm_object;

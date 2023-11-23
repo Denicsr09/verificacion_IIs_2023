@@ -1,6 +1,6 @@
 `include "driver.sv"
 `include "monitor.sv"
-`include "macros.sv"
+`include "macros2.sv"
 
 class agent extends uvm_agent;
   
