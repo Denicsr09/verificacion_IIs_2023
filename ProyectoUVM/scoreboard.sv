@@ -273,6 +273,9 @@ class scoreboard extends uvm_scoreboard;
           end
           
         end
+        foreach (gold_path[i])begin
+          $display("  Tamaño del goldpath: %0d", gold_path[i].size());
+        end
       end
       
         
