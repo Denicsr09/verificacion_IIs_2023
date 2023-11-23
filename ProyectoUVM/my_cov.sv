@@ -1,4 +1,4 @@
-
+`include "macros.sv"
 class my_cov extends uvm_component;
   
   `uvm_component_utils(my_cov)
