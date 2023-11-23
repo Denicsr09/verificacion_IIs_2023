@@ -1,4 +1,3 @@
-`include "objects.sv"
 `include "macros.sv"
 class monitor extends uvm_monitor;
   `uvm_component_utils (monitor)
@@ -12,10 +11,12 @@ class monitor extends uvm_monitor;
   function new(string  name, uvm_component parent);
     super.new(name,parent);
   endfunction
-
-  transaction_monitor transaction_mnr; 
   
-  uvm_analysis_port#(transaction_monitor) mon_analysis_port;
+  transaction transaction_mnr;
+	
+  //transaction_monitor transaction_mnr; 
+  
+  uvm_analysis_port#(transaction) mon_analysis_port;
   
   virtual function void build_phase(uvm_phase phase);
     super.build_phase (phase);//fase de construccion
@@ -28,8 +29,8 @@ class monitor extends uvm_monitor;
   
   virtual task run_phase(uvm_phase phase);
 	
-    vif.pop[drv_num]=0;
-    #10;
+    //vif.pop[drv_num]=0;
+    //#10;
     phase.raise_objection(this);
      forever begin
       
@@ -38,9 +39,10 @@ class monitor extends uvm_monitor;
         	
          	if(this.vif.pndng[drv_num]) begin
               
-        	  transaction_mnr = transaction_monitor::type_id::create("transaction_mnr", this);
+        	  transaction_mnr = transaction::type_id::create("transaction_mnr", this);
               transaction_mnr.dato=vif.data_out[drv_num][`pckg_sz-9:0];
-              //$display("monitor num=  %d dato= %b", drv_num,transaction_mnr.dato);
+              transaction_mnr.tiempo = $time;
+              transaction_mnr.tipo = lectura;
               mon_analysis_port.write(transaction_mnr);
               
               vif.pop[drv_num]=1;
@@ -60,5 +62,4 @@ class monitor extends uvm_monitor;
   endtask
   
 endclass
-
 
