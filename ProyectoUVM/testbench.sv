@@ -1,4 +1,5 @@
 `include "uvm_macros.svh"
+import uvm_pkg::*;
 `include "wrapper.svh"
 `include "Router_library.sv"
 `include "interface.sv"
@@ -6,7 +7,7 @@
 
 
 module tb_top;
-  import uvm_pkg::*;
+  //import uvm_pkg::*;
   
   bit clk;
   int pckg_sz = `pckg_sz;

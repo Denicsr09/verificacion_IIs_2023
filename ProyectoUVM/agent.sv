@@ -1,6 +1,6 @@
 `include "driver.sv"
 `include "monitor.sv"
-`include "macros.sv"
+`include "macros2.sv"
 
 class agent extends uvm_agent;
   
@@ -38,39 +38,5 @@ class agent extends uvm_agent;
     
   endfunction
   
- /*
-    task run_phase(uvm_phase phase);
-      
-      phase.raise_objection(this); begin
-        if (caso==0) begin 
-            my_sequence secuencia;
-            secuencia = my_sequence::type_id::create("secuencia");
-
-             for (int i=0; i<(`ROWS*2+`COLUMS*2);  i++) begin
-                 automatic int n=i;
-               secuencia.randomize();
-
-               repeat(secuencia.numTrans) begin 
-                 secuencia.start(sequencer_ag[n]);//aqui envia los paquetes
-               end 
-             end
-        end 
-        if (caso==1) begin 
-            my_sequence secuencia;
-            secuencia = my_sequence::type_id::create("secuencia");
-
-             //for (int i=0; i<(`ROWS*2+`COLUMS*2);  i++) begin
-               //  automatic int n=i;
-               secuencia.randomize();
-
-               repeat(secuencia.numTrans) begin 
-                 secuencia.start(sequencer_ag[5]);//aqui envia los paquetes
-               end 
-             //end
-        end 
-      end
-      phase.drop_objection(this);
-	
-    endtask
-    */
+ 
  endclass

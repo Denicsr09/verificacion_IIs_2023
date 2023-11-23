@@ -1,4 +1,5 @@
 `include "objects.sv"
+`include "my_cov.sv"
 class scoreboard extends uvm_scoreboard;
   `uvm_component_utils(scoreboard)
   
@@ -9,6 +10,7 @@ class scoreboard extends uvm_scoreboard;
   uvm_analysis_imp #(transaction,scoreboard) m_analysis_imp;
   uvm_analysis_imp #(transaction,scoreboard) drv_analysis_imp;
   
+  my_cov coverage_sb;
   transaction list_sb[int];//arreglo asoc con indice de tipo int 
   transaction list_mnr[int]; //Lista para guardar los datos del monitor
   trans_sb    list_verif[int];
@@ -36,12 +38,10 @@ class scoreboard extends uvm_scoreboard;
   
     virtual function void build_phase(uvm_phase phase);
       super.build_phase(phase);
-      
-      //list_verif = trans_sb::type_id::create($sformatf("list_verif[%0d]", i));
-      //list_verif = trans_sb::type_id::create("list_veri");
-      //list_verif = trans_sb::type_id::create("list_verif");
+     
       m_analysis_imp=new("m_analysis_imp",this);
       drv_analysis_imp=new("drv_analysis_imp",this);
+      coverage_sb = my_cov::type_id::create("coverage_sb ", this);
     endfunction
     
   
@@ -216,7 +216,7 @@ class scoreboard extends uvm_scoreboard;
       end
       `uvm_info("SB", $sformatf("El camino del dato %h es el siguiente ", transaction_sb.dato[`pckg_sz-9:0]), UVM_LOW)
       foreach (gold_path[transaction_sb.dato[`pckg_sz-9:0]][i]) begin
-         $display("  Valor: %0d", gold_path[transaction_sb.dato[`pckg_sz-9:0]][i]);
+         //$display("  Valor: %0d", gold_path[transaction_sb.dato[`pckg_sz-9:0]][i]);
       end
     end
     else if (transaction_sb.tipo ==  lectura) begin
@@ -247,13 +247,13 @@ class scoreboard extends uvm_scoreboard;
       foreach(list_sb[i])begin
         foreach(list_mnr[j])begin 
           
-          $display("Dato list_sb %b",list_sb[i].dato);
-          $display("Dato list_sb %h",list_sb[i].dato);
-          $display("Dato list_mnr %b",list_mnr[j].dato);
-          $display("Dato list_mnr %h",list_mnr[j].dato);
+          //$display("Dato list_sb %b",list_sb[i].dato);
+          //$display("Dato list_sb %h",list_sb[i].dato);
+          //$display("Dato list_mnr %b",list_mnr[j].dato);
+          //$display("Dato list_mnr %h",list_mnr[j].dato);
           
-          $display("Dato list_sb cortado %b",list_sb[i].dato[`pckg_sz-9:0]);
-          $display("Dato list_mnr cortado %b",list_mnr[j].dato[`pckg_sz-9:0]);
+          //$display("Dato list_sb cortado %b",list_sb[i].dato[`pckg_sz-9:0]);
+          //$display("Dato list_mnr cortado %b",list_mnr[j].dato[`pckg_sz-9:0]);
           
           if(list_sb[i].dato[`pckg_sz-9:0]==list_mnr[j].dato[`pckg_sz-9:0]) begin
             list_verif[transacciones_completadas] = trans_sb::type_id::create($sformatf("list_verif[%0d]", transacciones_completadas));
@@ -266,15 +266,22 @@ class scoreboard extends uvm_scoreboard;
           	list_verif[transacciones_completadas].mode = list_sb[i].mode;
           	list_verif[transacciones_completadas].calc_latencia();
           	list_verif[transacciones_completadas].completado = 1;
-          	list_verif[transacciones_completadas].print();
+          	//list_verif[transacciones_completadas].print();
           	list_sb[i].completo = 1;
           	retardo_total = retardo_total + list_verif[transacciones_completadas].latencia;
           	transacciones_completadas =transacciones_completadas +1;
           end
           
+          
         end
+       
       end
-      
+       foreach (gold_path[i])begin
+          //$display("  Tamaño del goldpath: %0d", gold_path[i].size());
+          if (gold_path[i].size()!=0)begin  
+           `uvm_info("SB",$sformatf("Dato perdido %0b ,tamaño del goldpath %0d", i ,gold_path[i].size()),UVM_LOW)
+           end 
+        end
         
     endfunction
   virtual function void report_phase (uvm_phase phase);
@@ -289,11 +296,11 @@ class scoreboard extends uvm_scoreboard;
     retardo_promedio = retardo_total/transacciones_completadas;
     `uvm_info("SB",$sformatf("El retardo promedio es de %0.3f", retardo_promedio),UVM_LOW)
     
-    ancho_banda_min = (1*`pckg_sz)/retardo_promedio;
-    `uvm_info("SB",$sformatf("El ancho de manda minimo es de %0.3f", ancho_banda_min),UVM_LOW)
+    ancho_banda_min = ((1*`pckg_sz)*(1e9))/retardo_promedio;
+    `uvm_info("SB",$sformatf("El ancho de banda minimo es de %0.3f", ancho_banda_min),UVM_LOW)
     
-    ancho_banda_max = (transacciones_completadas*`pckg_sz*16)/retardo_promedio;
-    `uvm_info("SB",$sformatf("El ancho de manda minimo es de %0.3f", ancho_banda_max),UVM_LOW)
+    ancho_banda_max = ((transacciones_completadas*`pckg_sz*16)*(1e9))/retardo_promedio;
+    `uvm_info("SB",$sformatf("El ancho de banda maximo es de %0.3f", ancho_banda_max),UVM_LOW)
     
     
     //Creacion del REPORTE CSV
